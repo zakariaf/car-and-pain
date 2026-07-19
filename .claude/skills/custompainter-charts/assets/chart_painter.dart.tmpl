@@ -1,0 +1,77 @@
+// TEMPLATE — a new a11y-complete PULSE painted chart. No chart package: pure Canvas/Path/Paint.
+// Replace __Chart__ / __chart__ and fill the paint() geometry. Rules baked in:
+//   • RepaintBoundary + ExcludeSemantics around the painter; a sibling Semantics speaks the ANSWER.
+//   • Data from the firouzeh ramp only (PulseTokens) — status hues (saffron/ember/pomegranate) are
+//     RESERVED for urgency and NEVER a data series.
+//   • Redundant encoding: direct label + hatch on the highlighted mark + legend for 2+ series.
+//   • Empty state = axis frame + next-action text, handled in the WIDGET (no skeleton loader).
+//   • shouldRepaint compares fields, never `=> true`.
+//   • Data arrives downsampled (Isolate.run) + unit-converted + numeral/calendar-formatted upstream.
+//   • No hard-coded left/right/Offset sign — derive direction from Directionality.of(context).
+
+import 'package:flutter/material.dart';
+// import '<pulse-design-system tokens>'; // PulseTokens.of(context)
+
+class __Chart__ extends StatelessWidget {
+  const __Chart__({
+    required this.series, // display units; canonical->display + downsample done upstream
+    required this.semanticsLabel, // the ANSWER, in display numerals, correct in RTL
+    super.key,
+  });
+
+  final List<double> series;
+  final String semanticsLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    // final t = PulseTokens.of(context);
+    // final dir = Directionality.of(context);
+
+    if (series.length < 2) {
+      // Empty state — axis frame + next action. NEVER a skeleton/spinner.
+      return const _EmptyChart(message: 'Not enough data yet — log 2 fills to see your trend');
+    }
+
+    return Semantics(
+      image: true, // a chart is an image to a screen reader
+      label: semanticsLabel,
+      child: ExcludeSemantics(
+        child: RepaintBoundary(
+          child: CustomPaint(
+            size: const Size.fromHeight(120),
+            painter: ___Chart__Painter(
+              series: series,
+              // line: t.accent,                              // firouzeh — data ramp
+              // band: t.temp[0].withValues(alpha: 0.12),     // u0-soft reference band
+              // direction: dir,                              // chrome mirrors; data does not
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class ___Chart__Painter extends CustomPainter {
+  ___Chart__Painter({required this.series});
+
+  final List<double> series;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    // 1. reference band / axis frame (u0-soft)
+    // 2. data marks from the firouzeh ramp (largest = darkest for ranked bars)
+    // 3. direct labels; hatch the highlighted mark (white @ .35, 45deg, 3px on/off)
+    // 4. NEVER paint status hues here; NEVER mirror the plotted data in RTL
+  }
+
+  @override
+  bool shouldRepaint(___Chart__Painter old) => !identical(old.series, series); // never `=> true`
+}
+
+class _EmptyChart extends StatelessWidget {
+  const _EmptyChart({required this.message});
+  final String message;
+  @override
+  Widget build(BuildContext context) => Center(child: Text(message)); // + axis frame paint
+}

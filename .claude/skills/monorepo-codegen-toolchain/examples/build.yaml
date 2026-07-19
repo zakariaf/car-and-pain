@@ -1,0 +1,23 @@
+# Example: correctly scoped per-package builder config (packages/data/build.yaml).
+# Fence each builder to the directory that OWNS its annotations so a change in
+# one feature does not regenerate all 25. Copy and adjust the globs per package.
+targets:
+  $default:
+    builders:
+      # Drift database + DAOs live under lib/src/db only.
+      drift_dev:
+        generate_for:
+          - "lib/src/db/**.dart"
+        options:
+          # Project canon: encrypted SQLCipher DB, forward-only migrations.
+          store_date_time_values_as_text: true
+      # The single-file backup/export DTOs are the only json_serializable users.
+      json_serializable:
+        generate_for:
+          - "lib/src/backup/**.dart"
+      # freezed domain/value models (row -> domain mapping happens at the
+      # repository boundary; never leak Drift row/companion classes to the UI).
+      freezed:
+        generate_for:
+          - "lib/src/**/model/**.dart"
+          - "lib/src/**/*_model.dart"

@@ -1,0 +1,1164 @@
+<style>
+/* ============================================================
+   DOSSIER — The Instrument Press
+   Self-contained prototype gallery. Body content only.
+   ============================================================ */
+
+/* ---- Tokens -------------------------------------------------- */
+#dsr{
+  --paper:#ECE6D8;
+  --paper-2:#E3DBCA;      /* slightly deeper newsprint for wells */
+  --ink:#131210;
+  --ink-2:#55504A;
+  --accent:#F5310D;       /* proof red-orange */
+  --blue:#123A8C;         /* riso-blue, boxed labels only */
+  --rule:#131210;
+  --fig-rgb:19 18 16;     /* figure colour components for ramps */
+  --surface-rgb:236 230 216;
+  --surface:var(--paper);
+  --well:var(--paper-2);
+  --text:var(--ink);
+  --text-2:var(--ink-2);
+  --hair:rgb(19 18 16 / .82);
+  --ok:#2C6E49;
+  --warn:#B26B00;
+  --crit:#C42B12;
+
+  --ground:#CBC3B0;       /* gallery ground under paper phones */
+
+  --f-grot: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --f-mono: ui-monospace, "SF Mono", SFMono-Regular, "Cascadia Mono", Menlo, Consolas, monospace;
+  --f-nast: "Noto Nastaliq Urdu", "Gulzar", "Vazirmatn", "Segoe UI", serif;
+  --f-fa: "Vazirmatn", "Segoe UI", system-ui, sans-serif;
+}
+
+/* PRESS (dark) mode */
+#dsr[data-theme="dark"]{
+  --surface:#14120E;
+  --well:#1D1A14;
+  --text:#ECE6D8;
+  --text-2:#A69E8C;
+  --rule:#ECE6D8;
+  --fig-rgb:236 230 216;
+  --surface-rgb:20 18 14;
+  --hair:rgb(236 230 216 / .80);
+  --accent:#FF4A22;
+  --blue:#6D8BD6;
+  --ground:#0C0B08;
+  --ok:#6FB58C;
+  --warn:#E0A24A;
+  --crit:#FF6A4E;
+}
+@media (prefers-color-scheme: dark){
+  #dsr:not([data-theme="light"]){
+    --surface:#14120E; --well:#1D1A14; --text:#ECE6D8; --text-2:#A69E8C;
+    --rule:#ECE6D8; --fig-rgb:236 230 216; --surface-rgb:20 18 14; --hair:rgb(236 230 216 / .80);
+    --accent:#FF4A22; --blue:#6D8BD6; --ground:#0C0B08;
+    --ok:#6FB58C; --warn:#E0A24A; --crit:#FF6A4E;
+  }
+}
+
+/* ---- Reset-ish ---------------------------------------------- */
+#dsr, #dsr *{ box-sizing:border-box; }
+#dsr{
+  font-family:var(--f-grot);
+  color:var(--text);
+  background:var(--ground);
+  padding:40px 20px 72px;
+  min-height:100vh;
+  -webkit-font-smoothing:antialiased;
+  line-height:1.4;
+}
+#dsr h1,#dsr h2,#dsr h3,#dsr p,#dsr ul,#dsr ol{ margin:0; }
+#dsr button{ font:inherit; color:inherit; cursor:pointer; }
+#dsr :focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+
+/* ---- Page header -------------------------------------------- */
+.dsr-masthead{
+  max-width:1180px; margin:0 auto 40px;
+  border:2px solid var(--rule);
+  background:var(--surface);
+  position:relative;
+}
+.dsr-mh-top{
+  display:flex; justify-content:space-between; align-items:stretch;
+  border-bottom:1px solid var(--hair);
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--text-2);
+}
+.dsr-mh-top span{ padding:8px 16px; }
+.dsr-mh-top span+span{ border-inline-start:1px solid var(--hair); }
+.dsr-mh-top .grow{ flex:1; }
+.dsr-mh-body{ padding:26px 28px 30px; }
+.dsr-title{
+  font-size:clamp(46px,9vw,104px); line-height:.9; font-weight:800;
+  letter-spacing:-.03em; text-transform:uppercase;
+  display:flex; align-items:baseline; gap:.14em; flex-wrap:wrap;
+}
+.dsr-title .no{
+  font-family:var(--f-mono); font-size:.32em; font-weight:700;
+  color:var(--accent); letter-spacing:0; align-self:flex-start;
+  border:1.5px solid var(--accent); padding:2px 6px; margin-inline-end:.1em;
+}
+.dsr-tag{
+  margin-top:18px; max-width:60ch; font-size:15px; line-height:1.55; color:var(--text-2);
+  border-inline-start:3px solid var(--accent); padding-inline-start:14px;
+}
+.dsr-legend{
+  display:flex; flex-wrap:wrap; gap:10px 8px; margin-top:24px;
+}
+.dsr-legend .lg{
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.02em;
+  border:1px solid var(--hair); padding:6px 9px; color:var(--text);
+  display:flex; align-items:center; gap:8px;
+}
+.dsr-legend .lg b{ color:var(--accent); font-weight:700; }
+.dsr-mh-actions{ position:absolute; inset-block-start:52px; inset-inline-end:16px; }
+.theme-toggle{
+  display:flex; border:1.5px solid var(--rule); background:var(--surface);
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase;
+}
+.theme-toggle button{ padding:7px 12px; background:none; border:0; color:var(--text-2); }
+.theme-toggle button+button{ border-inline-start:1px solid var(--hair); }
+.theme-toggle button[aria-pressed="true"]{ background:var(--ink); color:var(--paper); }
+#dsr[data-theme="dark"] .theme-toggle button[aria-pressed="true"]{ background:var(--paper); color:var(--ink); }
+
+/* ---- Gallery grid ------------------------------------------- */
+.dsr-gallery{
+  display:flex; flex-wrap:wrap; gap:34px; justify-content:center;
+  max-width:1320px; margin:0 auto;
+}
+.frame-wrap{ width:390px; max-width:100%; }
+.frame-label{
+  display:flex; align-items:baseline; gap:10px; margin-bottom:12px;
+  font-family:var(--f-mono); text-transform:uppercase;
+}
+.frame-label .fn{
+  color:var(--accent); font-weight:700; font-size:13px; letter-spacing:.02em;
+  border:1.5px solid var(--accent); padding:1px 6px;
+}
+.frame-label .fname{ font-size:12px; letter-spacing:.1em; color:var(--ground); mix-blend-mode:difference; }
+#dsr .frame-label .fname{ color:var(--text); }
+
+/* ---- Phone frame -------------------------------------------- */
+.phone{
+  width:390px; height:844px; max-width:100%;
+  background:#0a0a0a; border-radius:44px; padding:11px;
+  box-shadow:0 1px 0 rgba(255,255,255,.06) inset, 0 18px 40px rgba(0,0,0,.28);
+}
+#dsr[data-theme="dark"] .phone{ background:#000; box-shadow:0 0 0 1px #2a2620, 0 18px 40px rgba(0,0,0,.55); }
+.screen{
+  position:relative; width:100%; height:100%;
+  background:var(--surface); color:var(--text);
+  border-radius:33px; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+/* status bar */
+.statusbar{
+  flex:0 0 auto; height:34px; display:flex; align-items:center;
+  justify-content:space-between; padding:0 22px;
+  font-family:var(--f-mono); font-size:12px; font-variant-numeric:tabular-nums;
+  color:var(--text); letter-spacing:.02em; z-index:5;
+}
+.statusbar .sb-r{ display:flex; align-items:center; gap:6px; }
+.sb-bat{ width:20px; height:11px; border:1px solid var(--text); border-radius:1px; position:relative; }
+.sb-bat::after{ content:""; position:absolute; inset:1.5px; inset-inline-end:auto; width:12px; background:var(--text); }
+.sb-bat::before{ content:""; position:absolute; inset-inline-end:-3px; inset-block-start:3px; width:2px; height:5px; background:var(--text); }
+.sb-dot{ width:4px; height:4px; border-radius:50%; background:var(--accent); }
+
+/* scroll body */
+.view{
+  flex:1 1 auto; overflow-y:auto; overflow-x:hidden; position:relative;
+  scrollbar-width:thin; scrollbar-color:var(--text-2) transparent;
+}
+.view::-webkit-scrollbar{ width:5px; }
+.view::-webkit-scrollbar-thumb{ background:var(--text-2); border-radius:0; }
+
+/* ---- Shared editorial primitives ---------------------------- */
+.pad{ padding:0 20px; }
+.folio{
+  display:flex; align-items:center; gap:10px; padding:10px 20px;
+  border-bottom:1px solid var(--hair);
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.14em; text-transform:uppercase; color:var(--text-2);
+}
+.folio .no{ color:var(--accent); font-weight:700; }
+.folio .grow{ flex:1; }
+.rule{ height:1px; background:var(--hair); border:0; margin:0; }
+.rule.thick{ height:2px; background:var(--rule); }
+
+.sec-head{
+  display:flex; align-items:baseline; gap:12px; padding:20px 20px 8px;
+}
+.sec-head .snum{
+  font-family:var(--f-mono); font-weight:700; font-size:22px; color:var(--accent);
+  font-variant-numeric:tabular-nums;
+}
+.sec-head h2{
+  font-size:20px; line-height:1.15; font-weight:800; letter-spacing:-.01em; text-transform:uppercase;
+}
+.sec-head .meta{ margin-inline-start:auto; font-family:var(--f-mono); font-size:11px; color:var(--text-2); letter-spacing:.06em; }
+
+.kicker{
+  font-family:var(--f-mono); font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--text-2);
+}
+
+/* data chip — bidi isolated foreign object */
+.chip{
+  font-family:var(--f-mono); font-size:12px; font-variant-numeric:tabular-nums;
+  border:1px solid var(--hair); padding:2px 7px; border-radius:2px;
+  display:inline-flex; align-items:center; gap:5px; white-space:nowrap; color:var(--text);
+  line-height:1.5;
+}
+.chip.accent{ border-color:var(--accent); color:var(--accent); }
+.chip.blue{ border-color:var(--blue); color:var(--blue); }
+.chip.solid{ background:var(--ink); color:var(--paper); border-color:var(--ink); }
+#dsr[data-theme="dark"] .chip.solid{ background:var(--paper); color:var(--ink); }
+.chip .u{ opacity:.6; } /* unit tail */
+
+/* boxed status label — form encodes state, not colour alone */
+.tag{
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.12em; text-transform:uppercase;
+  padding:3px 7px; border:1.5px solid currentColor; display:inline-flex; align-items:center; gap:6px;
+  font-weight:700;
+}
+.tag::before{ content:""; width:7px; height:7px; }
+.tag.on{ color:var(--ok); }
+.tag.on::before{ background:currentColor; border-radius:50%; }
+.tag.soon{ color:var(--warn); }
+.tag.soon::before{ background:currentColor; clip-path:polygon(50% 0,100% 100%,0 100%); }
+.tag.over{ color:var(--crit); }
+.tag.over::before{ background:currentColor; }
+
+/* ghost numeral texture */
+.ghost{
+  position:absolute; font-family:var(--f-mono); font-weight:700;
+  font-variant-numeric:tabular-nums; letter-spacing:-.04em;
+  color:rgb(var(--fig-rgb) / .06); pointer-events:none; user-select:none; z-index:0;
+  line-height:.8;
+}
+
+/* split-flap odometer */
+.flap{ display:inline-flex; gap:3px; font-variant-numeric:tabular-nums; }
+.flap .fd{
+  position:relative; font-family:var(--f-mono); font-weight:700;
+  background:var(--well); color:var(--text);
+  border:1px solid var(--hair); border-radius:2px;
+  display:flex; align-items:center; justify-content:center;
+  overflow:hidden;
+}
+.flap .fd::after{ /* the flap seam */
+  content:""; position:absolute; inset-inline:0; inset-block-start:50%;
+  height:1px; background:var(--hair); z-index:2;
+}
+.flap .fd.sep{ background:none; border:0; color:var(--text-2); }
+.flap.rolling .fd{ animation:roll 300ms cubic-bezier(.3,.7,.3,1); }
+@keyframes roll{
+  0%{ transform:translateY(-16%); opacity:.35; }
+  60%{ opacity:1; }
+  100%{ transform:translateY(0); opacity:1; }
+}
+
+/* buttons */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border:1.5px solid var(--rule); background:var(--surface); color:var(--text);
+  padding:11px 16px; border-radius:2px; font-weight:700; font-size:14px;
+  text-transform:uppercase; letter-spacing:.04em;
+}
+.btn.primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+.btn.block{ width:100%; }
+.btn .k{ font-family:var(--f-mono); font-weight:400; opacity:.7; text-transform:none; letter-spacing:0; }
+
+/* index list (home nav) */
+.index-list{ list-style:none; }
+.index-item{
+  display:flex; align-items:center; gap:16px; padding:15px 20px;
+  border-bottom:1px solid var(--hair); position:relative; background:none; width:100%;
+  text-align:start;
+}
+.index-item:hover{ background:var(--well); }
+.index-item .ino{
+  font-family:var(--f-mono); font-weight:700; font-size:15px; color:var(--accent);
+  font-variant-numeric:tabular-nums; flex:0 0 auto; width:24px;
+}
+.index-item .iname{ font-size:17px; font-weight:700; letter-spacing:-.01em; }
+.index-item .isub{ font-family:var(--f-mono); font-size:11px; color:var(--text-2); margin-top:1px; letter-spacing:.02em; }
+.index-item .ival{ margin-inline-start:auto; text-align:end; }
+.index-item .iarrow{ color:var(--text-2); font-family:var(--f-mono); }
+[dir="rtl"] .index-item .iarrow{ transform:scaleX(-1); }
+
+/* urgency type */
+.urg{ transition:none; }
+.urg.calm{ font-weight:300; letter-spacing:.02em; }
+.urg.soon{ font-weight:600; letter-spacing:0; }
+.urg.over{ font-weight:800; letter-spacing:-.02em; transform:scaleX(1.05); transform-origin:left; }
+[dir="rtl"] .urg.over{ transform-origin:right; transform:none; }
+
+/* mono data rows / ledger */
+.ledger{ width:100%; border-collapse:collapse; font-family:var(--f-mono); font-size:13px; font-variant-numeric:tabular-nums; }
+.ledger td,.ledger th{ padding:9px 20px; border-bottom:1px solid var(--hair); text-align:start; }
+.ledger .num{ text-align:end; }
+.ledger .lbl{ color:var(--text-2); }
+
+/* keypad */
+.keypad{ display:grid; grid-template-columns:repeat(3,1fr); gap:1px; background:var(--hair); border-block-start:1px solid var(--hair); }
+.keypad button{
+  background:var(--surface); border:0; height:60px; font-family:var(--f-mono);
+  font-size:24px; font-weight:600; color:var(--text); font-variant-numeric:tabular-nums;
+}
+.keypad button:active{ background:var(--accent); color:#fff; }
+.keypad button.fn{ font-size:14px; color:var(--text-2); text-transform:uppercase; letter-spacing:.06em; }
+
+/* bars — ranked cost ledger */
+.bar-row{ padding:11px 20px; border-bottom:1px solid var(--hair); }
+.bar-row .bt{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:6px; }
+.bar-row .bt .bn{ font-weight:700; font-size:14px; }
+.bar-row .bt .bv{ font-family:var(--f-mono); font-variant-numeric:tabular-nums; font-size:13px; }
+.bar-track{ height:22px; border:1px solid var(--hair); position:relative; background:var(--well); }
+.bar-fill{ height:100%; position:relative; }
+.bar-fill .blab{
+  position:absolute; inset-inline-start:6px; inset-block:0; display:flex; align-items:center;
+  font-family:var(--f-mono); font-size:10.5px; letter-spacing:.08em; color:var(--paper);
+  text-transform:uppercase; font-weight:700; mix-blend-mode:difference;
+}
+
+/* segmented control */
+.seg{ display:flex; border:1.5px solid var(--rule); border-radius:2px; overflow:hidden; }
+.seg button{ flex:1; padding:9px 6px; background:var(--surface); border:0; font-family:var(--f-mono); font-size:12px; color:var(--text-2); letter-spacing:.02em; }
+.seg button+button{ border-inline-start:1px solid var(--hair); }
+.seg button[aria-pressed="true"]{ background:var(--ink); color:var(--paper); }
+#dsr[data-theme="dark"] .seg button[aria-pressed="true"]{ background:var(--paper); color:var(--ink); }
+
+/* settings rows */
+.set-row{ display:flex; align-items:center; gap:12px; padding:14px 20px; border-bottom:1px solid var(--hair); }
+.set-row .sl{ flex:1; }
+.set-row .sl .st{ font-weight:700; font-size:15px; }
+.set-row .sl .ss{ font-family:var(--f-mono); font-size:11px; color:var(--text-2); }
+
+/* form field */
+.field{ padding:12px 20px; border-bottom:1px solid var(--hair); }
+.field label{ font-family:var(--f-mono); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--text-2); display:block; margin-bottom:7px; }
+.field .inp{
+  width:100%; border:1.5px solid var(--rule); background:var(--well); padding:11px 12px;
+  font-family:var(--f-mono); font-size:16px; color:var(--text); border-radius:2px; font-variant-numeric:tabular-nums;
+}
+.field .inp.big{ font-size:22px; font-weight:700; }
+
+/* bottom capture bar */
+.capbar{
+  flex:0 0 auto; display:flex; align-items:stretch; border-top:2px solid var(--rule);
+  background:var(--surface);
+}
+.capbar button{ flex:1; padding:14px 8px; background:none; border:0; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--text-2); }
+.capbar button .ci{ font-family:var(--f-mono); font-weight:700; font-size:15px; }
+.capbar button .cl{ font-family:var(--f-mono); font-size:9.5px; letter-spacing:.1em; text-transform:uppercase; }
+.capbar button.hot{ background:var(--accent); color:#fff; }
+.capbar button.hot .cl{ color:#fff; }
+.capbar button+button{ border-inline-start:1px solid var(--hair); }
+
+/* capture sheet overlay */
+.sheet-scrim{
+  position:absolute; inset:0; background:rgb(19 18 16 / .45); z-index:20;
+  display:none; align-items:flex-end;
+}
+.sheet-scrim.open{ display:flex; }
+.sheet{
+  width:100%; background:var(--surface); border-block-start:2px solid var(--rule);
+  transform:translateY(100%); animation:sheetUp 260ms cubic-bezier(.2,.7,.2,1) forwards;
+}
+@keyframes sheetUp{ to{ transform:translateY(0); } }
+
+/* radial marking menu */
+.radial-scrim{ position:absolute; inset:0; z-index:25; display:none; background:rgb(19 18 16 / .35); }
+.radial-scrim.open{ display:block; }
+.radial{ position:absolute; inset-inline-start:50%; inset-block-end:96px; transform:translateX(-50%); width:230px; height:230px; }
+.radial .hub{
+  position:absolute; inset-inline-start:50%; inset-block-start:50%; transform:translate(-50%,-50%);
+  width:60px; height:60px; border-radius:50%; border:2px solid var(--accent); background:var(--surface);
+  display:flex; align-items:center; justify-content:center; font-family:var(--f-mono); font-size:11px; color:var(--accent);
+  text-align:center; z-index:2;
+}
+.radial .slice{
+  position:absolute; width:70px; height:44px; margin-inline-start:-35px; margin-block-start:-22px;
+  border:1.5px solid var(--rule); background:var(--surface); display:flex; align-items:center; justify-content:center;
+  font-family:var(--f-mono); font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.04em;
+  border-radius:2px;
+}
+.radial .slice small{ color:var(--accent); }
+
+/* timeline */
+.tl{ list-style:none; padding:8px 0; }
+.tl li{ position:relative; padding:12px 20px 12px 46px; border-bottom:1px solid var(--hair); }
+.tl li::before{ content:""; position:absolute; inset-inline-start:26px; inset-block:0; width:1px; background:var(--hair); }
+.tl li::after{ content:""; position:absolute; inset-inline-start:22px; inset-block-start:17px; width:9px; height:9px; background:var(--surface); border:2px solid var(--accent); }
+.tl li.svc::after{ background:var(--accent); }
+[dir="rtl"] .tl li{ padding:12px 46px 12px 20px; }
+.tl .td{ font-family:var(--f-mono); font-size:11px; color:var(--text-2); letter-spacing:.04em; }
+.tl .tt{ font-weight:700; font-size:15px; margin:2px 0 3px; }
+.tl .tm{ font-family:var(--f-mono); font-size:12px; color:var(--text-2); }
+
+/* heatmap */
+.heat{ display:grid; grid-template-columns:repeat(7,1fr); gap:3px; padding:0 20px; }
+.heat i{ aspect-ratio:1; border:1px solid var(--hair); display:block; }
+
+/* small helpers */
+.stack{ display:flex; flex-direction:column; }
+.row{ display:flex; align-items:center; }
+.gap8{ gap:8px; } .gap12{ gap:12px; } .gap6{ gap:6px; }
+.wrap{ flex-wrap:wrap; }
+.mt8{ margin-top:8px; } .mt12{ margin-top:12px; } .mt16{ margin-top:16px; } .mt20{ margin-top:20px; }
+.mb8{ margin-bottom:8px; }
+.tnum{ font-variant-numeric:tabular-nums; }
+.hero-num{
+  font-family:var(--f-mono); font-weight:700; letter-spacing:-.03em;
+  font-variant-numeric:tabular-nums; line-height:.9;
+}
+.dim{ color:var(--text-2); }
+.centered{ text-align:center; }
+
+/* footer */
+.dsr-foot{
+  max-width:1180px; margin:56px auto 0; padding-top:20px; border-top:1px solid var(--hair);
+  font-family:var(--f-mono); font-size:11px; color:var(--text-2); line-height:1.7; letter-spacing:.02em;
+}
+.dsr-foot b{ color:var(--text); font-weight:700; }
+
+/* RTL screen line-height bump */
+[dir="rtl"] .view{ line-height:1.7; }
+.nastaliq{ font-family:var(--f-nast); line-height:2; }
+
+@media (prefers-reduced-motion:reduce){
+  #dsr *{ animation-duration:.001ms !important; transition:none !important; }
+}
+@media (max-width:440px){
+  .phone{ height:820px; }
+  #dsr{ padding:24px 8px 48px; }
+}
+</style>
+
+<div id="dsr">
+
+  <!-- ===================== PAGE MASTHEAD ===================== -->
+  <header class="dsr-masthead">
+    <div class="dsr-mh-top">
+      <span>Concept 01 / 03</span>
+      <span>The Instrument Press</span>
+      <span class="grow"></span>
+      <span>Ed. 2026 · Car &amp; Pain</span>
+    </div>
+    <div class="dsr-mh-body">
+      <h1 class="dsr-title"><span class="no">№01</span>DOSSIER</h1>
+      <p class="dsr-tag">Every car keeps a file. Set ownership like an engineering broadsheet — a numbered index for a home, split-flap hero numerals, bidi-isolated data chips, and a calligraphic Nastaliq masthead as the RTL signature.</p>
+      <div class="dsr-legend">
+        <span class="lg"><b>№</b> Numbered index is home</span>
+        <span class="lg"><b>⊟</b> Split-flap odometer</span>
+        <span class="lg"><b>[ ]</b> Bidi-isolated data chips</span>
+        <span class="lg"><b>#</b> Numeral-first keypad + radial</span>
+        <span class="lg"><b>ن</b> Nastaliq RTL masthead</span>
+      </div>
+    </div>
+    <div class="dsr-mh-actions">
+      <div class="theme-toggle" role="group" aria-label="Theme">
+        <button data-theme-set="light" aria-pressed="true">Paper</button>
+        <button data-theme-set="dark" aria-pressed="false">Press</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===================== GALLERY ===================== -->
+  <div class="dsr-gallery">
+
+    <!-- ============ 01 FIRST-RUN ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">01</span><span class="fname">First-run · Add vehicle</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="folio"><span class="no">№01</span><span>Open a file</span><span class="grow"></span><span>Step 1 / 3</span></div>
+          <div style="position:relative; padding:24px 20px 8px;">
+            <div class="ghost" style="font-size:150px; inset-block-start:-6px; inset-inline-end:-24px;">01</div>
+            <p class="kicker" style="position:relative">Welcome to</p>
+            <h2 class="hero-num" style="font-size:56px; margin:6px 0 2px; letter-spacing:-.04em; position:relative">DOSSIER</h2>
+            <p class="dim" style="font-size:14px; max-width:30ch; position:relative">The logbook that reads its numbers back to you. Start by opening a file for your first vehicle.</p>
+          </div>
+          <hr class="rule thick">
+          <div class="field">
+            <label>Vehicle class</label>
+            <div class="seg" data-seg>
+              <button aria-pressed="true">⛽ Fuel</button>
+              <button aria-pressed="false">⚡ Electric</button>
+            </div>
+          </div>
+          <div class="field">
+            <label>Number plate</label>
+            <input class="inp big" value="B·CP 2481" aria-label="plate" spellcheck="false">
+          </div>
+          <div class="field">
+            <label>VIN / chassis</label>
+            <input class="inp" value="WVWZZZ1KZ8W000001" aria-label="vin" spellcheck="false">
+          </div>
+          <div class="field">
+            <label>Make · Model · Year</label>
+            <div class="row gap8 wrap mt8">
+              <span class="chip">2018</span><span class="chip">VW Golf</span><span class="chip">1.5 TSI</span><span class="chip accent">Petrol</span>
+            </div>
+          </div>
+          <div class="field">
+            <label>File accent — colour-blocked tag for this car</label>
+            <div class="row gap8 mt8">
+              <button class="swatch" style="width:34px;height:34px;border:2px solid var(--rule);background:#F5310D;border-radius:2px" aria-label="red-orange" aria-pressed="true"></button>
+              <button class="swatch" style="width:34px;height:34px;border:1px solid var(--hair);background:#123A8C;border-radius:2px" aria-label="blue"></button>
+              <button class="swatch" style="width:34px;height:34px;border:1px solid var(--hair);background:#2C6E49;border-radius:2px" aria-label="green"></button>
+              <button class="swatch" style="width:34px;height:34px;border:1px solid var(--hair);background:#55504A;border-radius:2px" aria-label="graphite"></button>
+            </div>
+          </div>
+          <div class="pad" style="padding:18px 20px 22px">
+            <button class="btn primary block">Open the file →</button>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 02 HOME / INDEX ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">02</span><span class="fname">Home · Numbered index</span></div>
+      <div class="phone"><div class="screen" data-screen="home">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="folio"><span class="no">№—</span><span>The Index</span><span class="grow"></span><span>Fri · 19 Jul</span></div>
+          <!-- vehicle selector -->
+          <div class="row gap8 pad" style="padding:12px 20px 8px">
+            <button class="chip solid">Blau · Golf</button>
+            <button class="chip">Volt · EV6</button>
+          </div>
+          <!-- hero odometer split-flap -->
+          <div style="position:relative; padding:6px 20px 16px">
+            <div class="ghost" style="font-size:128px; inset-block-start:14px; inset-inline-start:-30px;">84</div>
+            <p class="kicker" style="position:relative">Odometer · Blau</p>
+            <div class="row" style="align-items:flex-end; gap:10px; position:relative; margin-top:6px">
+              <div class="flap" data-odometer style="font-size:52px">
+                <span class="fd" style="width:34px;height:60px">8</span>
+                <span class="fd" style="width:34px;height:60px">4</span>
+                <span class="fd sep" style="width:12px;height:60px">,</span>
+                <span class="fd" style="width:34px;height:60px">3</span>
+                <span class="fd" style="width:34px;height:60px">2</span>
+                <span class="fd" style="width:34px;height:60px">0</span>
+              </div>
+              <span class="chip" style="margin-bottom:8px">km</span>
+            </div>
+            <div class="row gap8 mt12" style="position:relative">
+              <span class="tag on">All systems on file</span>
+              <button class="chip accent" data-roll style="margin-inline-start:auto">+ log ↻</button>
+            </div>
+          </div>
+          <hr class="rule thick">
+          <!-- the numbered index -->
+          <ul class="index-list">
+            <li><button class="index-item"><span class="ino">01</span><span class="stack"><span class="iname">Fuel</span><span class="isub">6.4 L/100 · last €75.72</span></span><span class="ival chip">42.3 L</span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">02</span><span class="stack"><span class="iname">Service</span><span class="isub">Oil &amp; filter — due soon</span></span><span class="ival"><span class="tag soon">850 km</span></span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">03</span><span class="stack"><span class="iname">Trips</span><span class="isub">Berlin → München · 584 km</span></span><span class="ival chip">2 d</span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">04</span><span class="stack"><span class="iname">Stats</span><span class="isub">Efficiency 6.9 → 6.4</span></span><span class="ival chip">↓ 7%</span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">05</span><span class="stack"><span class="iname">Costs</span><span class="isub">This month · €0.31 / km</span></span><span class="ival chip">€418</span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">06</span><span class="stack"><span class="iname">Reminders</span><span class="isub">Insurance renewal</span></span><span class="ival"><span class="tag soon">22 d</span></span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">07</span><span class="stack"><span class="iname">Garage</span><span class="isub">Blau · Volt</span></span><span class="ival chip">2</span><span class="iarrow">→</span></button></li>
+          </ul>
+        </div>
+        <!-- capture bar -->
+        <div class="capbar">
+          <button class="hot" data-open-sheet><span class="ci">＋ #</span><span class="cl">Quick log</span></button>
+          <button data-open-radial><span class="ci">◔</span><span class="cl">Radial</span></button>
+          <button><span class="ci">☰</span><span class="cl">Files</span></button>
+        </div>
+        <!-- capture sheet -->
+        <div class="sheet-scrim" data-sheet>
+          <div class="sheet">
+            <div class="folio"><span class="no">№01</span><span>Quick log · Fuel</span><span class="grow"></span><button data-close-sheet class="dim" style="background:none;border:0;font-family:var(--f-mono)">✕ close</button></div>
+            <div class="centered" style="padding:14px 20px 4px">
+              <p class="kicker">Litres · tap the figure</p>
+              <div class="hero-num" data-keyfig style="font-size:72px; margin-top:4px">42.3<span style="font-size:.4em; color:var(--accent)">▏</span></div>
+              <div class="row gap8 mt8" style="justify-content:center">
+                <span class="chip accent">€1.79/L</span><span class="chip">€75.72</span><span class="chip">Shell A2 Nord</span>
+              </div>
+            </div>
+            <div class="keypad" data-keypad>
+              <button>1</button><button>2</button><button>3</button>
+              <button>4</button><button>5</button><button>6</button>
+              <button>7</button><button>8</button><button>9</button>
+              <button class="fn" data-k="dec">٫ / .</button><button>0</button><button class="fn" data-k="del">⌫</button>
+            </div>
+            <div class="pad" style="padding:12px 20px 18px"><button class="btn primary block">Enter — save to file</button></div>
+          </div>
+        </div>
+        <!-- radial -->
+        <div class="radial-scrim" data-radial>
+          <div class="radial">
+            <div class="hub">FLICK →</div>
+            <div class="slice" style="inset-inline-start:50%;inset-block-start:8%">Fuel<small style="margin-inline-start:4px">01</small></div>
+            <div class="slice" style="inset-inline-start:88%;inset-block-start:50%">Odo</div>
+            <div class="slice" style="inset-inline-start:50%;inset-block-start:92%">Note</div>
+            <div class="slice" style="inset-inline-start:12%;inset-block-start:50%">Cost</div>
+            <div class="slice" style="inset-inline-start:82%;inset-block-start:15%">Svc</div>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 03 FAST FUEL ENTRY ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">03</span><span class="fname">Fast fuel · Numeral-first</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="folio"><span class="no">№01</span><span>Fuel · fast entry</span><span class="grow"></span><span>Enter any two</span></div>
+          <div style="position:relative; padding:12px 20px 0">
+            <div class="ghost" style="font-size:120px; inset-block-start:56px; inset-inline-end:-16px;">L</div>
+            <p class="kicker" style="position:relative">Litres · the figure IS the field</p>
+            <div class="row" style="align-items:flex-end; gap:8px; position:relative">
+              <div class="hero-num" data-keyfig style="font-size:104px">42.3<span style="font-size:.32em;color:var(--accent)">▏</span></div>
+            </div>
+          </div>
+          <div class="row gap8 wrap pad" style="padding:8px 20px 16px">
+            <span class="chip accent">€1.79 <span class="u">/L</span></span>
+            <span class="chip">€75.72 <span class="u">total</span></span>
+            <span class="chip blue">Shell A2 Nord</span>
+          </div>
+          <hr class="rule">
+          <div class="pad" style="padding:12px 20px 6px">
+            <p class="kicker mb8">Enter any two — the third solves</p>
+            <div class="stack gap8">
+              <div class="row gap8"><span class="chip" style="flex:0 0 90px">Litres</span><input class="inp tnum" value="42.30" aria-label="litres" style="flex:1"></div>
+              <div class="row gap8"><span class="chip" style="flex:0 0 90px">€/L</span><input class="inp tnum" value="1.79" aria-label="price" style="flex:1"></div>
+              <div class="row gap8"><span class="chip solid" style="flex:0 0 90px">Total €</span><input class="inp tnum" value="75.72" aria-label="total" style="flex:1"></div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Odometer — pre-filled from last</label>
+            <input class="inp big tnum" value="84,320" aria-label="odometer">
+          </div>
+          <div class="row gap8 wrap pad" style="padding:0 20px 8px">
+            <span class="chip">☑ Full tank</span><span class="chip">Home ↔ A2 route</span>
+          </div>
+        </div>
+        <div class="keypad" data-keypad>
+          <button>1</button><button>2</button><button>3</button>
+          <button>4</button><button>5</button><button>6</button>
+          <button>7</button><button>8</button><button>9</button>
+          <button class="fn" data-k="dec">٫ / .</button><button>0</button><button class="fn" data-k="del">⌫</button>
+        </div>
+        <div class="capbar"><button class="hot" style="flex:2"><span class="ci">Save to file — Shell A2 Nord</span></button></div>
+      </div></div>
+    </div>
+
+    <!-- ============ 04 VEHICLE PROFILE ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">04</span><span class="fname">Vehicle profile · The object</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="folio"><span class="no">№07</span><span>Garage · file</span><span class="grow"></span><span>Blau</span></div>
+          <div style="position:relative; padding:18px 20px 10px">
+            <div class="ghost" style="font-size:132px; inset-block-start:2px; inset-inline-end:-20px;">18</div>
+            <p class="kicker" style="position:relative">2018 · Volkswagen</p>
+            <h2 class="hero-num" style="font-size:44px; letter-spacing:-.03em; position:relative">Golf 1.5</h2>
+            <div class="row gap8 wrap mt8" style="position:relative">
+              <span class="chip solid">Blau</span>
+              <span class="chip"><bdi>B·CP 2481</bdi></span>
+              <span class="chip accent">Petrol</span>
+            </div>
+          </div>
+          <hr class="rule thick">
+          <table class="ledger">
+            <tr><td class="lbl">VIN</td><td class="num"><bdi>WVWZZZ1KZ8W000001</bdi></td></tr>
+            <tr><td class="lbl">Engine</td><td class="num">1.5 TSI · 110 kW</td></tr>
+            <tr><td class="lbl">Odometer</td><td class="num">84,320 km</td></tr>
+            <tr><td class="lbl">First reg.</td><td class="num">03 · 2018</td></tr>
+            <tr><td class="lbl">Fuel</td><td class="num">Petrol E10 · 50 L</td></tr>
+            <tr><td class="lbl">Avg. economy</td><td class="num">6.4 L/100km</td></tr>
+          </table>
+          <div class="sec-head"><span class="snum">§</span><h2>Documents</h2></div>
+          <div class="stack">
+            <div class="set-row"><span class="chip solid">PDF</span><span class="sl"><span class="st">Registration Part I</span><span class="ss">Zulassung · added 2023</span></span><span class="iarrow dim">→</span></div>
+            <div class="set-row"><span class="chip solid">PDF</span><span class="sl"><span class="st">Insurance policy</span><span class="ss">HUK · renews in 22 d</span></span><span class="iarrow dim">→</span></div>
+            <div class="set-row"><span class="chip solid">IMG</span><span class="sl"><span class="st">TÜV/HU report</span><span class="ss">valid · next in 4 mo</span></span><span class="iarrow dim">→</span></div>
+          </div>
+          <div class="pad" style="padding:16px 20px 22px"><button class="btn block">Edit file details</button></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 05 REMINDERS LIST ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">05</span><span class="fname">Reminders · Whichever-first</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="sec-head"><span class="snum">06</span><h2>Reminders</h2><span class="meta">4 open</span></div>
+          <p class="pad dim" style="font-size:13px; padding:0 20px 12px">Type visualizes state — on-schedule sits light, overdue grows heavy &amp; wide.</p>
+          <hr class="rule">
+          <!-- overdue -->
+          <div class="bar-row" style="border-inline-start:3px solid var(--crit)">
+            <div class="bt"><span class="bn urg over">Oil &amp; filter</span><span class="tag over">Due soon</span></div>
+            <div class="row gap8 wrap mt8">
+              <span class="chip accent">850 km</span><span class="dim" style="font-family:var(--f-mono);font-size:11px">or</span><span class="chip accent">40 days</span>
+              <span class="chip solid" style="margin-inline-start:auto">whichever first</span>
+            </div>
+          </div>
+          <!-- soon -->
+          <div class="bar-row">
+            <div class="bt"><span class="bn urg soon">Insurance renewal</span><span class="tag soon">22 days</span></div>
+            <div class="row gap8 wrap mt8">
+              <span class="chip">10 Aug</span><span class="chip blue">HUK-Coburg</span>
+              <span class="chip" style="margin-inline-start:auto">lead: 1 wk</span>
+            </div>
+          </div>
+          <!-- soon -->
+          <div class="bar-row">
+            <div class="bt"><span class="bn urg soon">Winter tyres</span><span class="tag soon">15 Oct</span></div>
+            <div class="row gap8 wrap mt8">
+              <span class="chip">seasonal</span><span class="chip">205/55 R16</span>
+            </div>
+          </div>
+          <!-- on schedule -->
+          <div class="bar-row">
+            <div class="bt"><span class="bn urg calm">TÜV / HU</span><span class="tag on">4 months</span></div>
+            <div class="row gap8 wrap mt8">
+              <span class="chip">Nov 2026</span><span class="chip">at ~90,000 km</span>
+              <span class="chip" style="margin-inline-start:auto">whichever first</span>
+            </div>
+          </div>
+          <div class="pad" style="padding:18px 20px 22px"><button class="btn primary block">＋ New reminder</button></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 06 ADD / EDIT REMINDER ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">06</span><span class="fname">Add reminder · Dual trigger</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="folio"><span class="no">№06</span><span>New reminder</span><span class="grow"></span><span>Blau</span></div>
+          <div class="field">
+            <label>What</label>
+            <input class="inp big" value="Oil &amp; filter" aria-label="reminder name">
+          </div>
+          <div class="sec-head"><span class="snum">↺</span><h2 style="font-size:17px">Trigger — whichever first</h2></div>
+          <!-- distance trigger -->
+          <div class="field" style="border-block-start:1px solid var(--hair)">
+            <label>By distance</label>
+            <div class="row gap8">
+              <input class="inp big tnum" value="85,170" aria-label="target km" style="flex:1">
+              <span class="chip" style="align-self:stretch;display:flex">km</span>
+            </div>
+            <p class="dim" style="font-family:var(--f-mono);font-size:11px;margin-top:6px">= now 84,320 + 850 km interval</p>
+          </div>
+          <!-- time trigger -->
+          <div class="field">
+            <label>By time</label>
+            <div class="row gap8">
+              <input class="inp big tnum" value="28 Aug 2026" aria-label="target date" style="flex:1">
+            </div>
+            <p class="dim" style="font-family:var(--f-mono);font-size:11px;margin-top:6px">= in 40 days</p>
+          </div>
+          <div class="pad" style="padding:8px 20px 4px">
+            <div class="seg" data-seg>
+              <button aria-pressed="true">Whichever first</button>
+              <button aria-pressed="false">Both</button>
+            </div>
+          </div>
+          <div class="field" style="border-block-start:1px solid var(--hair);margin-top:12px">
+            <label>Warn me before — lead time</label>
+            <div class="row gap8 wrap mt8">
+              <button class="chip accent">1 week</button>
+              <button class="chip">2 weeks</button>
+              <button class="chip accent">1,000 km</button>
+              <button class="chip">500 km</button>
+            </div>
+          </div>
+          <div class="pad" style="padding:16px 20px 22px"><button class="btn primary block">Save reminder</button></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 07 EXPENSES ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">07</span><span class="fname">Expenses · Cost per km</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div style="position:relative; padding:0">
+            <div class="sec-head"><span class="snum">05</span><h2>Costs</h2><span class="meta">July 2026</span></div>
+            <div style="position:relative; padding:0 20px 12px">
+              <div class="ghost" style="font-size:132px; inset-block-start:-18px; inset-inline-end:-14px;">€</div>
+              <p class="kicker" style="position:relative">This month · total</p>
+              <div class="row" style="align-items:flex-end; gap:10px; position:relative">
+                <div class="hero-num" style="font-size:72px">418</div>
+                <span class="chip" style="margin-bottom:10px">€ · 0.31/km</span>
+              </div>
+            </div>
+          </div>
+          <hr class="rule thick">
+          <div class="row gap8 pad" style="padding:10px 20px"><span class="kicker">Ranked — where it went</span></div>
+          <!-- ranked ledger bars -->
+          <div class="bar-row" style="border:0;padding:6px 20px 10px">
+            <div class="bt"><span class="bn">Fuel</span><span class="bv">€231 · 55%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:55%;background-color:rgb(var(--fig-rgb));background-image:repeating-linear-gradient(45deg,transparent 0 5px,rgb(var(--surface-rgb)/.55) 5px 6px)"><span class="blab">01</span></div></div>
+          </div>
+          <div class="bar-row" style="border:0;padding:6px 20px 10px">
+            <div class="bt"><span class="bn">Service</span><span class="bv">€120 · 29%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:29%;background-color:rgb(var(--fig-rgb)/.62);background-image:repeating-linear-gradient(135deg,transparent 0 5px,rgb(var(--surface-rgb)/.5) 5px 6px)"><span class="blab">02</span></div></div>
+          </div>
+          <div class="bar-row" style="border:0;padding:6px 20px 12px">
+            <div class="bt"><span class="bn">Other</span><span class="bv">€67 · 16%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:16%;background-color:rgb(var(--fig-rgb)/.40)"><span class="blab">03</span></div></div>
+          </div>
+          <hr class="rule">
+          <div class="sec-head"><span class="snum">§</span><h2 style="font-size:16px">Entries</h2></div>
+          <table class="ledger">
+            <tr><td>Shell A2 Nord</td><td class="lbl">fuel</td><td class="num">€75.72</td></tr>
+            <tr><td>ATU service</td><td class="lbl">service</td><td class="num">€120.00</td></tr>
+            <tr><td>Parking · Mitte</td><td class="lbl">other</td><td class="num">€18.00</td></tr>
+            <tr><td>Car wash</td><td class="lbl">other</td><td class="num">€12.90</td></tr>
+          </table>
+          <div class="pad" style="padding:16px 20px 22px"><button class="btn primary block">＋ Add expense</button></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 08 TRIPS ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">08</span><span class="fname">Trips · Road-trip detail</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="sec-head"><span class="snum">03</span><h2>Trips</h2><span class="meta">6 logged</span></div>
+          <hr class="rule">
+          <!-- selected trip detail -->
+          <div style="position:relative; padding:16px 20px 8px">
+            <p class="kicker" style="position:relative">Selected · 12–13 Jul</p>
+            <div class="row gap8" style="align-items:baseline; margin-top:4px">
+              <h2 class="hero-num" style="font-size:30px; letter-spacing:-.02em">Berlin</h2>
+              <span class="accent" style="font-family:var(--f-mono);font-size:20px">→</span>
+              <h2 class="hero-num" style="font-size:30px; letter-spacing:-.02em">München</h2>
+            </div>
+            <!-- route line -->
+            <svg viewBox="0 0 340 40" width="100%" height="40" style="margin-top:12px" aria-hidden="true">
+              <line x1="8" y1="20" x2="332" y2="20" stroke="var(--hair)" stroke-width="1.5" stroke-dasharray="2 4"/>
+              <circle cx="8" cy="20" r="5" fill="none" stroke="var(--accent)" stroke-width="2"/>
+              <circle cx="170" cy="20" r="3" fill="var(--text-2)"/>
+              <circle cx="332" cy="20" r="5" fill="var(--accent)"/>
+              <text x="8" y="38" font-family="var(--f-mono)" font-size="9" fill="var(--text-2)">B</text>
+              <text x="150" y="38" font-family="var(--f-mono)" font-size="9" fill="var(--text-2)">Leipzig</text>
+              <text x="318" y="38" font-family="var(--f-mono)" font-size="9" fill="var(--text-2)">M</text>
+            </svg>
+          </div>
+          <!-- trip figures -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);border-block:1px solid var(--hair);margin-top:8px">
+            <div style="background:var(--surface);padding:14px 20px"><p class="kicker">Distance</p><p class="hero-num" style="font-size:34px">584<span style="font-size:.4em;color:var(--text-2)"> km</span></p></div>
+            <div style="background:var(--surface);padding:14px 20px"><p class="kicker">Duration</p><p class="hero-num" style="font-size:34px">2<span style="font-size:.4em;color:var(--text-2)"> days</span></p></div>
+            <div style="background:var(--surface);padding:14px 20px"><p class="kicker">Fuel</p><p class="hero-num" style="font-size:34px">96<span style="font-size:.4em;color:var(--text-2)"> €</span></p></div>
+            <div style="background:var(--surface);padding:14px 20px"><p class="kicker">Other</p><p class="hero-num" style="font-size:34px">41<span style="font-size:.4em;color:var(--text-2)"> €</span></p></div>
+          </div>
+          <div class="sec-head"><span class="snum">§</span><h2 style="font-size:16px">All trips</h2></div>
+          <table class="ledger">
+            <tr><td>Berlin → München</td><td class="num">584 km</td></tr>
+            <tr><td>Berlin → Rügen</td><td class="num">278 km</td></tr>
+            <tr><td>Commute · week 28</td><td class="num">214 km</td></tr>
+            <tr><td>Dresden day-trip</td><td class="num">193 km</td></tr>
+          </table>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 09 REPORTS ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">09</span><span class="fname">Reports · Charts &amp; TCO</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="sec-head"><span class="snum">04</span><h2>Stats</h2><span class="meta">12 mo</span></div>
+          <!-- year/month chips -->
+          <div class="row gap8 pad" style="padding:0 20px 10px">
+            <button class="chip">− </button><button class="chip solid">2026</button><button class="chip">+</button>
+            <button class="chip accent" style="margin-inline-start:auto">Jul</button>
+          </div>
+          <hr class="rule">
+          <!-- efficiency line -->
+          <div class="pad" style="padding:14px 20px 6px">
+            <p class="kicker mb8">Economy · L/100km — trending down</p>
+            <svg viewBox="0 0 340 120" width="100%" height="120" aria-label="Efficiency trend 6.9 to 6.4">
+              <line x1="0" y1="30" x2="340" y2="30" stroke="var(--hair)" stroke-width=".5"/>
+              <line x1="0" y1="60" x2="340" y2="60" stroke="var(--hair)" stroke-width=".5"/>
+              <line x1="0" y1="90" x2="340" y2="90" stroke="var(--hair)" stroke-width=".5"/>
+              <polyline points="6,44 34,40 62,52 90,48 118,58 146,54 174,66 202,62 230,70 258,74 286,80 320,86"
+                fill="none" stroke="rgb(var(--fig-rgb))" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+              <circle cx="320" cy="86" r="4" fill="var(--accent)"/>
+              <text x="6" y="20" font-family="var(--f-mono)" font-size="10" fill="var(--text-2)">6.9</text>
+              <text x="300" y="104" font-family="var(--f-mono)" font-size="10" fill="var(--accent)">6.4</text>
+            </svg>
+          </div>
+          <hr class="rule">
+          <!-- cost breakdown ranked -->
+          <div class="pad" style="padding:12px 20px 4px"><p class="kicker">Cost breakdown · TCO share</p></div>
+          <div class="bar-row" style="border:0;padding:6px 20px 8px">
+            <div class="bt"><span class="bn" style="font-size:13px">Fuel</span><span class="bv">55%</span></div>
+            <div class="bar-track" style="height:18px"><div class="bar-fill" style="width:55%;background-color:rgb(var(--fig-rgb));background-image:repeating-linear-gradient(45deg,transparent 0 5px,rgb(var(--surface-rgb)/.55) 5px 6px)"></div></div>
+          </div>
+          <div class="bar-row" style="border:0;padding:6px 20px 8px">
+            <div class="bt"><span class="bn" style="font-size:13px">Service</span><span class="bv">29%</span></div>
+            <div class="bar-track" style="height:18px"><div class="bar-fill" style="width:29%;background-color:rgb(var(--fig-rgb)/.62);background-image:repeating-linear-gradient(135deg,transparent 0 5px,rgb(var(--surface-rgb)/.5) 5px 6px)"></div></div>
+          </div>
+          <div class="bar-row" style="border:0;padding:6px 20px 10px">
+            <div class="bt"><span class="bn" style="font-size:13px">Other</span><span class="bv">16%</span></div>
+            <div class="bar-track" style="height:18px"><div class="bar-fill" style="width:16%;background-color:rgb(var(--fig-rgb)/.40)"></div></div>
+          </div>
+          <hr class="rule">
+          <!-- cadence heatmap -->
+          <div class="pad" style="padding:12px 20px 8px"><p class="kicker mb8">Fill-up cadence · July</p></div>
+          <div class="heat" data-heat></div>
+          <div class="row gap6 pad" style="padding:8px 20px 20px;align-items:center">
+            <span class="dim" style="font-family:var(--f-mono);font-size:10px">less</span>
+            <i style="width:12px;height:12px;border:1px solid var(--hair);background:rgb(var(--fig-rgb)/.08)"></i>
+            <i style="width:12px;height:12px;border:1px solid var(--hair);background:rgb(var(--fig-rgb)/.4)"></i>
+            <i style="width:12px;height:12px;border:1px solid var(--hair);background:rgb(var(--fig-rgb)/.85)"></i>
+            <span class="dim" style="font-family:var(--f-mono);font-size:10px">more</span>
+          </div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 10 SERVICE HISTORY ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">10</span><span class="fname">Service history · Timeline</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="sec-head"><span class="snum">02</span><h2>Service</h2><span class="meta">Blau · life</span></div>
+          <p class="pad dim" style="font-size:13px;padding:0 20px 8px">The car's file, newest first — a printed maintenance ledger.</p>
+          <hr class="rule">
+          <ul class="tl">
+            <li class="svc"><p class="td">19 Jul 2026 · 84,320 km</p><p class="tt">Oil &amp; filter — booked</p><p class="tm">ATU Berlin · est. €120</p></li>
+            <li class="svc"><p class="td">02 Mar 2026 · 79,110 km</p><p class="tt">Front brake pads</p><p class="tm">€214 · pads + fitting</p></li>
+            <li class="svc"><p class="td">14 Nov 2025 · 76,540 km</p><p class="tt">Winter tyres fitted</p><p class="tm">205/55 R16 · seasonal</p></li>
+            <li class="svc"><p class="td">08 Nov 2025 · 76,210 km</p><p class="tt">TÜV / HU passed</p><p class="tm">no defects · valid 2 yr</p></li>
+            <li class="svc"><p class="td">21 Jun 2025 · 71,880 km</p><p class="tt">Oil &amp; filter</p><p class="tm">€118 · 5W-30</p></li>
+            <li class="svc"><p class="td">03 Feb 2025 · 68,020 km</p><p class="tt">Cabin filter + wipers</p><p class="tm">€64</p></li>
+          </ul>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 11 SETTINGS ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">11</span><span class="fname">Settings · Locale &amp; theme</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar"><span>9:41</span><span class="sb-r"><span class="sb-dot"></span>5G<span class="sb-bat"></span></span></div>
+        <div class="view">
+          <div class="sec-head"><span class="snum">⚙</span><h2>Settings</h2></div>
+          <hr class="rule">
+          <div class="set-row"><span class="sl"><span class="st">Language</span><span class="ss">Interface language</span></span>
+            <div class="seg" data-seg style="flex:0 0 auto"><button aria-pressed="true">DE</button><button aria-pressed="false">EN</button><button aria-pressed="false">FA</button></div>
+          </div>
+          <div class="set-row"><span class="sl"><span class="st">Units</span><span class="ss">Distance · economy</span></span>
+            <div class="seg" data-seg style="flex:0 0 auto"><button aria-pressed="true">km · L/100</button><button aria-pressed="false">mi · mpg</button></div>
+          </div>
+          <div class="field">
+            <label>Calendar</label>
+            <div class="seg" data-seg><button aria-pressed="true">Gregorian</button><button aria-pressed="false">Jalali</button><button aria-pressed="false">Hijri</button><button aria-pressed="false">Hebrew</button></div>
+          </div>
+          <div class="field">
+            <label>Numeral system</label>
+            <div class="seg" data-seg><button aria-pressed="true">1234</button><button aria-pressed="false">۱۲۳۴</button><button aria-pressed="false">١٢٣٤</button></div>
+            <p class="dim" style="font-family:var(--f-mono);font-size:11px;margin-top:7px">Decimal ٫ vs grouping ٬ distinguished — 1٫5 = 1.5</p>
+          </div>
+          <div class="field">
+            <label>Theme — this whole gallery</label>
+            <div class="seg" data-seg data-theme-seg><button data-theme-set="light" aria-pressed="true">Paper</button><button data-theme-set="dark" aria-pressed="false">Press (dark)</button></div>
+          </div>
+          <div class="set-row"><span class="sl"><span class="st">First-run hints</span><span class="ss">Radial gesture animation</span></span>
+            <div class="seg" data-seg style="flex:0 0 auto"><button aria-pressed="true">On</button><button aria-pressed="false">Off</button></div>
+          </div>
+          <div class="pad" style="padding:16px 20px 22px"><button class="btn block">Export file · CSV</button></div>
+        </div>
+      </div></div>
+    </div>
+
+    <!-- ============ 12 RTL SHOWCASE ============ -->
+    <div class="frame-wrap">
+      <div class="frame-label"><span class="fn">12</span><span class="fname">RTL · صفحهٔ اصلی (Persian)</span></div>
+      <div class="phone"><div class="screen">
+        <div class="statusbar" dir="rtl"><span class="sb-r"><span class="sb-bat"></span>5G<span class="sb-dot"></span></span><span>۹:۴۱</span></div>
+        <div class="view" dir="rtl" lang="fa">
+          <div class="folio"><span class="no">№—</span><span>فهرست</span><span class="grow"></span><span dir="ltr"><bdi>۱۴۰۳/۰۴/۲۹</bdi></span></div>
+          <!-- Nastaliq masthead -->
+          <div style="position:relative; padding:14px 20px 8px">
+            <div class="ghost" style="font-size:128px; inset-block-start:20px; inset-inline-start:-28px;">۸۴</div>
+            <p class="kicker" style="position:relative">دفترچهٔ خودرو</p>
+            <h2 class="nastaliq" style="font-size:52px; position:relative; margin:2px 0 0">پرونده</h2>
+          </div>
+          <!-- vehicle chip + hero odometer -->
+          <div class="row gap8 pad" style="padding:4px 20px 8px"><span class="chip solid">بلاو · گلف</span><span class="chip">۷۱٪ · ولت</span></div>
+          <div style="position:relative; padding:0 20px 14px">
+            <p class="kicker" style="position:relative">کیلومترشمار</p>
+            <div class="row" style="align-items:flex-end; gap:10px; position:relative; margin-top:6px">
+              <div class="flap" style="font-size:48px" dir="ltr">
+                <span class="fd" style="width:32px;height:56px">8</span>
+                <span class="fd" style="width:32px;height:56px">4</span>
+                <span class="fd sep" style="width:11px;height:56px">٬</span>
+                <span class="fd" style="width:32px;height:56px">3</span>
+                <span class="fd" style="width:32px;height:56px">2</span>
+                <span class="fd" style="width:32px;height:56px">0</span>
+              </div>
+              <span class="chip" style="margin-bottom:8px"><bdi>km</bdi></span>
+            </div>
+          </div>
+          <!-- overdue reminder (weight-only urgency) -->
+          <div class="bar-row" style="border-inline-start:3px solid var(--crit)">
+            <div class="bt"><span class="bn" style="font-weight:800">روغن موتور</span><span class="tag over" style="letter-spacing:0">به‌زودی</span></div>
+            <div class="row gap8 wrap mt8">
+              <span class="chip accent"><bdi>۸۵۰ km</bdi></span>
+              <span class="dim" style="font-family:var(--f-mono);font-size:12px">یا</span>
+              <span class="chip accent"><bdi>۴۰ روز</bdi></span>
+              <span class="chip solid" style="margin-inline-start:auto">هرکدام زودتر</span>
+            </div>
+          </div>
+          <hr class="rule thick">
+          <!-- numbered index, numerals stay LTR-positioned -->
+          <ul class="index-list">
+            <li><button class="index-item"><span class="ino">۰۱</span><span class="stack"><span class="iname">سوخت</span><span class="isub"><bdi>۶٫۴ L/100</bdi></span></span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">۰۲</span><span class="stack"><span class="iname">سرویس</span><span class="isub">روغن — به‌زودی</span></span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">۰۳</span><span class="stack"><span class="iname">سفرها</span><span class="isub">برلین ← مونیخ</span></span><span class="ival chip"><bdi>۵۸۴ km</bdi></span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">۰۴</span><span class="stack"><span class="iname">آمار</span><span class="isub">بازده ماهانه</span></span><span class="iarrow">→</span></button></li>
+            <li><button class="index-item"><span class="ino">۰۵</span><span class="stack"><span class="iname">هزینه‌ها</span><span class="isub">این ماه</span></span><span class="ival chip"><bdi>€۴۱۸</bdi></span><span class="iarrow">→</span></button></li>
+          </ul>
+          <div class="pad" style="padding:16px 20px 22px"><button class="btn primary block">＋ ثبت سریع</button></div>
+        </div>
+      </div></div>
+    </div>
+
+  </div><!-- /gallery -->
+
+  <!-- ===================== FOOTER ===================== -->
+  <footer class="dsr-foot">
+    <p><b>DOSSIER — The Instrument Press.</b> Paper-and-ink editorial with one hot proof-mark accent. The type system IS the brand: oversized tabular numerals, a numbered editorial index for a home, split-flap hero figures, bidi-isolated data chips, and a calligraphic Nastaliq masthead as the RTL signature.</p>
+    <p style="margin-top:10px"><b>Production fonts</b> (not loaded here; prototype uses system fallbacks): Latin display &amp; UI — <b>Roboto Flex</b> (wght 100–1000 + wdth 25–151, for the variable-urgency move) or <b>Anybody</b>. Instrument numerals — <b>Martian Mono</b> / <b>IBM Plex Mono</b> (deliberately not Space Mono). RTL body — <b>Vazirmatn</b> (weight-only urgency). Nastaliq signature word — <b>Gulzar</b> / <b>Noto Nastaliq Urdu</b> (Persian). Arabic decorative Naskh — <b>Aref Ruqaa</b> / <b>Rakkas</b>. Colour: PAPER #ECE6D8 · INK #131210 · proof-mark #F5310D · riso-blue #123A8C · Press field #14120E.</p>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('dsr');
+  if(!root) return;
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Theme toggle (header + settings segmented) ---- */
+  function setTheme(mode){
+    root.setAttribute('data-theme', mode);
+    root.querySelectorAll('[data-theme-set]').forEach(function(b){
+      b.setAttribute('aria-pressed', String(b.getAttribute('data-theme-set') === mode));
+    });
+  }
+  root.querySelectorAll('[data-theme-set]').forEach(function(b){
+    b.addEventListener('click', function(){ setTheme(b.getAttribute('data-theme-set')); });
+  });
+
+  /* ---- Generic segmented controls (non-theme) ---- */
+  root.querySelectorAll('[data-seg]').forEach(function(seg){
+    if(seg.hasAttribute('data-theme-seg')) return;
+    seg.addEventListener('click', function(e){
+      var btn = e.target.closest('button'); if(!btn) return;
+      seg.querySelectorAll('button').forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+    });
+  });
+
+  /* ---- Swatch pickers (first-run accent) ---- */
+  root.querySelectorAll('.swatch').forEach(function(sw){
+    sw.addEventListener('click', function(){
+      var group = sw.parentElement;
+      group.querySelectorAll('.swatch').forEach(function(s){
+        s.setAttribute('aria-pressed','false'); s.style.border='1px solid var(--hair)';
+      });
+      sw.setAttribute('aria-pressed','true'); sw.style.border='2px solid var(--rule)';
+    });
+  });
+
+  /* ---- Numeral-first keypad ---- */
+  root.querySelectorAll('[data-keypad]').forEach(function(pad){
+    var screen = pad.closest('.screen');
+    var fig = screen && screen.querySelector('[data-keyfig]');
+    if(!fig) return;
+    var buf = '42.3';
+    function render(){
+      fig.innerHTML = (buf.length ? buf : '0') + '<span style="font-size:.32em;color:var(--accent)">▏</span>';
+    }
+    pad.addEventListener('click', function(e){
+      var b = e.target.closest('button'); if(!b) return;
+      var k = b.getAttribute('data-k');
+      if(k === 'del'){ buf = buf.slice(0,-1); }
+      else if(k === 'dec'){ if(buf.indexOf('.') === -1) buf += '.'; }
+      else { if(buf.replace('.','').length < 6) buf += b.textContent.trim(); }
+      render();
+    });
+    render();
+  });
+
+  /* ---- Split-flap odometer roll (home) ---- */
+  root.querySelectorAll('[data-roll]').forEach(function(btn){
+    var screen = btn.closest('.screen');
+    var flap = screen && screen.querySelector('[data-odometer]');
+    if(!flap) return;
+    var val = 84320;
+    btn.addEventListener('click', function(){
+      val += 7;
+      var digits = String(val).split('');
+      var cells = flap.querySelectorAll('.fd:not(.sep)');
+      cells.forEach(function(c,i){ if(digits[i] !== undefined) c.textContent = digits[i]; });
+      if(!reduce){
+        flap.classList.remove('rolling'); void flap.offsetWidth; flap.classList.add('rolling');
+      }
+    });
+  });
+
+  /* ---- Capture sheet ---- */
+  root.querySelectorAll('[data-open-sheet]').forEach(function(btn){
+    var screen = btn.closest('.screen');
+    var sheet = screen.querySelector('[data-sheet]');
+    btn.addEventListener('click', function(){ if(sheet) sheet.classList.add('open'); });
+  });
+  root.querySelectorAll('[data-close-sheet]').forEach(function(btn){
+    btn.addEventListener('click', function(){ var s = btn.closest('[data-sheet]'); if(s) s.classList.remove('open'); });
+  });
+  root.querySelectorAll('[data-sheet]').forEach(function(scrim){
+    scrim.addEventListener('click', function(e){ if(e.target === scrim) scrim.classList.remove('open'); });
+  });
+
+  /* ---- Radial marking menu ---- */
+  root.querySelectorAll('[data-open-radial]').forEach(function(btn){
+    var screen = btn.closest('.screen');
+    var rad = screen.querySelector('[data-radial]');
+    btn.addEventListener('click', function(){ if(rad) rad.classList.add('open'); });
+  });
+  root.querySelectorAll('[data-radial]').forEach(function(rad){
+    rad.addEventListener('click', function(){ rad.classList.remove('open'); });
+  });
+
+  /* ---- Cadence heatmap fill (July, 31 days on a 7-col grid) ---- */
+  var heat = root.querySelector('[data-heat]');
+  if(heat){
+    // July 1 2026 is a Wednesday -> offset 3 (Sun=0)
+    var offset = 3, days = 31;
+    var pattern = [0,0,1,0,0,2,1,0,3,0,0,1,0,2,0,0,1,3,0,0,1,0,0,2,0,1,0,0,3,0,1];
+    var levels = ['.06','.28','.55','.9'];
+    var html = '';
+    for(var i=0;i<offset;i++) html += '<i style="border:0;background:none"></i>';
+    for(var d=0; d<days; d++){
+      var lv = levels[pattern[d] || 0];
+      html += '<i style="background:rgb(var(--fig-rgb)/'+lv+')" title="Jul '+(d+1)+'"></i>';
+    }
+    heat.innerHTML = html;
+  }
+})();
+</script>

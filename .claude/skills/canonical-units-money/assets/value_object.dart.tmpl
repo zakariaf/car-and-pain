@@ -1,0 +1,35 @@
+// Template: a new canonical value object for packages/core.
+// Replace __Name__, __canonicalField__, __CanonicalUnit__, and the display
+// factories/getters. Rules baked in:
+//   * canonical field is an INTEGER SI base unit (metres/millilitres/minutes/...)
+//   * .from<DisplayUnit> factories ROUND into the canonical integer
+//   * to<DisplayUnit>() getters return a double, used ONLY at the presentation edge
+//   * the class is immutable, const-constructible, and Flutter/IO-free
+//   * value equality so it can be compared and used in tests
+final class __Name__ {
+  const __Name__.__CanonicalUnit__(this.__canonicalField__);
+
+  /// Canonical storage: whole __CanonicalUnit__ (SI base). Never a double.
+  final int __canonicalField__;
+
+  // ---- Construct from a user-chosen display unit (round into canonical) ----
+  factory __Name__.__displayUnitA__(num value) =>
+      __Name__.__CanonicalUnit__((value * __FACTOR_A__).round());
+
+  factory __Name__.__displayUnitB__(num value) =>
+      __Name__.__CanonicalUnit__((value * __FACTOR_B__).round());
+
+  // ---- Project to a display unit (edge only; returns double) ----
+  double to__DisplayUnitA__() => __canonicalField__ / __FACTOR_A__;
+  double to__DisplayUnitB__() => __canonicalField__ / __FACTOR_B__;
+
+  @override
+  bool operator ==(Object other) =>
+      other is __Name__ && other.__canonicalField__ == __canonicalField__;
+
+  @override
+  int get hashCode => __canonicalField__.hashCode;
+
+  @override
+  String toString() => '__Name__(__canonicalField__: $__canonicalField__)';
+}

@@ -1,0 +1,31 @@
+// Template: a feature ViewModel (Notifier) for Car and Pain.
+// Copy into features/NN-<name>/presentation/<name>_notifier.dart and replace the
+// {{PLACEHOLDERS}}. Run build_runner at the workspace root to generate the part file.
+//
+// Rules baked in (see SKILL.md):
+//  - autoDispose per-screen controller; keepAlive is for infra/repos only.
+//  - Reads the DB ONLY through a repository provider — never Drift directly.
+//  - State is Freezed and holds VALUE OBJECTS from core, never display strings.
+//  - Failures come back as typed Result<T,F>; the View switches exhaustively.
+
+import 'package:core/core.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part '{{feature_snake}}_notifier.g.dart';
+
+@riverpod
+class {{FeaturePascal}}Notifier extends _${{FeaturePascal}}Notifier {
+  @override
+  Future<{{FeaturePascal}}State> build(String vehicleId) async {
+    // ref.watch a scoped repository/stream provider so the view recomputes
+    // automatically when the underlying rows change.
+    final rows = await ref.watch({{featureCamel}}sProvider(vehicleId).future);
+    return {{FeaturePascal}}State(items: rows);
+  }
+
+  // Commands use ref.read (callback context), return typed Result, and let the
+  // View localize any Failure by its stable code.
+  Future<Result<void, {{FeaturePascal}}Failure>> add({{FeaturePascal}}Draft draft) {
+    return ref.read({{featureCamel}}RepositoryProvider).add(draft);
+  }
+}

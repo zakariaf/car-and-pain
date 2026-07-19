@@ -1,0 +1,52 @@
+// GENERATED SCAFFOLD — features/__FEATURE_NUM__-__FEATURE_KEBAB__/presentation/__FEATURE_SNAKE___notifier.dart
+//
+// The Notifier IS the ViewModel (Riverpod 3.x @riverpod code-gen). It owns:
+//   1) a scoped stream provider wrapping the shared repository's .watch() (reactive backbone)
+//   2) a command Notifier that performs writes and surfaces AsyncValue to the dumb View.
+//
+// Rules baked in:
+//   - Read the DB ONLY through a repository provider from packages/data — never touch Drift here.
+//   - Scope the stream by vehicleId (+ time window where relevant) so one write is not app-wide.
+//   - Repositories return Result<T, Failure> and domain models — never Drift rows or float money.
+//   - ref.watch in build; ref.read in callbacks; ref.listen (in the View) for one-shot effects.
+//   - No unit math / numeral / calendar formatting here — pass value objects (core), format in l10n.
+//
+// After editing, regenerate: dart run build_runner build --delete-conflicting-outputs
+
+import 'package:core/core.dart';        // Result, Ok, Err, Failure, Distance, Volume, Money, EngineHours
+import 'package:data/data.dart';        // __FEATURE_CAMEL__RepositoryProvider (keepAlive; lives in packages/data)
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+import '../domain/__FEATURE_SNAKE__.dart'; // feature-local Freezed domain model
+
+part '__FEATURE_SNAKE___notifier.g.dart';
+
+/// Reactive backbone: wrap the repository's scoped `.watch()` in a stream provider.
+/// Scoped by [vehicleId] so a write for one vehicle never re-emits for every screen.
+/// The repository maps Drift rows -> domain models at the boundary; this never sees a row.
+@riverpod
+Stream<List<__FEATURE_PASCAL__>> __FEATURE_CAMEL__List(Ref ref, String vehicleId) =>
+    ref.watch(__FEATURE_CAMEL__RepositoryProvider).watch__FEATURE_PASCAL__s(vehicleId);
+
+/// The ViewModel: command state for the __FEATURE_KEBAB__ screen.
+/// autoDispose (per-screen). Promote to @Riverpod(keepAlive: true) only if app-wide.
+@riverpod
+class __FEATURE_PASCAL__Controller extends _$__FEATURE_PASCAL__Controller {
+  @override
+  FutureOr<void> build() {
+    // No synchronous heavy work in build(). Offload analytics/TCO to Isolate.run elsewhere.
+  }
+
+  /// Example write command. Repository returns Result<Unit, Failure>; map it to AsyncValue
+  /// so the View can render loading / done / typed-and-localized error exhaustively.
+  Future<void> save(__FEATURE_PASCAL__ draft) async {
+    state = const AsyncLoading();
+    final Result<void, Failure> result =
+        await ref.read(__FEATURE_CAMEL__RepositoryProvider).add__FEATURE_PASCAL__(draft);
+    state = switch (result) {
+      Ok() => const AsyncData(null),
+      Err(:final failure) => AsyncError(failure, StackTrace.current),
+    };
+    // Fire the PULSE "exhale" (cool + settle + haptic) from the View via ref.listen on success.
+  }
+}

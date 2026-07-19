@@ -1,0 +1,1403 @@
+<style>
+/* ============================================================
+   PULSE — A Vitals Chart for Your Car
+   Self-contained prototype. Body content only.
+   ============================================================ */
+
+:root{
+  /* DAY (warm paper) — default */
+  --base:#F4EFE7;
+  --surface:#FFFFFF;
+  --surface-2:#FBF8F2;
+  --hairline:#E4DCD0;
+  --hairline-strong:#D6CBBB;
+  --text:#1B242E;
+  --text-2:#5E6B74;
+  --text-3:#8A949B;
+  --shadow:0 6px 24px rgba(20,30,40,.07);
+  --shadow-lg:0 12px 40px rgba(20,30,40,.10);
+  --grain-op:.05;
+  --halo-day-night:1;
+
+  /* Temperature 5-stop (urgency 0-4) — shared both themes */
+  --u0:#2FB8A8; /* firouzeh */
+  --u1:#7FBF6A; /* pistachio */
+  --u2:#E9A43B; /* saffron */
+  --u3:#E8703A; /* ember */
+  --u4:#D64533; /* pomegranate */
+  --u0-soft:rgba(47,184,168,.12);
+  --u2-soft:rgba(233,164,59,.14);
+  --u3-soft:rgba(232,112,58,.16);
+  --u4-soft:rgba(214,69,51,.16);
+
+  --accent:#2FB8A8;
+  --accent-ink:#1F8F82;
+  --secondary:#E9A43B;
+
+  /* semantic (distinct from brand accent) */
+  --ok:#2FB8A8;
+  --warn:#E9A43B;
+  --crit:#D64533;
+
+  --r-card:20px;
+  --r-sheet:26px;
+  --r-pill:999px;
+
+  --fs-hero:84px; --lh-hero:88px;
+  --fs-display:30px; --lh-display:38px;
+  --fs-title:20px; --lh-title:28px;
+  --fs-body:16px; --lh-body:26px;
+  --fs-label:13px; --lh-label:20px;
+  --fs-cap:12px; --lh-cap:18px;
+
+  --font-latin: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-num: "Hanken Grotesk", ui-monospace, "SF Mono", "SFMono-Regular", Menlo, monospace;
+  --font-fa: "Vazirmatn", "Noto Sans Arabic", ui-sans-serif, system-ui, sans-serif;
+  --font-nastaliq: "Noto Nastaliq Urdu", "Gulzar", serif;
+}
+
+[data-theme="night"]{
+  --base:#0E1317;
+  --surface:#141A20;
+  --surface-2:#182027;
+  --hairline:#222A32;
+  --hairline-strong:#2E3841;
+  --text:#ECF1F3;
+  --text-2:#98A4AD;
+  --text-3:#6E7A83;
+  --shadow:0 0 0 1px #222A32;
+  --shadow-lg:0 8px 30px rgba(0,0,0,.5), 0 0 0 1px #222A32;
+  --grain-op:.06;
+  --u0-soft:rgba(47,184,168,.16);
+  --u2-soft:rgba(233,164,59,.18);
+  --u3-soft:rgba(232,112,58,.20);
+  --u4-soft:rgba(214,69,51,.22);
+  --accent-ink:#3ED6C4;
+}
+
+*{box-sizing:border-box}
+
+.pulse-root{
+  font-family:var(--font-latin);
+  color:var(--text);
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(47,184,168,.06), transparent 55%),
+    var(--base);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  padding:0;
+  margin:0;
+  min-height:100vh;
+  line-height:1.5;
+  overflow-x:hidden;
+}
+[data-theme="night"] .pulse-root{
+  background:
+    radial-gradient(120% 90% at 15% 0%, rgba(47,184,168,.10), transparent 55%),
+    var(--base);
+}
+
+.wrap{max-width:1320px;margin:0 auto;padding:40px 24px 80px}
+
+/* ---------- Page header ---------- */
+.page-head{margin-bottom:40px}
+.masthead{display:flex;align-items:baseline;gap:16px;flex-wrap:wrap;margin-bottom:14px}
+.mark{
+  display:inline-flex;align-items:center;gap:12px;
+}
+.mark svg{display:block}
+.mark-word{
+  font-size:34px;font-weight:600;letter-spacing:-.02em;
+}
+.mark-word b{color:var(--accent-ink);font-weight:600}
+.mast-sub{
+  font-size:13px;color:var(--text-2);letter-spacing:.14em;text-transform:uppercase;
+  font-weight:600;
+}
+.tagline{
+  font-size:18px;line-height:28px;color:var(--text-2);max-width:760px;
+  font-weight:400;margin:0 0 22px;
+}
+.tagline em{color:var(--text);font-style:normal;font-weight:600}
+
+.legend{display:flex;flex-wrap:wrap;gap:10px}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:7px 13px;border:1px solid var(--hairline);border-radius:var(--r-pill);
+  background:var(--surface);font-size:12.5px;font-weight:500;color:var(--text-2);
+}
+.chip .dot{width:9px;height:9px;border-radius:50%}
+.chip svg{display:block}
+
+.head-tools{display:flex;gap:10px;margin-left:auto;align-items:center}
+.theme-toggle{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 15px;border:1px solid var(--hairline);border-radius:var(--r-pill);
+  background:var(--surface);color:var(--text);cursor:pointer;font:inherit;
+  font-size:13px;font-weight:600;
+}
+.theme-toggle:hover{border-color:var(--hairline-strong)}
+.theme-toggle:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---------- Gallery grid ---------- */
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(auto-fill, minmax(390px, 1fr));
+  gap:44px 32px;
+  justify-items:center;
+}
+.cell{width:390px;max-width:100%}
+.cell-label{
+  display:flex;align-items:baseline;gap:10px;margin:0 4px 12px;
+}
+.cell-num{
+  font-family:var(--font-num);font-variant-numeric:tabular-nums;
+  font-size:12px;font-weight:600;color:var(--surface);
+  background:var(--text);border-radius:6px;padding:3px 7px;letter-spacing:.02em;
+}
+.cell-name{font-size:14px;font-weight:600;color:var(--text)}
+.cell-note{font-size:12px;color:var(--text-3);margin-left:auto}
+
+/* ---------- Phone frame ---------- */
+.phone{
+  position:relative;width:390px;max-width:100%;height:844px;
+  border-radius:46px;
+  background:var(--base);
+  border:1px solid var(--hairline-strong);
+  box-shadow:var(--shadow-lg);
+  padding:11px;
+  overflow:hidden;
+}
+[data-theme="night"] .phone{border-color:#000;box-shadow:0 20px 50px rgba(0,0,0,.6)}
+.screen{
+  position:relative;width:100%;height:100%;
+  border-radius:36px;overflow:hidden;
+  background:var(--base);
+  display:flex;flex-direction:column;
+}
+/* baked grain to kill OLED banding */
+.screen::after{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:40;
+  opacity:var(--grain-op);mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* status bar */
+.statusbar{
+  height:44px;flex:0 0 44px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 22px;font-size:13px;font-weight:600;color:var(--text);
+  font-family:var(--font-num);font-variant-numeric:tabular-nums;z-index:20;
+}
+.statusbar .sb-icons{display:flex;align-items:center;gap:6px}
+.statusbar svg{display:block}
+
+/* scoped ambient edge halo — CAPPED at saffron */
+.halo{
+  position:absolute;inset:0;pointer-events:none;z-index:1;
+  box-shadow:inset 0 0 0 0 transparent;
+  transition:box-shadow .8s cubic-bezier(.2,.7,.2,1);
+}
+.halo[data-u="0"]{box-shadow:inset 0 0 70px -30px rgba(47,184,168,.55)}
+.halo[data-u="1"]{box-shadow:inset 0 0 80px -30px rgba(127,191,106,.55)}
+.halo[data-u="2"]{box-shadow:inset 0 0 96px -26px rgba(233,164,59,.62)}
+/* NOTE: halo never exceeds u2 (saffron) by design */
+
+.scr-body{position:relative;z-index:5;flex:1;overflow:hidden;display:flex;flex-direction:column}
+.scr-scroll{flex:1;overflow-y:auto;overflow-x:hidden}
+.scr-scroll::-webkit-scrollbar{width:0}
+.pad{padding:0 22px}
+
+/* ---------- Rooms nav ---------- */
+.rooms{
+  flex:0 0 auto;position:relative;z-index:15;
+  display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;
+  padding:10px 16px calc(10px + env(safe-area-inset-bottom));
+  background:linear-gradient(to top, var(--surface), color-mix(in srgb, var(--surface) 82%, transparent));
+  border-top:1px solid var(--hairline);
+  backdrop-filter:blur(8px);
+}
+.room{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:8px 4px 6px;border:0;background:none;cursor:pointer;border-radius:14px;
+  color:var(--text-3);font:inherit;min-height:48px;justify-content:center;
+}
+.room svg{display:block}
+.room .r-name{font-size:11px;font-weight:600;letter-spacing:.01em}
+.room .r-sub{font-size:9.5px;font-weight:500;opacity:.7;letter-spacing:.02em}
+.room[aria-current="true"]{color:var(--accent-ink)}
+.room[aria-current="true"] .r-icon{filter:drop-shadow(0 2px 6px rgba(47,184,168,.35))}
+.room:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* persistent quick-add pill */
+.quickadd{
+  position:absolute;left:50%;transform:translateX(-50%);
+  bottom:calc(74px + env(safe-area-inset-bottom));z-index:30;
+  width:56px;height:56px;border-radius:var(--r-pill);border:none;cursor:pointer;
+  background:linear-gradient(160deg,#3ED6C4,#1F8F82);
+  color:#04241f;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 22px rgba(31,143,130,.42), 0 0 0 4px color-mix(in srgb,var(--base) 70%,transparent);
+}
+.quickadd:hover{transform:translateX(-50%) translateY(-2px)}
+.quickadd:active{transform:translateX(-50%) scale(.94)}
+.quickadd:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.quickadd svg{display:block}
+
+/* ---------- Cards ---------- */
+.card{
+  background:var(--surface);border:1px solid var(--hairline);border-radius:var(--r-card);
+  box-shadow:var(--shadow);
+}
+[data-theme="night"] .card{box-shadow:none}
+.card-pad{padding:16px 18px}
+
+/* the aching card — concentrated warmth (may reach stop-4) */
+.ache{position:relative;overflow:hidden;transition:box-shadow .7s cubic-bezier(.2,.7,.2,1), border-color .7s}
+.ache::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  transition:opacity .7s cubic-bezier(.2,.7,.2,1), background .7s;
+  opacity:1;
+}
+.ache[data-u="0"]{border-color:rgba(47,184,168,.4)}
+.ache[data-u="0"]::before{background:radial-gradient(120% 130% at 100% 0%, var(--u0-soft), transparent 60%)}
+.ache[data-u="2"]{border-color:rgba(233,164,59,.5)}
+.ache[data-u="2"]::before{background:radial-gradient(120% 130% at 100% 0%, var(--u2-soft), transparent 62%)}
+.ache[data-u="3"]{border-color:rgba(232,112,58,.55)}
+.ache[data-u="3"]::before{background:radial-gradient(120% 130% at 100% 0%, var(--u3-soft), transparent 62%)}
+.ache[data-u="4"]{border-color:rgba(214,69,51,.6)}
+.ache[data-u="4"]::before{background:radial-gradient(120% 130% at 100% 0%, var(--u4-soft), transparent 62%)}
+.ache-inner{position:relative;z-index:2}
+/* left stripe encodes urgency in FORM, not color alone */
+.ustripe{position:absolute;left:0;top:14px;bottom:14px;width:4px;border-radius:0 4px 4px 0;z-index:3}
+.ustripe[data-u="0"]{background:var(--u0)}
+.ustripe[data-u="1"]{background:var(--u1)}
+.ustripe[data-u="2"]{background:repeating-linear-gradient(180deg,var(--u2) 0 5px,transparent 5px 8px)}
+.ustripe[data-u="3"]{background:repeating-linear-gradient(180deg,var(--u3) 0 4px,transparent 4px 7px)}
+.ustripe[data-u="4"]{background:repeating-linear-gradient(180deg,var(--u4) 0 3px,transparent 3px 5px)}
+
+/* ---------- Typography helpers ---------- */
+.num{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-weight:600}
+.eyebrow{font-size:11px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--text-3)}
+.h-display{font-size:var(--fs-display);line-height:var(--lh-display);font-weight:600;letter-spacing:-.02em}
+.h-title{font-size:var(--fs-title);line-height:var(--lh-title);font-weight:600;letter-spacing:-.01em}
+.t-body{font-size:var(--fs-body);line-height:var(--lh-body)}
+.t-label{font-size:var(--fs-label);line-height:var(--lh-label);color:var(--text-2)}
+.t-cap{font-size:var(--fs-cap);line-height:var(--lh-cap);color:var(--text-3)}
+.muted{color:var(--text-2)}
+.dim{color:var(--text-3)}
+
+/* status pill — encodes state in form + icon+label, not color alone */
+.pill{
+  display:inline-flex;align-items:center;gap:6px;padding:4px 10px 4px 8px;
+  border-radius:var(--r-pill);font-size:11.5px;font-weight:600;
+  border:1px solid var(--hairline);background:var(--surface-2);color:var(--text-2);
+}
+.pill svg{display:block}
+.pill--ok{color:var(--accent-ink);border-color:rgba(47,184,168,.35);background:var(--u0-soft)}
+.pill--warn{color:#9a6b12;border-color:rgba(233,164,59,.45);background:var(--u2-soft)}
+[data-theme="night"] .pill--warn{color:#f0bd6a}
+.pill--crit{color:#a5352a;border-color:rgba(214,69,51,.5);background:var(--u4-soft)}
+[data-theme="night"] .pill--crit{color:#f08a7c}
+
+/* ---------- Vitals pulse-line hero ---------- */
+.vitals{
+  position:relative;padding:22px 22px 8px;text-align:center;
+}
+.pulse-wrap{position:relative;height:120px;margin:2px -22px 6px}
+.pulse-svg{width:100%;height:100%;display:block}
+.pulse-line{
+  fill:none;stroke:var(--accent);stroke-width:2.4;
+  stroke-linecap:round;stroke-linejoin:round;
+  filter:drop-shadow(0 0 6px rgba(47,184,168,.4));
+}
+.pulse-dot{fill:var(--accent);filter:drop-shadow(0 0 6px rgba(47,184,168,.7))}
+.breathe{animation:breathe 4s ease-in-out infinite;transform-origin:center}
+@keyframes breathe{
+  0%,100%{transform:scaleY(.94);opacity:.9}
+  50%{transform:scaleY(1.06);opacity:1}
+}
+.sweep{animation:sweep 4s linear infinite}
+@keyframes sweep{from{transform:translateX(-30px)}to{transform:translateX(390px)}}
+
+.hero-num{
+  font-family:var(--font-num);font-variant-numeric:tabular-nums;
+  font-size:var(--fs-hero);line-height:var(--lh-hero);font-weight:600;letter-spacing:-.04em;
+}
+.hero-unit{font-size:20px;font-weight:600;color:var(--text-2);letter-spacing:0}
+.hero-label{margin-top:2px;font-size:13px;font-weight:600;letter-spacing:.03em;color:var(--text-2)}
+.readiness-word{color:var(--accent-ink)}
+
+/* pull hint (list one swipe away) */
+.pull-hint{
+  display:flex;flex-direction:column;align-items:center;gap:4px;margin-top:10px;color:var(--text-3);
+}
+.pull-hint .bar{width:36px;height:4px;border-radius:3px;background:var(--hairline-strong)}
+.pull-hint span{font-size:11px;font-weight:600;letter-spacing:.04em}
+
+/* vitals mini row */
+.vrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--hairline);
+  border:1px solid var(--hairline);border-radius:16px;overflow:hidden;margin-top:14px}
+.vcell{background:var(--surface);padding:12px 10px;text-align:center}
+.vcell .vn{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:19px}
+.vcell .vl{font-size:10.5px;color:var(--text-3);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-top:2px}
+
+/* vehicle switcher */
+.vswitch{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:2px}
+.vtab{
+  display:inline-flex;align-items:center;gap:7px;padding:6px 12px;border-radius:var(--r-pill);
+  border:1px solid var(--hairline);background:var(--surface);cursor:pointer;font:inherit;
+  font-size:12.5px;font-weight:600;color:var(--text-2);
+}
+.vtab .vdot{width:9px;height:9px;border-radius:50%}
+.vtab[aria-current="true"]{color:var(--text);border-color:var(--accent);background:var(--u0-soft)}
+
+/* list rows (needs-you list) */
+.list{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;gap:12px}
+.row .ricon{
+  width:38px;height:38px;border-radius:12px;flex:0 0 38px;display:flex;align-items:center;justify-content:center;
+  background:var(--surface-2);border:1px solid var(--hairline);color:var(--text-2);
+}
+.row .rmain{flex:1;min-width:0}
+.row .rt{font-size:14px;font-weight:600;line-height:19px}
+.row .rs{font-size:12px;color:var(--text-2);line-height:17px}
+.row .rv{text-align:right;font-family:var(--font-num);font-variant-numeric:tabular-nums;font-weight:600;font-size:14px}
+
+/* keypad sheet */
+.sheet-backdrop{
+  position:absolute;inset:0;z-index:50;background:rgba(10,15,20,.42);
+  opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(2px);
+}
+.sheet-backdrop.open{opacity:1;pointer-events:auto}
+.sheet{
+  position:absolute;left:0;right:0;bottom:0;z-index:51;
+  background:var(--surface);border-radius:var(--r-sheet) var(--r-sheet) 36px 36px;
+  border-top:1px solid var(--hairline);
+  transform:translateY(102%);transition:transform .38s cubic-bezier(.2,.7,.2,1);
+  padding:10px 18px calc(20px + env(safe-area-inset-bottom));
+  box-shadow:0 -12px 40px rgba(0,0,0,.18);
+  max-height:86%;overflow:auto;
+}
+.sheet.open{transform:translateY(0)}
+.sheet-grab{width:40px;height:4px;border-radius:3px;background:var(--hairline-strong);margin:6px auto 12px}
+.sheet-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
+.sheet-x{border:none;background:var(--surface-2);width:32px;height:32px;border-radius:50%;cursor:pointer;color:var(--text-2);font-size:17px;display:flex;align-items:center;justify-content:center}
+.sheet-x:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.entry-display{
+  text-align:center;padding:14px 0 6px;
+}
+.entry-big{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-size:52px;font-weight:600;letter-spacing:-.03em;line-height:1}
+.entry-big .u{font-size:20px;color:var(--text-3);font-weight:600}
+.entry-cap{font-size:12px;color:var(--text-3);margin-top:4px;font-weight:600;letter-spacing:.04em}
+
+.enter-two{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}
+.et{border:1px solid var(--hairline);border-radius:14px;padding:9px 12px;background:var(--surface-2);text-align:left}
+.et[data-active="true"]{border-color:var(--accent);background:var(--u0-soft)}
+.et .el{font-size:10.5px;color:var(--text-3);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.et .ev{font-family:var(--font-num);font-variant-numeric:tabular-nums;font-size:19px;font-weight:600;margin-top:1px}
+.et .ev small{color:var(--text-3);font-size:12px}
+
+.odo-shortcut{
+  display:flex;align-items:center;gap:8px;justify-content:center;
+  margin:2px 0 10px;font-size:12px;color:var(--text-2);font-weight:600;
+}
+.odo-shortcut b{
+  font-family:var(--font-num);font-variant-numeric:tabular-nums;
+  background:var(--u0-soft);color:var(--accent-ink);padding:3px 8px;border-radius:8px;cursor:pointer;
+  border:1px solid rgba(47,184,168,.3);
+}
+
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.key{
+  min-height:56px;border:1px solid var(--hairline);border-radius:16px;background:var(--surface);
+  font-family:var(--font-num);font-variant-numeric:tabular-nums;font-size:24px;font-weight:600;color:var(--text);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.key:active{background:var(--surface-2);transform:scale(.97)}
+.key:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.key--fn{font-size:16px;color:var(--text-2);background:var(--surface-2)}
+.key--save{background:linear-gradient(160deg,#3ED6C4,#1F8F82);color:#04241f;border:none;font-size:16px;font-weight:700;grid-column:span 3}
+
+/* segmented control */
+.seg{display:inline-flex;padding:3px;background:var(--surface-2);border:1px solid var(--hairline);border-radius:var(--r-pill)}
+.seg button{border:none;background:none;padding:7px 14px;border-radius:var(--r-pill);cursor:pointer;font:inherit;font-size:12.5px;font-weight:600;color:var(--text-2)}
+.seg button[aria-pressed="true"]{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+[data-theme="night"] .seg button[aria-pressed="true"]{background:var(--accent);color:#04241f}
+
+/* charts */
+.bar-track{height:12px;border-radius:6px;background:var(--surface-2);overflow:hidden;border:1px solid var(--hairline)}
+.bar-fill{height:100%;border-radius:6px}
+.hatch{background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.35) 0 3px,transparent 3px 6px)}
+
+/* car-as-body diagram */
+.body-diag{position:relative}
+.body-diag .part-hot{animation:pulseHot 2.6s ease-in-out infinite}
+@keyframes pulseHot{0%,100%{opacity:.55}50%{opacity:1}}
+
+/* trip route */
+.route{display:flex;align-items:center;gap:8px}
+.route .node{width:11px;height:11px;border-radius:50%;border:2.5px solid var(--accent);background:var(--surface)}
+.route .node.end{background:var(--accent)}
+.route .seg-line{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--accent) 0 6px,transparent 6px 11px)}
+
+/* timeline */
+.tl{position:relative;padding-left:26px}
+.tl::before{content:"";position:absolute;left:8px;top:6px;bottom:6px;width:2px;background:var(--hairline)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item::before{content:"";position:absolute;left:-22px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2.5px solid var(--accent)}
+.tl-item.recover::before{border-color:var(--u1)}
+
+/* settings rows */
+.set-row{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--hairline)}
+.set-row:last-child{border-bottom:none}
+.set-row .sl{font-size:14px;font-weight:600}
+.set-row .ss{font-size:12px;color:var(--text-2)}
+.switch{width:44px;height:26px;border-radius:var(--r-pill);background:var(--hairline-strong);position:relative;cursor:pointer;border:none;flex:0 0 44px}
+.switch.on{background:var(--accent)}
+.switch::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch.on::after{transform:translateX(18px)}
+
+/* RTL */
+.rtl{direction:rtl;font-family:var(--font-fa)}
+.rtl .num{font-family:var(--font-fa)}
+.nastaliq{font-family:var(--font-nastaliq);line-height:1.9}
+.bidi{unicode-bidi:isolate}
+
+/* welcome / first-run */
+.accent-pick{display:flex;gap:12px;justify-content:center;margin-top:6px}
+.swatch{width:40px;height:40px;border-radius:50%;cursor:pointer;border:2px solid transparent;position:relative}
+.swatch[aria-pressed="true"]{border-color:var(--text)}
+.swatch[aria-pressed="true"]::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1.5px solid var(--hairline-strong)}
+
+.fuel-toggle{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.ft{border:1px solid var(--hairline);border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;background:var(--surface)}
+.ft[aria-pressed="true"]{border-color:var(--accent);background:var(--u0-soft)}
+.ft .fti{margin-bottom:6px;color:var(--text-2)}
+.ft[aria-pressed="true"] .fti{color:var(--accent-ink)}
+.ft .ftt{font-size:14px;font-weight:600}
+.ft .fts{font-size:11px;color:var(--text-3)}
+
+.field{border:1px solid var(--hairline);border-radius:14px;padding:11px 14px;background:var(--surface);margin-bottom:10px}
+.field .fl{font-size:10.5px;color:var(--text-3);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.field .fv{font-size:16px;font-weight:600;margin-top:2px;font-family:var(--font-num)}
+
+.cta{
+  width:100%;border:none;border-radius:16px;padding:15px;cursor:pointer;
+  background:linear-gradient(160deg,#3ED6C4,#1F8F82);color:#04241f;font:inherit;font-size:15px;font-weight:700;
+  box-shadow:0 8px 22px rgba(31,143,130,.34);
+}
+.cta:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.cta.ghost{background:none;color:var(--text);border:1px solid var(--hairline);box-shadow:none}
+
+.divider{height:1px;background:var(--hairline);margin:14px 0}
+
+.footer{margin-top:56px;padding-top:24px;border-top:1px solid var(--hairline);color:var(--text-3);font-size:12.5px;line-height:1.7;max-width:900px}
+.footer b{color:var(--text-2);font-weight:600}
+
+.mini-legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.temp-stop{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--text-2);font-weight:600}
+.temp-stop i{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+@media (prefers-reduced-motion: reduce){
+  .breathe,.sweep,.body-diag .part-hot{animation:none !important}
+}
+@media (max-width:520px){
+  .wrap{padding:24px 12px 60px}
+  .gallery{gap:36px 16px}
+  .mark-word{font-size:26px}
+}
+</style>
+
+<div class="pulse-root" id="pulseRoot" data-theme="day">
+<div class="wrap">
+
+  <!-- ============ PAGE HEADER ============ -->
+  <header class="page-head">
+    <div class="masthead">
+      <span class="mark">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+          <rect x="1" y="1" width="38" height="38" rx="11" fill="#0E1317"/>
+          <path d="M4 20 H12 L15 11 L20 29 L24 16 L27 20 H36" stroke="#3ED6C4" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+        <span class="mark-word">PULSE</span>
+      </span>
+      <span class="mast-sub">A vitals chart for your car</span>
+      <div class="head-tools">
+        <button class="theme-toggle" id="themeBtn" aria-label="Toggle day and night theme">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path id="themeIcon" d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z" fill="currentColor"/></svg>
+          <span id="themeLbl">Night</span>
+        </button>
+      </div>
+    </div>
+    <p class="tagline">Feel your car's health as a living pulse-line — one vital, no clutter. The <em>ache</em> sits on the card that needs you; the <em>relief</em> is in your hands. Anxiety → Glance → Decision → Exhale.</p>
+    <div class="legend">
+      <span class="chip"><svg width="34" height="12" viewBox="0 0 34 12" aria-hidden="true"><path d="M1 6H8l2-4 3 8 2-5 2 3h15" stroke="#2FB8A8" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> Breathing vitals pulse-line</span>
+      <span class="chip"><span class="dot" style="background:linear-gradient(90deg,#2FB8A8,#E9A43B)"></span> Scoped, capped emotional temperature</span>
+      <span class="chip"><svg width="14" height="14" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6" stroke="#2FB8A8" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg> "The exhale" on every action</span>
+      <span class="chip"><span class="dot" style="background:#E9A43B"></span> Rooms nav · Cockpit · Garage · Pit-lane</span>
+      <span class="chip"><span class="dot" style="background:#1B242E"></span> Count-up tabular numerals</span>
+    </div>
+    <div class="mini-legend">
+      <span class="temp-stop"><i style="background:#2FB8A8"></i>0 calm</span>
+      <span class="temp-stop"><i style="background:#7FBF6A"></i>1</span>
+      <span class="temp-stop"><i style="background:#E9A43B"></i>2 (halo cap)</span>
+      <span class="temp-stop"><i style="background:#E8703A"></i>3</span>
+      <span class="temp-stop"><i style="background:#D64533"></i>4 ache</span>
+    </div>
+  </header>
+
+  <!-- ============ GALLERY ============ -->
+  <main class="gallery">
+
+  <!-- ========== 01 FIRST-RUN ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">01</span><span class="cell-name">First-run · Add first vehicle</span><span class="cell-note">welcome</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:8px">
+        <div class="eyebrow">Welcome to Pulse</div>
+        <h1 class="h-display" style="margin:8px 0 6px">Let's take your car's first reading.</h1>
+        <p class="t-body muted" style="margin:0 0 18px">Every car has vitals. Add yours and Pulse keeps a calm, honest chart of its health.</p>
+
+        <div class="pulse-wrap" style="height:80px;margin:0 -22px 16px">
+          <svg class="pulse-svg" viewBox="0 0 390 80" preserveAspectRatio="none" aria-hidden="true">
+            <path class="pulse-line" d="M0 40 H90 l14 0 8 -22 12 44 10 -30 8 8 H210 l10 0 7 -14 9 28 8 -14 H390"/>
+          </svg>
+        </div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Power source</div>
+        <div class="fuel-toggle">
+          <div class="ft" role="button" tabindex="0" aria-pressed="true">
+            <div class="fti"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14M4 20h12M15 9h2.5a1.5 1.5 0 0 1 1.5 1.5V16a1.5 1.5 0 0 0 3 0V8l-2.5-2.5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="ftt">Petrol / Diesel</div><div class="fts">litres · L/100km</div>
+          </div>
+          <div class="ft" role="button" tabindex="0" aria-pressed="false">
+            <div class="fti"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="ftt">Electric</div><div class="fts">kWh · Wh/km</div>
+          </div>
+        </div>
+
+        <div style="margin-top:16px">
+          <div class="field"><div class="fl">Vehicle</div><div class="fv" style="font-family:var(--font-latin)">2018 VW Golf 1.5 TSI</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <div class="field"><div class="fl">Plate</div><div class="fv">B·CP 2481</div></div>
+            <div class="field"><div class="fl">Odometer</div><div class="fv">84,320 <span class="dim" style="font-size:12px">km</span></div></div>
+          </div>
+        </div>
+
+        <div class="eyebrow" style="margin:6px 0 8px">Pick this car's accent</div>
+        <div class="accent-pick">
+          <span class="swatch" role="button" tabindex="0" aria-pressed="true" style="background:#2FB8A8" aria-label="Firouzeh turquoise"></span>
+          <span class="swatch" role="button" tabindex="0" aria-pressed="false" style="background:#3E6BE8" aria-label="Lapis blue"></span>
+          <span class="swatch" role="button" tabindex="0" aria-pressed="false" style="background:#E9A43B" aria-label="Saffron"></span>
+          <span class="swatch" role="button" tabindex="0" aria-pressed="false" style="background:#B65CC4" aria-label="Plum"></span>
+          <span class="swatch" role="button" tabindex="0" aria-pressed="false" style="background:#7FBF6A" aria-label="Pistachio"></span>
+        </div>
+
+        <button class="cta" style="margin-top:20px">Take first reading</button>
+        <p class="t-cap" style="text-align:center;margin:10px 0 4px">Offline-first · your data stays on this device</p>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 02 HOME / COCKPIT ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">02</span><span class="cell-name">Cockpit · Home vital</span><span class="cell-note">interactive</span></div>
+    <div class="phone" id="phoneHome"><div class="screen">
+      <div class="halo" data-u="2" id="homeHalo"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+
+        <div class="vswitch">
+          <button class="vtab" aria-current="true"><span class="vdot" style="background:#2FB8A8"></span>Blau · Golf</button>
+          <button class="vtab"><span class="vdot" style="background:#E9A43B"></span>Volt · EV6</button>
+        </div>
+
+        <!-- SIGNATURE: single vital, NO list -->
+        <div class="vitals">
+          <div class="eyebrow" style="margin-bottom:6px">Readiness · Blau</div>
+          <div class="pulse-wrap">
+            <svg class="pulse-svg" viewBox="0 0 390 120" preserveAspectRatio="none" aria-hidden="true">
+              <g class="breathe">
+              <path class="pulse-line" d="M0 60 H70 l10 0 6 -30 10 58 9 -40 7 14 8 -2 H180 l10 0 6 -34 11 62 9 -44 7 16 8 0 H300 l9 0 6 -22 9 42 7 -24 6 4 H390"/>
+              </g>
+              <g class="sweep"><circle class="pulse-dot" cx="30" cy="60" r="3.5"/></g>
+            </svg>
+          </div>
+          <div>
+            <span class="hero-num" id="homeScore">92</span><span class="hero-unit"> / 100</span>
+          </div>
+          <div class="hero-label"><span class="readiness-word">Healthy</span> — one thing wants attention soon</div>
+
+          <div class="vrow">
+            <div class="vcell"><div class="vn">84,320</div><div class="vl">km</div></div>
+            <div class="vcell"><div class="vn">6.4</div><div class="vl">L/100km</div></div>
+            <div class="vcell"><div class="vn">€0.31</div><div class="vl">per km</div></div>
+          </div>
+        </div>
+
+        <!-- the ONE aching card surfaced; full list is a swipe away -->
+        <div class="card ache" data-u="2" id="homeAche" style="margin-top:16px">
+          <span class="ustripe" data-u="2"></span>
+          <div class="card-pad ache-inner">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div class="eyebrow">The one ache</div>
+              <span class="pill pill--warn"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M12 16h.01M10.3 4l-7 12A2 2 0 0 0 5 19h14a2 2 0 0 0 1.7-3l-7-12a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Due soon</span>
+            </div>
+            <div class="row">
+              <div class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+              <div class="rmain">
+                <div class="rt">Oil &amp; filter</div>
+                <div class="rs">Due in <b class="num">850&nbsp;km</b> or <b class="num">40&nbsp;days</b> — whichever first</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="cta" id="exhaleBtn" style="padding:11px;font-size:13px">Mark done — exhale</button>
+              <button class="cta ghost" style="padding:11px;font-size:13px;width:auto;flex:0 0 auto">Snooze</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pull-hint">
+          <div class="bar"></div>
+          <span>Pull up · 3 more in Pit-lane</span>
+        </div>
+      </div></div>
+
+      <button class="quickadd" aria-label="Quick log fuel or charge" data-open-sheet="sheetHome">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="#04241f" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </button>
+
+      <nav class="rooms" aria-label="Rooms">
+        <button class="room" aria-current="true"><span class="r-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 13h4l2-5 4 9 2-6 2 3h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="r-name">Cockpit</span><span class="r-sub">Now</span></button>
+        <button class="room"><span class="r-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10l8-5 8 5v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="r-name">Garage</span><span class="r-sub">Care &amp; history</span></button>
+        <button class="room"><span class="r-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="r-name">Pit-lane</span><span class="r-sub">What's due</span></button>
+      </nav>
+
+      <!-- keypad sheet for home -->
+      <div class="sheet-backdrop" data-sheet="sheetHome"></div>
+      <div class="sheet" id="sheetHome" role="dialog" aria-label="Quick log fill">
+        <div class="sheet-grab"></div>
+        <div class="sheet-head"><div class="h-title">Log a fill</div><button class="sheet-x" data-close-sheet aria-label="Close">✕</button></div>
+        <div class="entry-display"><div class="entry-big" id="hEntry">42.3<span class="u"> L</span></div><div class="entry-cap">Enter any two — Pulse computes the rest</div></div>
+        <div class="enter-two">
+          <div class="et" data-active="true"><div class="el">Volume</div><div class="ev" id="hVol">42.3 <small>L</small></div></div>
+          <div class="et"><div class="el">Total €</div><div class="ev">75.72</div></div>
+        </div>
+        <div class="odo-shortcut">Odometer <b data-odo>…320</b> <span>tap to fill last 3 digits</span></div>
+        <div class="keypad">
+          <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+          <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+          <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+          <button class="key key--fn">.</button><button class="key">0</button><button class="key key--fn">⌫</button>
+          <button class="key key--save" data-close-sheet>Save · Shell A2 Nord</button>
+        </div>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- ========== 03 FAST FUEL/CHARGE ENTRY ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">03</span><span class="cell-name">Quick-log · Keypad first</span><span class="cell-note">interactive</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll" style="display:flex;flex-direction:column"><div class="pad" style="padding-top:6px;flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:2px">
+          <div>
+            <div class="eyebrow">Quick log</div>
+            <div class="h-title">Fill · Blau</div>
+          </div>
+          <div class="seg" role="group" aria-label="Fill or charge">
+            <button aria-pressed="true">Fuel</button><button aria-pressed="false">Charge</button>
+          </div>
+        </div>
+
+        <div class="entry-display" style="padding-top:26px">
+          <div class="entry-big">42.3<span class="u"> L</span></div>
+          <div class="entry-cap">Enter any two — Pulse computes the rest</div>
+        </div>
+
+        <div class="enter-two">
+          <div class="et" data-active="true"><div class="el">Volume</div><div class="ev">42.3 <small>L</small></div></div>
+          <div class="et"><div class="el">Price / L</div><div class="ev">€1.79</div></div>
+          <div class="et"><div class="el">Total</div><div class="ev">€75.72</div></div>
+          <div class="et"><div class="el">Odometer</div><div class="ev">84,320 <small>km</small></div></div>
+        </div>
+
+        <div class="odo-shortcut">Odometer <b data-odo>…320</b> <span>tap to fill last 3 digits</span></div>
+
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--hairline);border-radius:14px;background:var(--surface);margin-bottom:12px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" stroke="var(--accent)" stroke-width="1.6"/><circle cx="12" cy="10" r="2.5" stroke="var(--accent)" stroke-width="1.6"/></svg>
+            <div><div style="font-size:13px;font-weight:600">Shell A2 Nord</div><div class="t-cap">Remembered · last visited here</div></div>
+          </div>
+          <span class="pill pill--ok"><svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Auto</span>
+        </div>
+
+        <div class="keypad" style="margin-top:auto">
+          <button class="key">1</button><button class="key">2</button><button class="key">3</button>
+          <button class="key">4</button><button class="key">5</button><button class="key">6</button>
+          <button class="key">7</button><button class="key">8</button><button class="key">9</button>
+          <button class="key key--fn">.</button><button class="key">0</button><button class="key key--fn">⌫</button>
+          <button class="key key--save">Save fill · 6.4 L/100km</button>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 04 VEHICLE PROFILE ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">04</span><span class="cell-name">Garage · Vehicle profile</span><span class="cell-note">the car object</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Garage · The car object</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin:4px 0 2px">
+          <div class="h-display">Blau</div>
+          <span class="pill"><span style="width:9px;height:9px;border-radius:50%;background:#2FB8A8;display:inline-block"></span>Firouzeh</span>
+        </div>
+        <div class="muted t-body" style="margin-bottom:14px">2018 VW Golf 1.5 TSI · Petrol · B·CP 2481</div>
+
+        <!-- car-as-body diagram -->
+        <div class="card" style="padding:18px;margin-bottom:14px">
+          <div class="body-diag" style="text-align:center">
+            <svg width="100%" height="120" viewBox="0 0 300 120" fill="none" aria-hidden="true">
+              <path d="M40 78 L60 78 L78 52 Q84 44 96 44 L182 44 Q196 44 204 54 L232 62 Q262 66 264 82 L264 88 Q264 92 258 92 L44 92 Q40 92 40 88 Z" fill="var(--surface-2)" stroke="var(--hairline-strong)" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M96 46 L176 46 L192 60 L100 60 Z" fill="var(--base)" stroke="var(--hairline)" stroke-width="1.2"/>
+              <circle cx="92" cy="92" r="17" fill="var(--surface)" stroke="var(--text-2)" stroke-width="2"/>
+              <circle cx="92" cy="92" r="7" fill="var(--surface-2)" stroke="var(--text-2)" stroke-width="1.5"/>
+              <circle cx="218" cy="92" r="17" fill="var(--surface)" stroke="var(--text-2)" stroke-width="2"/>
+              <circle cx="218" cy="92" r="7" fill="var(--surface-2)" stroke="var(--text-2)" stroke-width="1.5"/>
+              <!-- engine/oil highlight -->
+              <circle class="part-hot" cx="215" cy="66" r="11" fill="rgba(233,164,59,.28)" stroke="#E9A43B" stroke-width="1.6"/>
+              <path d="M215 60c2 3 3.5 4 3.5 6a3.5 3.5 0 0 1-7 0c0-2 1.5-3 3.5-6Z" fill="#E9A43B"/>
+            </svg>
+            <div class="t-cap" style="margin-top:4px"><span style="color:#E9A43B;font-weight:700">●</span> Oil circuit is the part asking for care</div>
+          </div>
+        </div>
+
+        <div class="vrow" style="margin-top:0">
+          <div class="vcell"><div class="vn">84,320</div><div class="vl">km total</div></div>
+          <div class="vcell"><div class="vn">6.4</div><div class="vl">avg L/100</div></div>
+          <div class="vcell"><div class="vn">7</div><div class="vl">yrs owned</div></div>
+        </div>
+
+        <div class="eyebrow" style="margin:18px 0 8px">Specs</div>
+        <div class="card"><div style="padding:4px 16px">
+          <div class="set-row"><div><div class="sl">Engine</div></div><div class="num muted" style="font-weight:600">1.5 TSI · 150 PS</div></div>
+          <div class="set-row"><div><div class="sl">VIN</div></div><div class="num muted" style="font-weight:600">WVWZZZ…8291</div></div>
+          <div class="set-row"><div><div class="sl">Tank</div></div><div class="num muted" style="font-weight:600">50 L</div></div>
+          <div class="set-row"><div><div class="sl">First reg.</div></div><div class="num muted" style="font-weight:600">03 · 2018</div></div>
+        </div></div>
+
+        <div class="eyebrow" style="margin:18px 0 8px">Documents</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px">
+          <div class="card" style="padding:14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/></svg><div style="font-size:13px;font-weight:600;margin-top:8px">Insurance</div><div class="t-cap">PDF · renews 22 d</div></div>
+          <div class="card" style="padding:14px"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6Z" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/><path d="M14 3v4h4" stroke="var(--accent)" stroke-width="1.6" stroke-linejoin="round"/></svg><div style="font-size:13px;font-weight:600;margin-top:8px">TÜV / HU</div><div class="t-cap">PDF · in 4 months</div></div>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 05 REMINDERS LIST / PIT-LANE ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">05</span><span class="cell-name">Pit-lane · Reminders</span><span class="cell-note">whichever-first</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="2"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Pit-lane · What's due</div>
+        <h2 class="h-title" style="margin:4px 0 2px">A calm engineer's list</h2>
+        <p class="t-cap" style="margin-bottom:14px">Ranked by whichever trigger — time or distance — arrives first.</p>
+
+        <!-- OVERDUE -->
+        <div class="eyebrow" style="color:#a5352a;margin-bottom:8px">● Aching now</div>
+        <div class="card ache" data-u="4" style="margin-bottom:14px">
+          <span class="ustripe" data-u="4"></span>
+          <div class="card-pad ache-inner">
+            <div class="row">
+              <div class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 7v5l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+              <div class="rmain"><div class="rt">Winter tyres</div><div class="rs">Fit by <b class="num">15 Oct</b> · overdue by <b class="num">6 days</b></div></div>
+              <span class="pill pill--crit">Overdue</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- DUE SOON -->
+        <div class="eyebrow" style="color:#9a6b12;margin-bottom:8px">● Wanting attention</div>
+        <div class="list" style="margin-bottom:14px">
+          <div class="card ache" data-u="2"><span class="ustripe" data-u="2"></span><div class="card-pad ache-inner"><div class="row">
+            <div class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="rmain"><div class="rt">Oil &amp; filter</div><div class="rs">In <b class="num">850 km</b> or <b class="num">40 days</b> · whichever first</div></div>
+            <span class="pill pill--warn">Soon</span>
+          </div></div></div>
+          <div class="card ache" data-u="2"><span class="ustripe" data-u="2"></span><div class="card-pad ache-inner"><div class="row">
+            <div class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 3h8l4 4v14H6Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="rmain"><div class="rt">Insurance renewal</div><div class="rs">In <b class="num">22 days</b> · €640/yr</div></div>
+            <span class="pill pill--warn">Soon</span>
+          </div></div></div>
+        </div>
+
+        <!-- SCHEDULED -->
+        <div class="eyebrow" style="margin-bottom:8px">● Healthy · scheduled</div>
+        <div class="list">
+          <div class="card"><div class="card-pad"><div class="row">
+            <div class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 11h16M6 4v3M18 4v3M5 7h14v13H5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="rmain"><div class="rt">TÜV / HU inspection</div><div class="rs">In <b class="num">4 months</b> · Feb 2027</div></div>
+            <span class="pill pill--ok"><svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>OK</span>
+          </div></div></div>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 06 ADD/EDIT REMINDER ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">06</span><span class="cell-name">Add reminder · Dual trigger</span><span class="cell-note">whichever first</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+          <div><div class="eyebrow">New reminder</div><div class="h-title">Oil &amp; filter</div></div>
+          <button class="sheet-x" aria-label="Close">✕</button>
+        </div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Trigger — fires on whichever comes first</div>
+
+        <!-- distance trigger -->
+        <div class="card" style="margin-bottom:10px"><div class="card-pad">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="var(--accent)" stroke-width="1.6"/><path d="M12 12l4-3" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="font-weight:600;font-size:14px">Every distance</div>
+            <span class="switch on" style="margin-left:auto" role="switch" aria-checked="true"></span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <span class="num" style="font-size:30px">15,000</span><span class="muted" style="font-weight:600">km</span>
+            <span class="dim" style="margin-left:auto;font-size:12px">next at 88,500 km</span>
+          </div>
+          <div class="bar-track" style="margin-top:10px"><div class="bar-fill" style="width:72%;background:var(--accent)"></div></div>
+        </div></div>
+
+        <!-- time trigger -->
+        <div class="card" style="margin-bottom:10px"><div class="card-pad">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="2" stroke="var(--accent)" stroke-width="1.6"/><path d="M4 10h16M8 3v4M16 3v4" stroke="var(--accent)" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <div style="font-weight:600;font-size:14px">Every time</div>
+            <span class="switch on" style="margin-left:auto" role="switch" aria-checked="true"></span>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:8px">
+            <span class="num" style="font-size:30px">12</span><span class="muted" style="font-weight:600">months</span>
+            <span class="dim" style="margin-left:auto;font-size:12px">next on 29 May 2027</span>
+          </div>
+        </div></div>
+
+        <!-- whichever-first synthesis -->
+        <div class="card ache" data-u="2" style="margin-bottom:14px"><span class="ustripe" data-u="2"></span><div class="card-pad ache-inner">
+          <div style="display:flex;align-items:center;gap:8px"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 8v5M12 16h.01M10.3 4l-7 12A2 2 0 0 0 5 19h14a2 2 0 0 0 1.7-3l-7-12a2 2 0 0 0-3.4 0Z" stroke="#9a6b12" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg><div style="font-size:13px;font-weight:600">Pulse will ache in <span class="num">850 km</span> — distance wins first</div></div>
+        </div></div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Warn me before</div>
+        <div class="seg" role="group" aria-label="Lead time" style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr">
+          <button aria-pressed="false">3 days</button>
+          <button aria-pressed="true">1 week / 1,000 km</button>
+          <button aria-pressed="false">2 weeks</button>
+        </div>
+
+        <button class="cta" style="margin-top:18px">Save reminder</button>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 07 EXPENSES ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">07</span><span class="cell-name">Expenses · Cost/km</span><span class="cell-note">this month</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Expenses · July</div>
+        <div style="display:flex;align-items:flex-end;gap:10px;margin:2px 0 2px">
+          <span class="num" style="font-size:52px;letter-spacing:-.03em;line-height:1">€418</span>
+          <span class="muted" style="font-weight:600;padding-bottom:8px">this month</span>
+        </div>
+        <div class="t-cap" style="margin-bottom:14px"><span style="color:var(--accent-ink);font-weight:700">€0.31/km</span> · your cheapest month since March</div>
+
+        <!-- ranked bars, firouzeh ramp, direct labels, hatch on highlight -->
+        <div class="card" style="margin-bottom:14px"><div class="card-pad">
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span class="t-label" style="font-weight:600;color:var(--text)">Fuel</span><span class="num" style="font-size:13px">€231 · 55%</span></div>
+            <div class="bar-track"><div class="bar-fill hatch" style="width:55%;background:#1F8F82"></div></div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span class="t-label" style="font-weight:600;color:var(--text)">Service</span><span class="num" style="font-size:13px">€120 · 29%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:29%;background:#2FB8A8"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span class="t-label" style="font-weight:600;color:var(--text)">Other</span><span class="num" style="font-size:13px">€67 · 16%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:16%;background:#7FD4C8"></div></div>
+          </div>
+          <div class="t-cap" style="margin-top:10px;display:flex;align-items:center;gap:6px"><span class="hatch" style="width:14px;height:10px;border-radius:2px;background:#1F8F82;display:inline-block"></span>Hatched = largest slice</div>
+        </div></div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Recent</div>
+        <div class="list">
+          <div class="card"><div class="card-pad" style="padding:12px 16px"><div class="row">
+            <div class="ricon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 20V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v14M4 20h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <div class="rmain"><div class="rt">Shell A2 Nord</div><div class="rs">Fuel · 42.3 L · 18 Jul</div></div>
+            <div class="rv">€75.72</div>
+          </div></div></div>
+          <div class="card"><div class="card-pad" style="padding:12px 16px"><div class="row">
+            <div class="ricon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 7l3 3-8 8H6v-3l8-8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="rmain"><div class="rt">Bosch Service</div><div class="rs">Service · Inspection · 09 Jul</div></div>
+            <div class="rv">€120.00</div>
+          </div></div></div>
+          <div class="card"><div class="card-pad" style="padding:12px 16px"><div class="row">
+            <div class="ricon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16v11H4zM4 7l4-3h8l4 3" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+            <div class="rmain"><div class="rt">Autobahn toll · A9</div><div class="rs">Other · Vignette · 02 Jul</div></div>
+            <div class="rv">€67.00</div>
+          </div></div></div>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 08 TRIPS ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">08</span><span class="cell-name">Trips · Road-trip detail</span><span class="cell-note">Berlin → München</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Trips · Blau this year</div>
+        <h2 class="h-title" style="margin:4px 0 12px">You've driven Berlin → Tehran, on paper.</h2>
+
+        <!-- featured trip -->
+        <div class="card" style="margin-bottom:14px;overflow:hidden">
+          <div style="padding:16px 18px 6px">
+            <div class="route" style="margin-bottom:10px">
+              <span class="node"></span><span class="seg-line"></span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true" style="flex:0 0 auto"><path d="M6 11l6-7 6 7-6 9-6-9Z" stroke="var(--accent)" stroke-width="1.4"/></svg>
+              <span class="seg-line"></span><span class="node end"></span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:600"><span>Berlin</span><span>München</span></div>
+            <div style="display:flex;align-items:baseline;gap:8px;margin-top:12px">
+              <span class="num" style="font-size:40px;letter-spacing:-.03em">584</span><span class="muted" style="font-weight:600">km · 2 days</span>
+            </div>
+          </div>
+          <div class="vrow" style="margin:8px 0 0;border-left:none;border-right:none;border-bottom:none;border-radius:0">
+            <div class="vcell"><div class="vn">€96</div><div class="vl">fuel</div></div>
+            <div class="vcell"><div class="vn">€41</div><div class="vl">other</div></div>
+            <div class="vcell"><div class="vn">€0.23</div><div class="vl">per km</div></div>
+          </div>
+        </div>
+
+        <div class="eyebrow" style="margin-bottom:8px">All trips</div>
+        <div class="list">
+          <div class="card"><div class="card-pad" style="padding:13px 16px"><div class="row">
+            <div class="ricon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/></svg></div>
+            <div class="rmain"><div class="rt">Berlin → München</div><div class="rs">18–19 Jul · 584 km</div></div>
+            <div class="rv">€137</div>
+          </div></div></div>
+          <div class="card"><div class="card-pad" style="padding:13px 16px"><div class="row">
+            <div class="ricon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/></svg></div>
+            <div class="rmain"><div class="rt">Berlin → Ostsee</div><div class="rs">04–06 Jul · 238 km</div></div>
+            <div class="rv">€58</div>
+          </div></div></div>
+          <div class="card"><div class="card-pad" style="padding:13px 16px"><div class="row">
+            <div class="ricon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 21s-7-5.6-7-11a7 7 0 0 1 14 0c0 5.4-7 11-7 11Z" stroke="currentColor" stroke-width="1.6"/></svg></div>
+            <div class="rmain"><div class="rt">City · June commute</div><div class="rs">Aggregated · 612 km</div></div>
+            <div class="rv">€94</div>
+          </div></div></div>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 09 REPORTS & STATS ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">09</span><span class="cell-name">Reports · Vitals over time</span><span class="cell-note">efficiency · TCO</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Reports · 12 months</div>
+        <h2 class="h-title" style="margin:4px 0 12px">Efficiency vitals</h2>
+
+        <!-- efficiency trend: firouzeh line + reference band + rounded data-end -->
+        <div class="card" style="margin-bottom:14px"><div class="card-pad">
+          <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+            <div><span class="num" style="font-size:26px">6.4</span> <span class="muted" style="font-weight:600;font-size:13px">L/100km now</span></div>
+            <span class="pill pill--ok"><svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l6-6 4 4 5-6" stroke="currentColor" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>−7% vs Jan</span>
+          </div>
+          <svg width="100%" height="120" viewBox="0 0 320 120" fill="none" aria-hidden="true" role="img" aria-label="Economy trending 6.9 to 6.4 L per 100km over 12 months">
+            <!-- your-history reference band -->
+            <rect x="0" y="46" width="320" height="34" fill="var(--u0-soft)"/>
+            <line x1="0" y1="46" x2="320" y2="46" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>
+            <line x1="0" y1="80" x2="320" y2="80" stroke="var(--accent)" stroke-width="1" stroke-dasharray="3 4" opacity=".5"/>
+            <path d="M6 34 L34 40 L62 30 L90 52 L118 46 L146 62 L174 56 L202 70 L230 64 L258 78 L286 72 L312 84" stroke="var(--accent)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="312" cy="84" r="4.5" fill="var(--accent)"/>
+          </svg>
+          <div style="display:flex;justify-content:space-between" class="t-cap"><span>6.9</span><span>your typical range</span><span style="color:var(--accent-ink);font-weight:700">6.4</span></div>
+        </div></div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Cost breakdown · TCO</div>
+        <div class="card" style="margin-bottom:14px"><div class="card-pad">
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span class="t-label" style="font-weight:600;color:var(--text)">Fuel</span><span class="num" style="font-size:13px">55%</span></div>
+            <div class="bar-track"><div class="bar-fill hatch" style="width:55%;background:#1F8F82"></div></div>
+          </div>
+          <div style="margin-bottom:12px">
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span class="t-label" style="font-weight:600;color:var(--text)">Service</span><span class="num" style="font-size:13px">29%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:29%;background:#2FB8A8"></div></div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;margin-bottom:5px"><span class="t-label" style="font-weight:600;color:var(--text)">Other</span><span class="num" style="font-size:13px">16%</span></div>
+            <div class="bar-track"><div class="bar-fill" style="width:16%;background:#7FD4C8"></div></div>
+          </div>
+        </div></div>
+
+        <div class="vrow" style="margin-top:0">
+          <div class="vcell"><div class="vn">€4,930</div><div class="vl">12-mo total</div></div>
+          <div class="vcell"><div class="vn">15,880</div><div class="vl">km/yr</div></div>
+          <div class="vcell"><div class="vn">€0.31</div><div class="vl">cost/km</div></div>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 10 SERVICE HISTORY ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">10</span><span class="cell-name">Garage · Service history</span><span class="cell-note">recovery timeline</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Garage · The life of Blau</div>
+        <h2 class="h-title" style="margin:4px 0 4px">Recovery log</h2>
+        <p class="t-cap" style="margin-bottom:16px">Every service is a recovery — a moment the car exhaled.</p>
+
+        <div class="tl">
+          <div class="tl-item recover">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:14px;font-weight:600">Major inspection</div>
+              <div class="num t-cap" style="color:var(--text-2)">09 Jul 2026</div>
+            </div>
+            <div class="rs muted" style="font-size:13px;line-height:19px">Bosch Service · brake fluid, cabin filter, diagnostics</div>
+            <div style="display:flex;gap:8px;margin-top:6px"><span class="pill pill--ok" style="font-size:10.5px"><svg width="10" height="10" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Recovered</span><span class="num t-cap">83,470 km · €120</span></div>
+          </div>
+          <div class="tl-item recover">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:14px;font-weight:600">Summer tyres fitted</div>
+              <div class="num t-cap" style="color:var(--text-2)">02 Apr 2026</div>
+            </div>
+            <div class="rs muted" style="font-size:13px;line-height:19px">Seasonal swap · balance &amp; alignment check</div>
+            <div style="margin-top:6px"><span class="num t-cap">79,110 km · €65</span></div>
+          </div>
+          <div class="tl-item recover">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:14px;font-weight:600">Oil &amp; filter change</div>
+              <div class="num t-cap" style="color:var(--text-2)">18 Nov 2025</div>
+            </div>
+            <div class="rs muted" style="font-size:13px;line-height:19px">5W-30 longlife · new sump plug seal</div>
+            <div style="margin-top:6px"><span class="num t-cap">73,240 km · €98</span></div>
+          </div>
+          <div class="tl-item">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:14px;font-weight:600">TÜV / HU passed</div>
+              <div class="num t-cap" style="color:var(--text-2)">Feb 2025</div>
+            </div>
+            <div class="rs muted" style="font-size:13px;line-height:19px">No defects · next due Feb 2027</div>
+            <div style="margin-top:6px"><span class="num t-cap">68,900 km · €89</span></div>
+          </div>
+          <div class="tl-item">
+            <div style="display:flex;justify-content:space-between;align-items:baseline">
+              <div style="font-size:14px;font-weight:600">Purchased · first reading</div>
+              <div class="num t-cap" style="color:var(--text-2)">Mar 2019</div>
+            </div>
+            <div class="rs muted" style="font-size:13px;line-height:19px">Blau joined the garage</div>
+            <div style="margin-top:6px"><span class="num t-cap">12,050 km</span></div>
+          </div>
+        </div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 11 SETTINGS ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">11</span><span class="cell-name">Settings · Locale &amp; theme</span><span class="cell-note">4 calendars</span></div>
+    <div class="phone"><div class="screen">
+      <div class="halo" data-u="0"></div>
+      <div class="statusbar"><span>9:41</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:6px">
+        <div class="eyebrow">Settings</div>
+        <h2 class="h-title" style="margin:4px 0 14px">Locale &amp; feel</h2>
+
+        <div class="eyebrow" style="margin-bottom:8px">Language</div>
+        <div class="seg" role="group" aria-label="Language" style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;margin-bottom:16px">
+          <button aria-pressed="true">EN</button><button aria-pressed="false">DE</button><button aria-pressed="false">فا</button><button aria-pressed="false">کوردی</button>
+        </div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Calendar</div>
+        <div class="card" style="margin-bottom:16px"><div style="padding:2px 16px">
+          <div class="set-row"><div><div class="sl">Gregorian</div><div class="ss">19 Jul 2026</div></div><span class="switch on" role="switch" aria-checked="true"></span></div>
+          <div class="set-row"><div><div class="sl">Jalali</div><div class="ss num">۱۴۰۳/۰۴/۲۹ · Tir</div></div><span class="switch" role="switch" aria-checked="false"></span></div>
+          <div class="set-row"><div><div class="sl">Hijri</div><div class="ss num">٤ صفر ١٤٤٨</div></div><span class="switch" role="switch" aria-checked="false"></span></div>
+          <div class="set-row"><div><div class="sl">Hebrew</div><div class="ss">4 Av 5786</div></div><span class="switch" role="switch" aria-checked="false"></span></div>
+        </div></div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Units &amp; numerals</div>
+        <div class="card" style="margin-bottom:16px"><div style="padding:2px 16px">
+          <div class="set-row"><div><div class="sl">Distance</div></div><div class="seg"><button aria-pressed="true" style="padding:5px 11px">km</button><button aria-pressed="false" style="padding:5px 11px">mi</button></div></div>
+          <div class="set-row"><div><div class="sl">Economy</div></div><div class="seg"><button aria-pressed="true" style="padding:5px 9px">L/100</button><button aria-pressed="false" style="padding:5px 9px">mpg</button></div></div>
+          <div class="set-row"><div><div class="sl">Numerals</div><div class="ss">Western · Eastern-Arabic · Persian</div></div><div class="num muted" style="font-weight:600">123 · ٠١٢٣ · ۰۱۲۳</div></div>
+        </div></div>
+
+        <div class="eyebrow" style="margin-bottom:8px">Appearance</div>
+        <div class="card"><div style="padding:2px 16px">
+          <div class="set-row"><div><div class="sl">Theme</div><div class="ss">Warm paper day · Ink night</div></div>
+            <div class="seg"><button aria-pressed="true" style="padding:5px 11px" data-set-theme="day">Day</button><button aria-pressed="false" style="padding:5px 11px" data-set-theme="night">Night</button></div>
+          </div>
+          <div class="set-row"><div><div class="sl">Breathing motion</div><div class="ss">Hero pulse-line animation</div></div><span class="switch on" role="switch" aria-checked="true"></span></div>
+          <div class="set-row"><div><div class="sl">Haptic exhale</div><div class="ss">Weighted tap on relief</div></div><span class="switch on" role="switch" aria-checked="true"></span></div>
+        </div></div>
+      </div></div></div>
+    </div></div>
+  </section>
+
+  <!-- ========== 12 RTL SHOWCASE ========== -->
+  <section class="cell">
+    <div class="cell-label"><span class="cell-num">12</span><span class="cell-name">RTL · Cockpit فارسی</span><span class="cell-note">dir=rtl · Jalali</span></div>
+    <div class="phone"><div class="screen rtl" dir="rtl" lang="fa">
+      <div class="halo" data-u="2"></div>
+      <div class="statusbar" dir="ltr" style="flex-direction:row-reverse"><span class="num">۹:۴۱</span><span class="sb-icons"><svg width="17" height="11" viewBox="0 0 17 11" aria-hidden="true"><rect x="0" y="7" width="3" height="4" rx="1" fill="currentColor"/><rect x="4" y="5" width="3" height="6" rx="1" fill="currentColor"/><rect x="8" y="3" width="3" height="8" rx="1" fill="currentColor"/><rect x="12" y="0" width="3" height="11" rx="1" fill="currentColor"/></svg><svg width="24" height="11" viewBox="0 0 24 11" aria-hidden="true"><rect x="1" y="1" width="19" height="9" rx="2.5" fill="none" stroke="currentColor" opacity=".5"/><rect x="2.5" y="2.5" width="14" height="6" rx="1" fill="currentColor"/><rect x="21" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg></span></div>
+      <div class="scr-body"><div class="scr-scroll"><div class="pad" style="padding-top:8px">
+
+        <!-- Nastaliq masthead + Nowruz motif -->
+        <div style="text-align:center;margin-bottom:4px">
+          <div class="nastaliq" style="font-size:30px;color:var(--accent-ink)">نبضِ خودرو</div>
+          <div class="t-cap" style="margin-top:2px">امروز <span class="num bidi">۱۴۰۳/۰۴/۲۹</span> · تیر</div>
+        </div>
+
+        <div class="vitals" style="padding-top:10px">
+          <div class="eyebrow" style="margin-bottom:6px">آمادگی · بلاو</div>
+          <div class="pulse-wrap">
+            <svg class="pulse-svg" viewBox="0 0 390 120" preserveAspectRatio="none" aria-hidden="true">
+              <g class="breathe">
+              <path class="pulse-line" d="M0 60 H70 l10 0 6 -30 10 58 9 -40 7 14 8 -2 H180 l10 0 6 -34 11 62 9 -44 7 16 8 0 H300 l9 0 6 -22 9 42 7 -24 6 4 H390"/>
+              </g>
+              <g class="sweep"><circle class="pulse-dot" cx="30" cy="60" r="3.5"/></g>
+            </svg>
+          </div>
+          <div><span class="hero-num num">۹۲</span><span class="hero-unit"> / ۱۰۰</span></div>
+          <div class="hero-label"><span class="readiness-word">سالم</span> — یک مورد به‌زودی رسیدگی می‌خواهد</div>
+
+          <div class="vrow">
+            <div class="vcell"><div class="vn num bidi">۸۴٬۳۲۰</div><div class="vl">کیلومتر</div></div>
+            <div class="vcell"><div class="vn num bidi">۶٫۴</div><div class="vl">ل/۱۰۰کم</div></div>
+            <div class="vcell"><div class="vn num bidi">۰٫۳۱€</div><div class="vl">هر کیلومتر</div></div>
+          </div>
+        </div>
+
+        <div class="card ache" data-u="2" style="margin-top:16px">
+          <span class="ustripe" data-u="2" style="left:auto;right:0;border-radius:4px 0 0 4px"></span>
+          <div class="card-pad ache-inner">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+              <div class="eyebrow">تنها درد</div>
+              <span class="pill pill--warn"><svg width="12" height="12" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8v5M12 16h.01M10.3 4l-7 12A2 2 0 0 0 5 19h14a2 2 0 0 0 1.7-3l-7-12a2 2 0 0 0-3.4 0Z" stroke="currentColor" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>به‌زودی</span>
+            </div>
+            <div class="row">
+              <div class="ricon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 3c3 4 5 6 5 9a5 5 0 0 1-10 0c0-3 2-5 5-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+              <div class="rmain">
+                <div class="rt">روغن موتور و فیلتر</div>
+                <div class="rs">تا <b class="num bidi">۸۵۰ کیلومتر</b> یا <b class="num bidi">۴۰ روز</b> — هرکدام زودتر</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="cta" style="padding:11px;font-size:13px">انجام شد — بازدم</button>
+              <button class="cta ghost" style="padding:11px;font-size:13px;width:auto;flex:0 0 auto">تعویق</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="pull-hint">
+          <div class="bar"></div>
+          <span>بالا بکشید · ۳ مورد دیگر</span>
+        </div>
+      </div></div>
+
+      <nav class="rooms" aria-label="اتاق‌ها">
+        <button class="room" aria-current="true"><span class="r-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 13h4l2-5 4 9 2-6 2 3h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="r-name">کابین</span><span class="r-sub">اکنون</span></button>
+        <button class="room"><span class="r-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 10l8-5 8 5v9a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 20v-5h6v5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg></span><span class="r-name">گاراژ</span><span class="r-sub">نگهداری</span></button>
+        <button class="room"><span class="r-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.6"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="r-name">پیت‌لِین</span><span class="r-sub">سررسیدها</span></button>
+      </nav>
+    </div></div>
+  </section>
+
+  </main>
+
+  <footer class="footer">
+    <b>PULSE — A vitals chart for your car.</b> Car-as-living-body: a single breathing vitals pulse-line home with no visible list; emotional temperature scoped to the aching card with a capped ambient halo (max = saffron), paid off by "the exhale" on every relieving action. Rooms navigation (Cockpit / Garage / Pit-lane) with a persistent keypad quick-add.<br><br>
+    <b>Production type:</b> Latin — Hanken Grotesk 400/600 with tabular numerals. Persian / Arabic / Sorani Kurdish — Vazirmatn variable (distinct Persian ۰۱۲۳ vs Eastern-Arabic ٠١٢٣). Persian masthead — Noto Nastaliq Urdu (or Gulzar), true Nastaliq; Arabic milestones — Aref Ruqaa. This mockup substitutes system stacks (CSP blocks webfonts); numeric fields use a tabular-numeral monospace fallback. <b>Haptics</b> (the accessible "exhale" channel) are native-only — a visual settle stands in here. Motion respects <b>prefers-reduced-motion</b> (breathing falls back to static). Emotional tints stay ambient; text/controls always meet WCAG contrast.
+  </footer>
+
+</div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('pulseRoot');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---- Theme toggle (header) ---- */
+  var btn = document.getElementById('themeBtn');
+  var lbl = document.getElementById('themeLbl');
+  function setTheme(t){
+    root.setAttribute('data-theme', t);
+    if(lbl) lbl.textContent = (t === 'night') ? 'Day' : 'Night';
+    // sync in-app settings theme seg
+    document.querySelectorAll('[data-set-theme]').forEach(function(b){
+      b.setAttribute('aria-pressed', b.getAttribute('data-set-theme') === t ? 'true' : 'false');
+    });
+  }
+  if(btn) btn.addEventListener('click', function(){
+    setTheme(root.getAttribute('data-theme') === 'night' ? 'day' : 'night');
+  });
+  document.querySelectorAll('[data-set-theme]').forEach(function(b){
+    b.addEventListener('click', function(){ setTheme(b.getAttribute('data-set-theme')); });
+  });
+
+  /* ---- Rooms nav switching (visual only, per-phone) ---- */
+  document.querySelectorAll('nav.rooms').forEach(function(nav){
+    nav.querySelectorAll('.room').forEach(function(r){
+      r.addEventListener('click', function(){
+        nav.querySelectorAll('.room').forEach(function(x){ x.setAttribute('aria-current','false'); });
+        r.setAttribute('aria-current','true');
+      });
+    });
+  });
+
+  /* ---- Vehicle tabs ---- */
+  document.querySelectorAll('.vswitch').forEach(function(sw){
+    sw.querySelectorAll('.vtab').forEach(function(t){
+      t.addEventListener('click', function(){
+        sw.querySelectorAll('.vtab').forEach(function(x){ x.setAttribute('aria-current','false'); });
+        t.setAttribute('aria-current','true');
+      });
+    });
+  });
+
+  /* ---- Segmented / seg groups ---- */
+  document.querySelectorAll('.seg[role="group"], .fuel-toggle, .accent-pick').forEach(function(g){
+    g.querySelectorAll('button, [role="button"]').forEach(function(b){
+      b.addEventListener('click', function(){
+        if(b.hasAttribute('data-set-theme')) return; // handled above
+        g.querySelectorAll('button, [role="button"]').forEach(function(x){ x.setAttribute('aria-pressed','false'); });
+        b.setAttribute('aria-pressed','true');
+      });
+    });
+  });
+
+  /* ---- Toggle switches ---- */
+  document.querySelectorAll('.switch').forEach(function(s){
+    s.addEventListener('click', function(){
+      var on = s.classList.toggle('on');
+      s.setAttribute('aria-checked', on ? 'true' : 'false');
+    });
+  });
+
+  /* ---- Keypad sheet open/close ---- */
+  function openSheet(id){
+    var sheet = document.getElementById(id);
+    if(!sheet) return;
+    var phone = sheet.closest('.screen');
+    var bd = phone.querySelector('.sheet-backdrop[data-sheet="'+id+'"]');
+    if(bd) bd.classList.add('open');
+    sheet.classList.add('open');
+  }
+  function closeSheet(el){
+    var phone = el.closest('.screen');
+    if(!phone) return;
+    phone.querySelectorAll('.sheet').forEach(function(s){ s.classList.remove('open'); });
+    phone.querySelectorAll('.sheet-backdrop').forEach(function(b){ b.classList.remove('open'); });
+  }
+  document.querySelectorAll('[data-open-sheet]').forEach(function(b){
+    b.addEventListener('click', function(){ openSheet(b.getAttribute('data-open-sheet')); });
+  });
+  document.querySelectorAll('[data-close-sheet]').forEach(function(b){
+    b.addEventListener('click', function(){ closeSheet(b); });
+  });
+  document.querySelectorAll('.sheet-backdrop').forEach(function(b){
+    b.addEventListener('click', function(){ closeSheet(b); });
+  });
+
+  /* ---- Odometer last-3 shortcut ---- */
+  document.querySelectorAll('[data-odo]').forEach(function(o){
+    o.style.cursor='pointer';
+    o.addEventListener('click', function(){ o.textContent='84,320'; o.style.color='var(--accent-ink)'; });
+  });
+
+  /* ---- Count-up on the home hero (real change only, once, on scroll into view) ---- */
+  function countUp(el, to, dur){
+    if(reduce){ el.textContent = to; return; }
+    var start = null;
+    function step(ts){
+      if(!start) start = ts;
+      var p = Math.min((ts - start)/dur, 1);
+      var e = 1 - Math.pow(1-p, 3); // ease-out
+      el.textContent = Math.round(to * e);
+      if(p < 1) requestAnimationFrame(step);
+      else el.textContent = to;
+    }
+    requestAnimationFrame(step);
+  }
+  var homeScore = document.getElementById('homeScore');
+  if(homeScore && 'IntersectionObserver' in window){
+    var done = false;
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if(en.isIntersecting && !done){ done = true; countUp(homeScore, 92, 700); io.disconnect(); }
+      });
+    }, {threshold:.6});
+    io.observe(homeScore);
+  }
+
+  /* ---- THE EXHALE: mark done -> ache cools one notch, halo eases, score rises ---- */
+  var exhaleBtn = document.getElementById('exhaleBtn');
+  if(exhaleBtn){
+    exhaleBtn.addEventListener('click', function(){
+      var ache = document.getElementById('homeAche');
+      var halo = document.getElementById('homeHalo');
+      var score = document.getElementById('homeScore');
+      var stripe = ache ? ache.querySelector('.ustripe') : null;
+      // cool the specific card to calm (u0)
+      if(ache) ache.setAttribute('data-u','0');
+      if(stripe) stripe.setAttribute('data-u','0');
+      // capped halo eases at most one stop (2 -> 1)
+      if(halo) halo.setAttribute('data-u','1');
+      // score rises with count-up on real change
+      if(score) countUp(score, 97, 600);
+      // soft settle
+      if(!reduce && ache){
+        ache.animate(
+          [{transform:'translateY(0)'},{transform:'translateY(3px)'},{transform:'translateY(0)'}],
+          {duration:520, easing:'cubic-bezier(.2,.7,.2,1)'}
+        );
+      }
+      // swap pill + copy to relief state
+      var pill = ache ? ache.querySelector('.pill') : null;
+      if(pill){ pill.className='pill pill--ok'; pill.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12l5 5L20 6" stroke="currentColor" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Done'; }
+      var rs = ache ? ache.querySelector('.rs') : null;
+      if(rs) rs.innerHTML = 'Recovered · next in <b class="num">15,000&nbsp;km</b>';
+      var lbl2 = document.querySelector('#phoneHome .hero-label');
+      if(lbl2) lbl2.innerHTML = '<span class="readiness-word">Healthy</span> — all clear, nothing aching';
+      exhaleBtn.textContent = 'Exhaled ✓';
+      exhaleBtn.disabled = true;
+      exhaleBtn.style.opacity = '.7';
+    });
+  }
+})();
+</script>

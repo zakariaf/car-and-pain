@@ -1,0 +1,39 @@
+// TEMPLATE — the narrow NotificationGateway port and its value objects.
+// Copy into packages/notifications/lib/src/gateway/notification_gateway.dart.
+// This file must NOT import flutter_local_notifications — only the FLN adapter may.
+
+import 'package:timezone/timezone.dart' as tz;
+
+/// The disposable-cache view returned by the OS.
+class PendingNotification {
+  final int id;
+  const PendingNotification({required this.id});
+}
+
+/// Value object the pure ReminderScheduler emits. `when` is always a Gregorian
+/// TZDateTime resolved in tz.local. `payload` is SERIALIZABLE and maps to a
+/// go_router location reconstructed from the encrypted DB on tap.
+class ScheduledNotification {
+  final int id;              // deterministic 32-bit: hash(reminderUuid + occurrenceIndex)
+  final tz.TZDateTime when;  // DST-correct fire instant
+  final String channelId;    // service_due | document_expiry | overdue | due_soon | info
+  final String vehicleId;    // groupKey (Android) / threadIdentifier (iOS)
+  final String payload;      // serializable -> /vehicles/:vehicleId/reminders/:reminderId
+
+  const ScheduledNotification({
+    required this.id,
+    required this.when,
+    required this.channelId,
+    required this.vehicleId,
+    required this.payload,
+  });
+}
+
+/// The single abstraction all math and all tests talk to. Keep it to these four
+/// operations — anything more belongs in the pure ReminderScheduler.
+abstract class NotificationGateway {
+  Future<void> schedule(ScheduledNotification n);
+  Future<void> cancel(int id);
+  Future<void> cancelAll();
+  Future<List<PendingNotification>> getPending();
+}

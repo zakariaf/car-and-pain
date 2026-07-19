@@ -1,0 +1,31 @@
+// Template for a new gen-l10n string key.
+// 1) Add the message + the @key metadata block to app_en.arb (the TEMPLATE) FIRST.
+// 2) Copy ONLY the message line (no @key block) into the other five files with a
+//    real translation, keeping placeholder names and ICU structure identical.
+// 3) Run scripts/check_arb_parity.sh, then scripts/run_gen_l10n.sh, then flutter analyze.
+//
+// Files: app_en.arb (template) · app_de.arb · app_fr.arb · app_fa.arb · app_ar.arb · app_ckb.arb
+
+// --- app_en.arb (TEMPLATE — declares keys + @metadata) ---------------------------
+
+  // Plain string with an interpolated UGC value:
+  "REPLACE_keyName": "REPLACE_english_text_with_{placeholderName}",
+  "@REPLACE_keyName": {
+    "description": "REPLACE_where_this_appears_for_translators",
+    "placeholders": {
+      "placeholderName": { "type": "String" }
+    }
+  },
+
+  // ICU plural (never build 1/2/N by concatenation; Arabic needs six forms):
+  "REPLACE_countKey": "{count, plural, =0{REPLACE_zero} =1{REPLACE_one} other{REPLACE_{count}_other}}",
+  "@REPLACE_countKey": {
+    "description": "REPLACE_context",
+    "placeholders": { "count": { "type": "int" } }
+  },
+
+// --- app_fa.arb / app_ar.arb / app_ckb.arb (RTL) and app_de.arb / app_fr.arb ------
+// Only the message line — NO @key block — with the same placeholder names:
+
+  "REPLACE_keyName": "REPLACE_translated_text_with_{placeholderName}",
+  "REPLACE_countKey": "{count, plural, =0{...} =1{...} few{...} many{...} other{...}}",

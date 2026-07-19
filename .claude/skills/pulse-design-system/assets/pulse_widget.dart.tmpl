@@ -1,0 +1,49 @@
+// PULSE design-system widget skeleton — token-driven, RTL-correct, a11y-complete.
+// Copy into packages/design_system/lib/src/<area>/ (shared atom) or a feature's
+// presentation/ layer (screen composition). Replace __Name__ / __field__.
+//
+// Checklist this skeleton bakes in:
+//   [ ] reads PulseTokens.of(context) / Theme.of(context) — no hex/dp/ms literals
+//   [ ] Directional geometry only (start/end, *Directional) — never left/right
+//   [ ] status is icon + label + shape + position, never colour-only
+//   [ ] the halo (if any) clamps to u2; only a card may reach u4
+//   [ ] every animation has a reduced-motion fallback; haptics survive it
+//   [ ] all user-facing strings via gen-l10n (AppLocalizations)
+import 'package:flutter/material.dart';
+// import 'package:design_system/design_system.dart'; // PulseTokens, PulseColors
+// import 'package:l10n/l10n.dart';                    // AppLocalizations
+
+class __Name__ extends StatelessWidget {
+  const __Name__({super.key, required this.__field__});
+
+  final Object __field__;
+
+  @override
+  Widget build(BuildContext context) {
+    final pc = PulseTokens.of(context);          // per-theme neutrals + semantic tones
+    final t = Theme.of(context).textTheme;       // tabular numerals baked in
+    // final l = AppLocalizations.of(context);   // never hardcode user-facing text
+    final reduceMotion = MediaQuery.maybeDisableAnimationsOf(context) ?? false;
+
+    return Semantics(
+      // Speak the ANSWER (status word + figure), never the decoration.
+      label: '/* l.__field__Label */',
+      child: Container(
+        padding: const EdgeInsetsDirectional.fromSTEB(
+            PulseTokens.s3, PulseTokens.s2, PulseTokens.s3, PulseTokens.s2),
+        decoration: BoxDecoration(
+          color: pc.surface,
+          borderRadius: BorderRadius.circular(PulseTokens.rCard),
+          border: Border.all(color: pc.hairline),
+        ),
+        child: Row(children: [
+          // If this widget shows status, keep ALL redundant channels:
+          //   Icon(u.icon) + Text(u.label(l)) + a shape + a sorted position.
+          Expanded(child: Text('__field__', style: t.bodyLarge)),
+          // Motion example — always guard on reduceMotion:
+          //   if (reduceMotion) return finalValue; else animate to it.
+        ]),
+      ),
+    );
+  }
+}

@@ -1,0 +1,37 @@
+// GENERATED SCAFFOLD — features/__FEATURE_NUM__-__FEATURE_KEBAB__/domain/__FEATURE_SNAKE__.dart
+//
+// A feature-local, immutable Freezed domain model. This is what the repository maps Drift
+// rows INTO at the boundary and what the Notifier/View consume — Drift row/companion classes
+// never cross into presentation.
+//
+// Rules baked in:
+//   - Canonical value objects from `core`, NEVER raw primitives for a measured quantity:
+//       Distance (SI metres), Volume (SI litres), Money (integer minor units + ISO-4217 currency),
+//       EngineHours. Convert/format only at the presentation edge (core = conversion, l10n = format).
+//   - Timestamps are UTC (DateTime.toUtc); project to the active calendar (Gregorian/Jalali/Hijri)
+//       via l10n at render time — store canonical, display localized.
+//   - IDs are stable strings (UUIDv7) so screens are reconstructable from a route path param.
+//
+// After editing, regenerate: dart run build_runner build --delete-conflicting-outputs
+
+import 'package:core/core.dart'; // Distance, Volume, Money, EngineHours
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '__FEATURE_SNAKE__.freezed.dart';
+
+@freezed
+class __FEATURE_PASCAL__ with _$__FEATURE_PASCAL__ {
+  const factory __FEATURE_PASCAL__({
+    required String id,             // UUIDv7, deep-linkable via the route path param
+    required String vehicleId,      // scoping key for the .watch() stream
+    required DateTime occurredAtUtc, // canonical UTC; localize the calendar at the edge
+
+    // --- REPLACE the fields below with this feature's real value objects ---
+    required Distance odometer,     // canonical SI metres — never an int of "km"
+    required Money cost,            // integer minor units keyed to ISO-4217 — never a double
+    // required Volume volume,      // e.g. fuel fills
+    // required EngineHours hours,  // e.g. equipment usage
+
+    int? urgency,                   // 0..4 PULSE status if this item can ache (else omit)
+  }) = ___FEATURE_PASCAL__; // freezed redirect resolves to _<Pascal> (e.g. _Trip)
+}

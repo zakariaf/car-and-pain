@@ -1,0 +1,100 @@
+// GENERATED SCAFFOLD — features/__FEATURE_NUM__-__FEATURE_KEBAB__/presentation/view/__FEATURE_SNAKE___view.dart
+//
+// A DUMB View: it watches providers and renders. No business logic, no unit math, no
+// formatting decisions. It picks a PULSE Part-B pattern (here: B1 List pattern inside
+// PulseScaffold) and encodes status with icon + label + position, never colour alone.
+//
+// Rules baked in:
+//   - Every user-facing string comes from AppLocalizations (gen-l10n) — never a literal.
+//   - Directional geometry ONLY: EdgeInsetsDirectional / AlignmentDirectional, no left/right.
+//   - .when on the AsyncValue: data / loading / error; the Failure is localized at this edge.
+//   - ref.watch to render; ref.read in callbacks; ref.listen for one-shot effects (SnackBar).
+
+import 'package:design_system/design_system.dart'; // PulseScaffold, StatusRow, StatusBadge, Room
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:l10n/l10n.dart';                    // AppLocalizations, context.l10n
+
+import '../__FEATURE_SNAKE___notifier.dart';
+
+class __FEATURE_PASCAL__View extends ConsumerWidget {
+  const __FEATURE_PASCAL__View({required this.vehicleId, super.key});
+
+  final String vehicleId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+
+    // One-shot side effects (SnackBar / navigate) belong in ref.listen, not build.
+    ref.listen(__FEATURE_PASCAL__ControllerProvider, (prev, next) {
+      if (next case AsyncError(:final error)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(localizeFailure(l10n, error))), // typed Failure -> localized text
+        );
+      }
+    });
+
+    final async = ref.watch(__FEATURE_CAMEL__ListProvider(vehicleId));
+
+    return PulseScaffold(
+      urgency: async.maybeWhen(
+        data: (rows) => worstUrgency(rows), // aggregate; PulseScaffold caps the halo at 2
+        orElse: () => 0,
+      ),
+      title: l10n.__FEATURE_CAMEL__Title,
+      activeRoom: Room.garage,
+      body: async.when(
+        // Report/analytics screens paint instantly (local DB) — no skeleton there; a list may show one.
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (e, _) => FailureView(message: localizeFailure(l10n, e)),
+        data: (rows) => rows.isEmpty
+            ? _EmptyState(l10n: l10n)
+            : ListView.builder(
+                // Sort aching-first, healthy last (redundant POSITION encoding); lazy builder.
+                itemCount: rows.length,
+                padding: const EdgeInsetsDirectional.symmetric(horizontal: 16, vertical: 8),
+                itemBuilder: (context, i) {
+                  final item = rows[i];
+                  return StatusRow(
+                    leadingRail: TemperatureRail(item.urgency), // concentrated warmth 0..4
+                    title: item.title,
+                    // Value objects (Distance/Money) format at THIS edge via l10n, not in the model.
+                    trailing: Text(item.value.formatFor(l10n)),
+                    badge: StatusBadge(item.urgency),           // redundant icon + label
+                    onTap: () => __FEATURE_PASCAL__DetailRoute(
+                      vehicleId: vehicleId,
+                      __FEATURE_CAMEL__Id: item.id,
+                    ).go(context),                              // navigate by ID, path param
+                  );
+                },
+              ),
+      ),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.l10n});
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    // PULSE B6 Empty pattern: always urgency 0 (calm), one illustration, one line, one action.
+    return Center(
+      child: Padding(
+        padding: const EdgeInsetsDirectional.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Illustration.empty(),
+            const SizedBox(height: 16),
+            Text(l10n.__FEATURE_CAMEL__EmptyTitle, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 8),
+            Text(l10n.__FEATURE_CAMEL__EmptyBody, textAlign: TextAlign.center),
+          ],
+        ),
+      ),
+    );
+  }
+}

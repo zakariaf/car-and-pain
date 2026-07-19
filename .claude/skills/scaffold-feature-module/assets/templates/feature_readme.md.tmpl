@@ -1,0 +1,48 @@
+# __FEATURE_NUM__ · __FEATURE_TITLE__
+
+> Feature folder in the Car and Pain feature-first modular monolith.
+> Path: `apps/car_and_pain/lib/src/features/__FEATURE_NUM__-__FEATURE_KEBAB__/`
+
+## Shape
+
+```
+__FEATURE_NUM__-__FEATURE_KEBAB__/
+├── presentation/
+│   ├── view/__FEATURE_SNAKE___view.dart   # dumb ConsumerWidget in a PulseScaffold
+│   └── __FEATURE_SNAKE___notifier.dart     # @riverpod Notifier (ViewModel) + scoped stream provider
+├── application/                            # thin use-cases — ONLY if logic spans >1 repository
+├── domain/__FEATURE_SNAKE__.dart           # Freezed model, value objects from `core`
+└── (no data/ — reads shared repositories from packages/data)
+```
+
+## Wiring
+
+- **Repository:** reads `__FEATURE_CAMEL__RepositoryProvider` from `packages/data`
+  (`keepAlive`). Its scoped `.watch__FEATURE_PASCAL__s(vehicleId)` feeds
+  `__FEATURE_CAMEL__ListProvider`. This feature owns no DB code.
+- **Route:** registered in the single `apps/car_and_pain/lib/src/routing/routes.dart`
+  as `@TypedGoRoute` — list at `/.../__FEATURE_KEBAB__`, detail at
+  `/vehicles/:vehicleId/__FEATURE_KEBAB__/:__FEATURE_CAMEL__Id` (deep-linkable path params).
+  Full-screen add/edit sets `parentNavigatorKey: _rootNavigatorKey`.
+- **PULSE pattern:** __FEATURE_TITLE__ uses the ____ pattern (List B1 / Detail B2 / Form B3 /
+  Report B4 / Settings B5 / Empty B6). Status is icon + label + position (never colour only).
+
+## Strings (gen-l10n)
+
+All user-facing text lives in `packages/l10n/lib/l10n/app_{en,de,fr,fa,ar,ckb}.arb`.
+Keys added for this feature (template `app_en.arb` first, mirrored to the other five):
+
+- `__FEATURE_CAMEL__Title`
+- `__FEATURE_CAMEL__EmptyTitle`, `__FEATURE_CAMEL__EmptyBody`
+- (add the rest here as you introduce them)
+
+Run `scripts/verify_feature.sh __FEATURE_NUM__ __FEATURE_KEBAB__` to check ARB parity,
+no cross-feature imports, and non-directional-geometry violations, then
+`dart run build_runner build --delete-conflicting-outputs` and `flutter analyze`.
+
+## Invariants
+
+- Never import another feature folder — share via `core`/`data` or navigate by route ID.
+- Value objects only (`Distance`, `Volume`, `Money` integer-minor-units, `EngineHours`);
+  no unit math or numeral/calendar formatting in widgets.
+- Repositories return `Result<T, Failure>`; the View localizes the `Failure` at the edge.

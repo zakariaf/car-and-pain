@@ -1,0 +1,32 @@
+// Template: a new sealed Failure family for a boundary.
+// Place in packages/core/lib/src/failures.dart (Flutter-free).
+// RULES: stable `code` (localization-key-like) + TYPED params only — NEVER a
+// user-facing/localized string. Every subtype is `final`; the family is `sealed`
+// so UI switches are exhaustive with NO default:.
+
+sealed class __Boundary__Failure extends Failure {
+  const __Boundary__Failure();
+}
+
+// One subtype per distinct, recoverable condition the UI must handle 1:1.
+final class __Condition__ extends __Boundary__Failure {
+  const __Condition__(this.param); // typed params, e.g. `int requested`
+  final __ParamType__ param;
+  @override
+  String get code => '__boundary__.__condition__'; // e.g. 'notif.pending_cap_exceeded'
+}
+
+final class __ConditionNoParams__ extends __Boundary__Failure {
+  const __ConditionNoParams__();
+  @override
+  String get code => '__boundary__.__condition_no_params__';
+}
+
+// Then, at each presentation site:
+//   Widget build(BuildContext c, __Boundary__Failure f) => switch (f) {
+//         __Condition__(:final param) => RecoveryBanner(c.l10n.__key__(param), action: ...),
+//         __ConditionNoParams__()     => RecoveryBanner(c.l10n.__key2__, action: ...),
+//         // NO default: — a new subtype must break this switch at compile time.
+//       };
+// And add a gen-l10n key for EVERY code in all six ARB files (en/de/fr/fa/ar/ckb);
+// the Failure × supportedLocales exhaustiveness test enforces it.

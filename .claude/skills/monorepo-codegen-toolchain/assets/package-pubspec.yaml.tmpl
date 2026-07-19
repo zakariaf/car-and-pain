@@ -1,0 +1,33 @@
+# Skeleton pubspec for a NEW workspace member under packages/<NAME>/.
+# Reserve packages for truly cross-cutting concerns with a stable, narrow barrel
+# API (the five existing packages are frozen). A new FEATURE is a folder under
+# apps/car_and_pain/lib/src/features/, NOT a package.
+#
+# After creating this file:
+#   1. add "packages/<NAME>" to the root /pubspec.yaml `workspace:` list
+#   2. dart pub get   (at the repo root)
+#   3. create lib/<NAME>.dart barrel: export 'src/...' show ...;
+#   4. add a scoped build.yaml if this package carries codegen
+name: <NAME>
+description: <one-line purpose; why this earned a compile-time wall>
+publish_to: none
+
+environment:
+  sdk: ^3.6.0            # keep compatible with the root workspace SDK
+
+resolution: workspace    # REQUIRED on every member — pub links locally,
+                         # one shared pubspec.lock at the root
+
+dependencies:
+  core:                  # depend on core; keep the graph a DAG (no cycles).
+  # flutter:             # add ONLY if this package needs Flutter.
+  #   sdk: flutter       # pure-Dart packages (like core) have NO flutter dep.
+
+dev_dependencies:
+  very_good_analysis:    # shared lint baseline
+  build_runner:          # add only if this package has codegen annotations
+  # drift_dev:           # if it owns Drift tables
+  # freezed:             # if it owns @freezed models
+  # json_serializable:   # if it owns @JsonSerializable DTOs
+  # riverpod_generator:  # if it owns @riverpod providers
+  mocktail:              # prefer fakes over mocks; no mock codegen

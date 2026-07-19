@@ -1,0 +1,25 @@
+// Template: a convert-at-the-boundary repository/service method.
+// Place in packages/data/lib/src/<feature>/<x>_repository.dart.
+// RULES: return Result<T, F>; wrap the dangerous call ONCE; capture (e, st);
+// LOG the original error + stack BEFORE returning; map to a TYPED failure.
+// NEVER `catch (_)`, NEVER a bare `catch (e)` without the stack, NEVER a string
+// inside the failure.
+
+Future<Result<__ReturnType__, __Boundary__Failure>> __methodName__(
+    __Input__ input) async {
+  // 1) PREP OUTSIDE any transaction: resolve Clock.now(), read secure storage,
+  //    run pure validation + canonical-unit conversion. Pass values in.
+
+  try {
+    // 2) The single dangerous call (DAO write, plugin call, file/backup IO).
+    //    For multi-table writes, wrap in ONE _db.transaction(() async { ... })
+    //    with SYNCHRONOUS txn.* calls only — no awaiting unrelated futures.
+    final result = await __dangerousCall__(input);
+    return Ok(__toDomain__(result));
+  } on __SpecificException__ catch (e, st) {
+    _log.error('__module__.__method__', e, st); // local rotating log FIRST
+    return Err(__mapToTypedFailure__(e)); // typed, stable code, NO strings
+  }
+  // Prefer `on <Specific>Exception`. Use `on Object catch (e, st)` only where a
+  // plugin/MethodChannel can throw an Error (notifications, exact-alarm, isolates).
+}

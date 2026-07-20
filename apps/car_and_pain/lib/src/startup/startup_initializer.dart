@@ -1,4 +1,5 @@
 import 'dart:developer' as developer;
+import 'dart:typed_data';
 
 import 'package:core/core.dart';
 import 'package:data/data.dart';
@@ -45,20 +46,22 @@ class AppStartupInitializer implements StartupInitializer {
     // 2. Timezone. TODO(F5): query the device zone + init the timezone database.
     const timeZone = AppTimeZone('UTC');
 
-    // 3. Secure key store (recoverable master key). TODO(F7).
-    final SecureKeyStore keyStore;
+    // 3. Secure key store → the raw 256-bit DB key (F7 hardens recovery).
+    final keyStore = FlutterSecureKeyStore();
+    final Uint8List key;
     try {
-      keyStore = const PlaceholderSecureKeyStore();
-      await keyStore.readAndUnwrapDbKey();
+      key = await keyStore.readAndUnwrapDbKey();
     } on Object catch (e, st) {
       developer.log('startup.key_store', error: e, stackTrace: st);
       return const Err(KeyStoreUnavailable());
     }
 
-    // 4. Encrypted database. TODO(F2): open the real Drift/SQLCipher database.
+    // 4. Open the encrypted Drift/SQLCipher database and force the connection
+    //    (a lazy open would defer the cipher assertion past the first frame).
     final AppDatabase database;
     try {
-      database = PlaceholderAppDatabase(dirs.dbPath);
+      database = await openAppDatabase(key: key, dbPath: dirs.dbPath);
+      await database.customSelect('SELECT 1').get();
     } on Object catch (e, st) {
       developer.log('startup.database', error: e, stackTrace: st);
       return const Err(DatabaseOpenFailed());

@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'db/app_database.dart';
 import 'diagnostics/diagnostics_repository.dart';
-import 'infra/app_database.dart';
 import 'infra/app_dirs.dart';
 import 'infra/app_time_zone.dart';
 import 'infra/secure_key_store.dart';

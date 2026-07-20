@@ -1,9 +1,9 @@
 name: data
 description: >-
   Car and Pain's data layer: the encrypted Drift/SQLCipher database, per-feature
-  DAOs, repositories exposing scoped .watch() streams, the odometer ledger +
-  rollups, and the backup/export engine. For F1 this hosts only the placeholder
-  root infra providers (overridden at bootstrap) and the DI seam.
+  DAOs, repositories exposing scoped .watch() streams, the shared odometer ledger
+  + rollups, soft-delete/trash, the custom taxonomy, and (later) the backup
+  engine. The single source of truth — zero network dependencies by construction.
 publish_to: none
 version: 0.1.0
 
@@ -23,7 +23,24 @@ dependencies:
   # providers live here and are overridden with real instances at bootstrap.
   flutter_riverpod: ^3.0.0
 
+  # ── Encrypted persistence ────────────────────────────────────────────────
+  drift: ^2.20.0
+  # The Dart sqlite3 binding. The native library is provided by
+  # sqlcipher_flutter_libs; we deliberately do NOT depend on sqlite3_flutter_libs
+  # (a plaintext sqlite3 could win the native link and ship an unencrypted DB).
+  sqlite3: ^2.4.0
+  sqlcipher_flutter_libs: ^0.6.0
+  # Keystore-backed raw DB key. F2 generates + persists a random 256-bit key;
+  # F7 wraps it with a passphrase KEK + one-time recovery code.
+  flutter_secure_storage: ^9.2.0
+  # UUIDv7 text PKs; app-private paths; content-addressed attachment hashing.
+  uuid: ^4.5.0
+  path_provider: ^2.1.0
+  path: ^1.9.0
+  crypto: ^3.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
-# NOTE: drift / sqlcipher_flutter_libs / flutter_secure_storage arrive in F2/F7.
+  drift_dev: ^2.20.0
+  build_runner: ^2.4.0

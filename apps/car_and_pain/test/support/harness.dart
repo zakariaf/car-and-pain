@@ -14,12 +14,12 @@ const _dirs = AppDirs(
   attachmentsDir: '/t/attachments',
 );
 
-/// A ready [AppInfra] built from placeholder infra — no plugins needed in tests.
-AppInfra fakeInfra() => const AppInfra(
+/// A ready [AppInfra] built from an in-memory DB + fake key store — no plugins.
+AppInfra fakeInfra() => AppInfra(
       dirs: _dirs,
-      timeZone: AppTimeZone('UTC'),
-      database: PlaceholderAppDatabase('/t/app.db'),
-      keyStore: PlaceholderSecureKeyStore(),
+      timeZone: const AppTimeZone('UTC'),
+      database: AppDatabase.memory(),
+      keyStore: const FakeSecureKeyStore(),
     );
 
 /// A fake initializer returning a fixed result — drives the ready and error
@@ -44,12 +44,8 @@ Widget testApp(StartupInitializer initializer, {AppDatabase? database}) {
     overrides: [
       flavorProvider.overrideWithValue(Flavor.dev),
       startupInitializerProvider.overrideWithValue(initializer),
-      appDatabaseProvider.overrideWithValue(
-        database ?? const PlaceholderAppDatabase('/t/app.db'),
-      ),
-      secureKeyStoreProvider.overrideWithValue(
-        const PlaceholderSecureKeyStore(),
-      ),
+      appDatabaseProvider.overrideWithValue(database ?? AppDatabase.memory()),
+      secureKeyStoreProvider.overrideWithValue(const FakeSecureKeyStore()),
       appDirsProvider.overrideWithValue(_dirs),
       appTimeZoneProvider.overrideWithValue(const AppTimeZone('UTC')),
     ],

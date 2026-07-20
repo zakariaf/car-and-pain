@@ -35,6 +35,7 @@ jobs:
       - name: Codegen (gen-l10n + build_runner)
         run: |
           (cd packages/l10n && flutter gen-l10n)
+          (cd packages/data && dart run build_runner build --delete-conflicting-outputs)
           (cd apps/car_and_pain && dart run build_runner build --delete-conflicting-outputs)
 
       - name: Format check (blocking)

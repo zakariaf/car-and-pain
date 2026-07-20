@@ -37,6 +37,7 @@ export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
 export 'src/repositories/vehicles_repository.dart' show VehiclesRepository;
+export 'src/serialization/canonical_codec.dart' show CanonicalCodec;
 export 'src/taxonomy/taxonomy.dart' show Category, TaxonomyRepository;
 export 'src/trash/trash_repository.dart' show TrashItem, TrashRepository;
 export 'src/validation/validators.dart' show IntegrityValidators;

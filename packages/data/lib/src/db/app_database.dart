@@ -54,6 +54,14 @@ class AppDatabase extends _$AppDatabase {
           }
         },
         beforeOpen: (details) async {
+          // Refuse to open a DB newer than this binary understands (forward-only;
+          // never silently downgrade). Surfaces as a typed startup failure.
+          final before = details.versionBefore;
+          if (before != null && before > schemaVersion) {
+            throw StateError(
+              'DB schema v$before is newer than supported v$schemaVersion',
+            );
+          }
           await customStatement('PRAGMA foreign_keys = ON;');
         },
       );

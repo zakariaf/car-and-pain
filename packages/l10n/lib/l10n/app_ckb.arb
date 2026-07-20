@@ -15,5 +15,18 @@
   "homeInfraLabel": "ژێرخان: {label}",
   "statusHealthy": "تەندروست",
   "statusDue": "بەم زووانە کاتی",
-  "statusOverdue": "دواکەوتوو"
+  "statusOverdue": "دواکەوتوو",
+  "trashTitle": "تەنەکەی خۆڵ",
+  "trashEmpty": "تەنەکەی خۆڵ بەتاڵە",
+  "trashRestore": "گەڕاندنەوە",
+  "trashDeleteNow": "ئێستا بیسڕەوە",
+  "trashEmptyAll": "بەتاڵکردنی تەنەکە",
+  "trashExpiresIn": "{days, plural, one{لە ماوەی ١ ڕۆژدا دەسڕدرێتەوە} other{لە ماوەی {days} ڕۆژدا دەسڕدرێتەوە}}",
+  "trashEntityName": "{type, select, vehicles{ئۆتۆمبێل} fuel_entries{سووتەمەنی} service_entries{خزمەتگوزاری} expenses{خەرجی} trips{گەشت} reminders{بیرخەرەوە} other{بڕگە}}",
+  "validationOdometerRegression": "ژمارەکە لە پێشووتر کەمترە",
+  "validationOdometerRollover": "وا دیارە کیلۆمەترپێو سووڕاوەتەوە",
+  "validationOdometerDuplicate": "ئەم ژمارەیە دووبارە دیارە",
+  "validationOverCapacity": "قەبارەکە لە توانای تانکەکە زیاترە",
+  "validationFutureDated": "ئەم بەروارە لە داهاتوودایە",
+  "validationEconomyOutlier": "خەرجی سووتەمەنی ئاسایی نییە"
 }

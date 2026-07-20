@@ -15,5 +15,18 @@
   "homeInfraLabel": "زیرساخت: {label}",
   "statusHealthy": "سالم",
   "statusDue": "به‌زودی سررسید",
-  "statusOverdue": "گذشته از موعد"
+  "statusOverdue": "گذشته از موعد",
+  "trashTitle": "سطل زباله",
+  "trashEmpty": "سطل زباله خالی است",
+  "trashRestore": "بازیابی",
+  "trashDeleteNow": "حذف فوری",
+  "trashEmptyAll": "خالی کردن سطل",
+  "trashExpiresIn": "{days, plural, =0{امروز حذف می‌شود} one{تا ۱ روز دیگر حذف می‌شود} other{تا {days} روز دیگر حذف می‌شود}}",
+  "trashEntityName": "{type, select, vehicles{خودرو} fuel_entries{سوخت‌گیری} service_entries{سرویس} expenses{هزینه} trips{سفر} reminders{یادآور} other{مورد}}",
+  "validationOdometerRegression": "این عدد کمتر از عدد قبلی است",
+  "validationOdometerRollover": "به نظر می‌رسد کیلومترشمار دور زده است",
+  "validationOdometerDuplicate": "این عدد تکراری به نظر می‌رسد",
+  "validationOverCapacity": "حجم از ظرفیت باک بیشتر است",
+  "validationFutureDated": "این تاریخ در آینده است",
+  "validationEconomyOutlier": "مصرف سوخت غیرعادی به نظر می‌رسد"
 }

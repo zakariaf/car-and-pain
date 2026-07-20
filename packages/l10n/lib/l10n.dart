@@ -16,3 +16,4 @@ export 'src/localization.dart'
         carAndPainLocalizationsDelegates,
         carAndPainSupportedLocales,
         isRtlLocale;
+export 'src/pulse_labels.dart' show pulseLabel;

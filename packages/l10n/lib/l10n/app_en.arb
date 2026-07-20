@@ -127,5 +127,23 @@
   "validationEconomyOutlier": "Fuel economy looks unusual",
   "@validationEconomyOutlier": {
     "description": "Warning for an implausible economy value."
-  }
+  },
+  "urgencyCalm": "Healthy",
+  "@urgencyCalm": { "description": "Urgency u0 label." },
+  "urgencyScheduled": "Scheduled",
+  "@urgencyScheduled": { "description": "Urgency u1 label." },
+  "urgencySoon": "Due soon",
+  "@urgencySoon": { "description": "Urgency u2 label." },
+  "urgencyPressing": "Pressing",
+  "@urgencyPressing": { "description": "Urgency u3 label." },
+  "urgencyOverdue": "Overdue",
+  "@urgencyOverdue": { "description": "Urgency u4 label." },
+  "roomCockpit": "Cockpit",
+  "@roomCockpit": { "description": "Rooms nav: the Now room." },
+  "roomGarage": "Garage",
+  "@roomGarage": { "description": "Rooms nav: the care & history room." },
+  "roomPitlane": "Pit-lane",
+  "@roomPitlane": { "description": "Rooms nav: the what's-due room." },
+  "exhaleDone": "Done — now calm",
+  "@exhaleDone": { "description": "Exhale live announcement on completion." }
 }

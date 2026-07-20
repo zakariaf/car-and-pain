@@ -28,5 +28,14 @@
   "validationOdometerDuplicate": "ئەم ژمارەیە دووبارە دیارە",
   "validationOverCapacity": "قەبارەکە لە توانای تانکەکە زیاترە",
   "validationFutureDated": "ئەم بەروارە لە داهاتوودایە",
-  "validationEconomyOutlier": "خەرجی سووتەمەنی ئاسایی نییە"
+  "validationEconomyOutlier": "خەرجی سووتەمەنی ئاسایی نییە",
+  "urgencyCalm": "تەندروست",
+  "urgencyScheduled": "خشتەکراو",
+  "urgencySoon": "بەم زووانە کاتی",
+  "urgencyPressing": "بەپەلە",
+  "urgencyOverdue": "دواکەوتوو",
+  "roomCockpit": "کۆکپیت",
+  "roomGarage": "گەراج",
+  "roomPitlane": "پیت‌لەین",
+  "exhaleDone": "ئەنجامدرا — ئێستا هێمن"
 }

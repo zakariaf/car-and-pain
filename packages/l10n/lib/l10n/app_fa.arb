@@ -28,5 +28,14 @@
   "validationOdometerDuplicate": "این عدد تکراری به نظر می‌رسد",
   "validationOverCapacity": "حجم از ظرفیت باک بیشتر است",
   "validationFutureDated": "این تاریخ در آینده است",
-  "validationEconomyOutlier": "مصرف سوخت غیرعادی به نظر می‌رسد"
+  "validationEconomyOutlier": "مصرف سوخت غیرعادی به نظر می‌رسد",
+  "urgencyCalm": "سالم",
+  "urgencyScheduled": "برنامه‌ریزی‌شده",
+  "urgencySoon": "به‌زودی سررسید",
+  "urgencyPressing": "فوری",
+  "urgencyOverdue": "گذشته از موعد",
+  "roomCockpit": "کابین",
+  "roomGarage": "گاراژ",
+  "roomPitlane": "پیت‌لِین",
+  "exhaleDone": "انجام شد — حالا آرام"
 }

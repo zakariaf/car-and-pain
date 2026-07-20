@@ -15,12 +15,19 @@ void main() {
     final snapshot = await guard.take();
     expect(File(snapshot).existsSync(), isTrue);
 
-    // Simulate a failed migration that corrupts the DB, then restore.
+    // Simulate a failed migration that corrupts the DB and leaves stale WAL
+    // sidecars behind, then restore.
     File(dbPath).writeAsStringSync('CORRUPT');
+    File('$dbPath-wal').writeAsStringSync('STALE_WAL');
+    File('$dbPath-shm').writeAsStringSync('STALE_SHM');
     await guard.restore(snapshot);
 
     expect(File(dbPath).readAsStringSync(), 'ORIGINAL');
     expect(File(snapshot).existsSync(), isFalse); // snapshot cleaned up
+    // Stale sidecars must be gone — otherwise SQLite recovers their frames on
+    // the next open and re-applies the writes the restore just undid.
+    expect(File('$dbPath-wal').existsSync(), isFalse);
+    expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
   test('schemaVersion is 1 and a fresh DB builds the full schema', () async {
@@ -55,5 +62,16 @@ void main() {
         .get();
     final indexNames = indexes.map((r) => r.read<String>('name')).toSet();
     expect(indexNames, contains('idx_odo_vehicle_time'));
+
+    // The rollup key index is UNIQUE — one row per (vehicle, period, metric),
+    // so RollupService.getSingleOrNull() can never trip on a duplicate.
+    final rollupIdx = await db
+        .customSelect(
+          "SELECT name, \"unique\" AS uq FROM pragma_index_list('rollups')",
+        )
+        .get();
+    final key =
+        rollupIdx.firstWhere((r) => r.read<String>('name') == 'idx_rollup_key');
+    expect(key.read<int>('uq'), 1);
   });
 }

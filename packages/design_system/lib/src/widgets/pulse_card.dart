@@ -45,7 +45,10 @@ class PulseCard extends StatelessWidget {
           if (u != null && u.index >= Urgency.soon.index)
             Positioned.fill(
               child: IgnorePointer(
-                child: CustomPaint(painter: _CornerTintPainter(tint!)),
+                child: CustomPaint(
+                  painter:
+                      _CornerTintPainter(tint!, Directionality.of(context)),
+                ),
               ),
             ),
           if (u != null)
@@ -109,15 +112,18 @@ class UStripePainter extends CustomPainter {
 }
 
 class _CornerTintPainter extends CustomPainter {
-  _CornerTintPainter(this.color);
+  _CornerTintPainter(this.color, this.textDirection);
   final Color color;
+  final TextDirection textDirection;
 
   @override
   void paint(Canvas canvas, Size size) {
     final rect = Offset.zero & size;
     final paint = Paint()
+      // Resolve against the real direction so the tint rides the start corner
+      // and mirrors to the top-end in RTL (matches the start-edge stripe).
       ..shader = RadialGradient(
-        center: AlignmentDirectional.topStart.resolve(TextDirection.ltr),
+        center: AlignmentDirectional.topStart.resolve(textDirection),
         radius: 0.9,
         colors: [color.withValues(alpha: 0.14), color.withValues(alpha: 0)],
       ).createShader(rect);
@@ -125,5 +131,6 @@ class _CornerTintPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(_CornerTintPainter old) => old.color != color;
+  bool shouldRepaint(_CornerTintPainter old) =>
+      old.color != color || old.textDirection != textDirection;
 }

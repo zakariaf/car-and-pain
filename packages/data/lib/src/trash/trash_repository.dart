@@ -80,10 +80,18 @@ class TrashRepository extends BaseRepository {
     }
     try {
       final now = nowMillis();
-      await db.customStatement(
+      final table =
+          db.allTables.firstWhere((t) => t.actualTableName == entityType);
+      // customUpdate (not customStatement) so Drift notifies the table's live
+      // .watch() streams — an Undo/restore must refresh the UI. Bump
+      // row_revision like every other write (documented invariant on
+      // AuditColumns) so sync/merge metadata stays consistent.
+      await db.customUpdate(
         'UPDATE $entityType SET is_deleted = 0, deleted_at = NULL, '
-        'trash_expires_at = NULL, updated_at = ? WHERE id = ?',
-        [now, id],
+        'trash_expires_at = NULL, updated_at = ?, '
+        'row_revision = row_revision + 1 WHERE id = ?',
+        variables: [Variable.withInt(now), Variable.withString(id)],
+        updates: {table},
       );
       return const Ok(null);
     } on Object catch (e) {
@@ -98,10 +106,13 @@ class TrashRepository extends BaseRepository {
       var count = 0;
       await db.transaction(() async {
         for (final table in trashedTables) {
+          final tableInfo =
+              db.allTables.firstWhere((t) => t.actualTableName == table);
           count += await db.customUpdate(
             'DELETE FROM $table WHERE is_deleted = 1 '
             'AND trash_expires_at IS NOT NULL AND trash_expires_at < ?',
             variables: [Variable.withInt(now)],
+            updates: {tableInfo},
             updateKind: UpdateKind.delete,
           );
         }

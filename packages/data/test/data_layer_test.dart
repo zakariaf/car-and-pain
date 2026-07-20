@@ -20,6 +20,12 @@ void main() {
     return rows.fold<int>(0, (s, r) => s + r.value);
   }
 
+  Future<int> rowRevisionOf(String id) async {
+    final row = await (db.select(db.vehicles)..where((t) => t.id.equals(id)))
+        .getSingle();
+    return row.rowRevision;
+  }
+
   group('VehiclesRepository', () {
     test('add / watch (tombstone-filtered) / soft-delete / restore', () async {
       final repo = VehiclesRepository(db);
@@ -148,6 +154,51 @@ void main() {
       final purged = await latePurge.purgeExpired();
       expect(purged.valueOrNull, greaterThanOrEqualTo(1));
       expect((await trash.list()).valueOrNull, isEmpty);
+    });
+
+    test('restore notifies a live .watch() stream and bumps row_revision',
+        () async {
+      final vehicles = VehiclesRepository(db);
+      final v = (await vehicles.add(nickname: 'Live')).valueOrNull!;
+      await vehicles.softDelete(v.id, retention: const Duration(days: 1));
+      final revAfterDelete = await rowRevisionOf(v.id);
+
+      // Subscribe BEFORE the restore: the already-open stream (empty now) must
+      // re-emit with the row back. customStatement would leave it stale at 0.
+      final counts = vehicles.watchAll().map((l) => l.length);
+      final seesRestore = expectLater(counts, emitsInOrder(<int>[0, 1]));
+
+      await pumpEventQueue();
+      expect(
+          (await TrashRepository(db).restore('vehicles', v.id)).isOk, isTrue);
+      await seesRestore;
+
+      expect(await rowRevisionOf(v.id), greaterThan(revAfterDelete));
+    });
+
+    test('purgeExpired notifies a live .watch() stream', () async {
+      final t0 = DateTime.fromMillisecondsSinceEpoch(1000, isUtc: true);
+      final vehicles = VehiclesRepository(db, clock: FixedClock(t0));
+      final v = (await vehicles.add(nickname: 'Purge')).valueOrNull!;
+      await vehicles.softDelete(v.id, retention: const Duration(days: 1));
+
+      // A live query over ALL rows (tombstoned included): 1 → 0 on hard purge.
+      // The DELETE must pass `updates:` or this stream never re-emits.
+      final totals = db
+          .customSelect('SELECT COUNT(*) AS c FROM vehicles',
+              readsFrom: {db.vehicles})
+          .watch()
+          .map((rows) => rows.first.read<int>('c'));
+      final seesPurge = expectLater(totals, emitsInOrder(<int>[1, 0]));
+
+      await pumpEventQueue();
+      final latePurge = TrashRepository(
+        db,
+        clock: FixedClock(t0.add(const Duration(days: 2))),
+      );
+      expect((await latePurge.purgeExpired()).valueOrNull,
+          greaterThanOrEqualTo(1));
+      await seesPurge;
     });
   });
 

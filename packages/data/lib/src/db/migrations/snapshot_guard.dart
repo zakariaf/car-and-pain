@@ -24,11 +24,21 @@ class SnapshotGuard {
   }
 
   /// Restore a previously-taken snapshot over the live DB, then remove it.
+  ///
+  /// The stale `-wal`/`-shm` sidecars MUST be removed too: SQLite would
+  /// otherwise recover their frames on top of the restored main file on the
+  /// next open, re-applying the very writes the restore is meant to undo (a
+  /// silent corruption of a data-custody DB). Deleting them forces a clean
+  /// reopen against the restored file alone.
   Future<void> restore(String snapshotPath) async {
     final snap = File(snapshotPath);
     if (snap.existsSync()) {
       await snap.copy(dbPath);
       await snap.delete();
+      for (final sidecar in ['$dbPath-wal', '$dbPath-shm']) {
+        final f = File(sidecar);
+        if (f.existsSync()) await f.delete();
+      }
     }
   }
 }

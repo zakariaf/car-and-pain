@@ -81,11 +81,13 @@ class BarChartPainter extends CustomPainter {
     required this.values,
     required this.track,
     required this.highlightIndex,
+    required this.textDirection,
   });
 
   final List<double> values;
   final Color track;
   final int highlightIndex;
+  final TextDirection textDirection;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -94,6 +96,7 @@ class BarChartPainter extends CustomPainter {
     final n = values.length;
     const barH = 12.0;
     final gap = n <= 1 ? 0.0 : (size.height - n * barH) / (n - 1);
+    final rtl = textDirection == TextDirection.rtl;
 
     for (var i = 0; i < n; i++) {
       final y = i * (barH + gap);
@@ -103,8 +106,13 @@ class BarChartPainter extends CustomPainter {
       );
       canvas.drawRRect(trackRect, Paint()..color = track);
 
-      final w = maxV <= 0 ? 0.0 : values[i] / maxV * size.width;
-      final fillRect = Rect.fromLTWH(0, y, w, barH);
+      // Clamp: a negative value must never produce a negative-width Rect
+      // (rendering anomaly / crash on some backends).
+      final w =
+          maxV <= 0 ? 0.0 : math.max<double>(0, values[i]) / maxV * size.width;
+      // Fill grows from the start edge — right-to-left in RTL locales.
+      final left = rtl ? size.width - w : 0.0;
+      final fillRect = Rect.fromLTWH(left, y, w, barH);
       canvas.drawRRect(
         RRect.fromRectAndRadius(fillRect, const Radius.circular(6)),
         Paint()..color = pulseChartRamp[i % pulseChartRamp.length],
@@ -134,7 +142,9 @@ class BarChartPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(BarChartPainter old) =>
-      old.values != values || old.highlightIndex != highlightIndex;
+      old.values != values ||
+      old.highlightIndex != highlightIndex ||
+      old.textDirection != textDirection;
 }
 
 /// A line chart with a `Semantics` textual summary (never colour-only). The
@@ -202,6 +212,7 @@ class PulseBarChart extends StatelessWidget {
               values: values,
               track: pc.surface2,
               highlightIndex: highlight,
+              textDirection: Directionality.of(context),
             ),
           ),
         ),

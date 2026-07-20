@@ -187,6 +187,43 @@ void main() {
       );
       expect(find.bySemanticsLabel('Fuel is the largest cost'), findsOneWidget);
     });
+
+    testWidgets('BarChart survives negative values in RTL without paint error',
+        (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const Directionality(
+            textDirection: TextDirection.rtl,
+            child: PulseBarChart(
+              values: [231, -40, 0, 120], // negative must not crash the painter
+              semanticsSummary: 'Costs by category',
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(find.bySemanticsLabel('Costs by category'), findsOneWidget);
+    });
+
+    testWidgets('PulseCard corner tint paints in RTL without error',
+        (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          const Directionality(
+            textDirection: TextDirection.rtl,
+            child: PulseCard(
+              urgency: Urgency.overdue, // >= soon → corner tint renders
+              semanticsLabel: 'Brake service overdue',
+              child: Text('Brakes'),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+      expect(tester.takeException(), isNull);
+      expect(find.text('Brakes'), findsOneWidget);
+    });
   });
 
   group('Symmetric glyphs do not mirror (F3-T8)', () {

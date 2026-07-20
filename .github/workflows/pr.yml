@@ -1,0 +1,82 @@
+name: pr
+
+# Fast, cheap verification on every PR and on pushes to main. iOS/release builds
+# are gated to the tag pipeline (release.yml) so PRs never burn macOS minutes.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Pin the SAME Flutter version as .fvmrc.
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.6"
+          channel: stable
+          cache: true
+
+      - name: Flutter version
+        run: flutter --version
+
+      - name: Resolve workspace
+        run: flutter pub get
+
+      # Codegen FIRST — a tree of gitignored, un-generated part files otherwise
+      # produces confusing "missing part file" / undefined-class errors.
+      - name: Codegen (gen-l10n + build_runner)
+        run: |
+          (cd packages/l10n && flutter gen-l10n)
+          (cd apps/car_and_pain && dart run build_runner build --delete-conflicting-outputs)
+
+      - name: Format check (blocking)
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Analyze (blocking, --fatal-infos)
+        run: flutter analyze --fatal-infos
+
+      - name: custom_lint / riverpod_lint (blocking)
+        run: cd apps/car_and_pain && dart run custom_lint
+
+      - name: Tests with coverage
+        run: |
+          for pkg in packages/core packages/data packages/notifications \
+                     packages/design_system apps/car_and_pain; do
+            echo "== testing $pkg =="
+            (cd "$pkg" && flutter test --coverage)
+          done
+
+      # 100% is enforced only on the logic packages; ratchet up elsewhere.
+      - name: Coverage gate (core logic package)
+        run: bash tool/check_coverage.sh packages/core/coverage/lcov.info 95
+
+      # ── The three blocking product-promise gates ────────────────────────
+      - name: No-telemetry lockfile scan
+        run: dart run tool/scan_no_telemetry.dart
+
+      - name: No INTERNET in release manifest
+        run: bash tool/check_no_internet_permission.sh
+
+      - name: Directional-geometry grep
+        run: bash tool/check_directional_geometry.sh
+
+      # TODO(F2): add the blocking "DB header is not `SQLite format 3`" test.
+
+      - name: Android smoke build (prod, unsigned)
+        run: flutter build apk --flavor prod -t apps/car_and_pain/lib/main_prod.dart --debug
+
+      - name: Upload coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: "**/coverage/lcov.info"
+          if-no-files-found: ignore

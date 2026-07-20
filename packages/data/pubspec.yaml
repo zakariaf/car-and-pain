@@ -1,0 +1,29 @@
+name: data
+description: >-
+  Car and Pain's data layer: the encrypted Drift/SQLCipher database, per-feature
+  DAOs, repositories exposing scoped .watch() streams, the odometer ledger +
+  rollups, and the backup/export engine. For F1 this hosts only the placeholder
+  root infra providers (overridden at bootstrap) and the DI seam.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.24.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  core:
+    # Workspace-linked; the pure-Dart kernel this layer enforces at its boundary.
+    path: ../core
+  # Riverpod is the ONE framework dependency — DI + state. The placeholder root
+  # providers live here and are overridden with real instances at bootstrap.
+  flutter_riverpod: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+# NOTE: drift / sqlcipher_flutter_libs / flutter_secure_storage arrive in F2/F7.

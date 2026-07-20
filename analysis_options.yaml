@@ -1,0 +1,50 @@
+# Workspace-wide lint + format baseline. Every member inherits this file.
+# very_good_analysis is the base ruleset; the override block below is kept SHORT
+# and each relaxed/added rule carries a one-line justification (F1-T2).
+include: package:very_good_analysis/analysis_options.yaml
+
+analyzer:
+  # riverpod_lint / custom_lint static-checks the DI+state graph (F1-T5).
+  plugins:
+    - custom_lint
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    # freezed/json_serializable emit annotations on synthetic targets; not a bug.
+    invalid_annotation_target: ignore
+  exclude:
+    # Generated code is gitignored and regenerated; never lint it.
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "**/*.drift.dart"
+    - "**/*.mocks.dart"
+    - "**/generated/**"
+
+linter:
+  rules:
+    # We ship an APP, not a pub package — API doc comments are not required.
+    public_member_api_docs: false
+    # The tall formatter owns line width (page_width below); this rule fights it.
+    lines_longer_than_80_chars: false
+    # Dependency ordering is a review concern, not a build-blocking one here.
+    sort_pub_dependencies: false
+    # Prefer relative imports WITHIN a package (shorter, refactor-friendly);
+    # cross-package imports still use package: URIs.
+    prefer_relative_imports: true
+    always_use_package_imports: false
+    # Our core value objects are immutable-by-construction (all-final fields +
+    # const constructors); we hand-roll structural equality for tests/DI.
+    avoid_equals_and_hash_code_on_mutable_classes: false
+    # Single-method abstract classes are intentional DI ports / repository
+    # contracts (Clock, repositories, gateways) that fakes implement.
+    one_member_abstracts: false
+    # TODOs reference roadmap epic ids (F2/F5/F7), not usernames.
+    flutter_style_todos: false
+    # The Dart 3 "tall" formatter manages trailing commas; this lint (now
+    # deprecated) conflicts with it, so let the formatter be the authority.
+    require_trailing_commas: false
+
+# Keep the VGV 80-column convention with the modern Dart 3 "tall" formatter.
+formatter:
+  page_width: 80

@@ -1,0 +1,19 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../startup/startup_gate.dart';
+
+/// The **single** GoRouter for the whole app (invariant: go_router only, one
+/// router). For F1 it routes to the startup gate; M1 expands this into a
+/// `StatefulShellRoute.indexedStack` Rooms shell with full-screen flows above it
+/// via `rootNavigatorKey`.
+final appRouterProvider = Provider<GoRouter>((ref) {
+  return GoRouter(
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const StartupGate(),
+      ),
+    ],
+  );
+});

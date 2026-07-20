@@ -1,0 +1,34 @@
+# Melos orchestrates scripts + change-based CI ON TOP of native pub-workspace
+# linking. Workspaces link; Melos orchestrates. Never mix the two mechanisms.
+# CI order is fixed: gen -> l10n -> format -> analyze -> test -> gates -> build.
+name: car_and_pain
+
+scripts:
+  gen:
+    # Runs at the workspace root: drift/freezed/riverpod regenerate in one pass.
+    # Filtered to members that actually depend on build_runner.
+    description: Run build_runner codegen across the workspace.
+    exec: dart run build_runner build --delete-conflicting-outputs
+    packageFilters:
+      dependsOn:
+        - build_runner
+
+  l10n:
+    # gen-l10n is not build_runner-based; regenerate AppLocalizations separately.
+    description: Regenerate gen-l10n AppLocalizations for the l10n package.
+    run: cd packages/l10n && flutter gen-l10n
+
+  format:
+    description: Fail if any file is not formatted (blocking CI gate).
+    run: dart format --output=none --set-exit-if-changed .
+
+  analyze:
+    description: Analyze every member with infos treated as failures.
+    exec: flutter analyze --fatal-infos
+
+  test:
+    description: Run tests with coverage in every member that has a test/ dir.
+    exec: flutter test --coverage
+    packageFilters:
+      dirExists:
+        - test

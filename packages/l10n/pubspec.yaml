@@ -1,0 +1,30 @@
+name: l10n
+description: >-
+  Car and Pain's i18n package: the gen-l10n ARB pipeline for the six shipping
+  locales (en/de/fr LTR + fa/ar/ckb RTL), the localization delegates including
+  the ckb Material/Cupertino fallback, and (later) calendar/numeral math and
+  bundled fonts. All user-facing strings resolve here — never hardcoded.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.24.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+  # Pinned transitively by flutter_localizations; `any` avoids a version clash.
+  intl: any
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  # Enables gen-l10n; regenerate explicitly with `flutter gen-l10n` (melos l10n).
+  generate: true

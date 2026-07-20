@@ -1,0 +1,69 @@
+name: release
+
+# Costly release pipeline — tags only. Produces obfuscated Android + iOS build
+# artifacts and archives the split-debug-info symbols per tag (the ONLY
+# symbolication path — there is no crash SaaS).
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.6"
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Codegen
+        run: |
+          (cd packages/l10n && flutter gen-l10n)
+          (cd apps/car_and_pain && dart run build_runner build --delete-conflicting-outputs)
+      - name: Build appbundle (prod, obfuscated)
+        run: |
+          flutter build appbundle --flavor prod \
+            -t apps/car_and_pain/lib/main_prod.dart \
+            --obfuscate --split-debug-info=build/symbols/${{ github.ref_name }} \
+            --build-name=${{ github.ref_name }} \
+            --build-number=${{ github.run_number }}
+        # TODO: sign with the Play upload key (base64 keystore from secrets) and
+        # ship via fastlane supply.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: android-${{ github.ref_name }}
+          path: |
+            build/app/outputs/bundle/prodRelease/*.aab
+            build/symbols
+
+  ios:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.44.6"
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Codegen
+        run: |
+          (cd packages/l10n && flutter gen-l10n)
+          (cd apps/car_and_pain && dart run build_runner build --delete-conflicting-outputs)
+      - name: Real-font golden lane (Persian/Arabic shaping)
+        run: cd apps/car_and_pain && flutter test --tags golden-realfont || true
+        # TODO(F3): add the real-font golden lane; remove the `|| true`.
+      - name: Build iOS (prod, no signing in CI)
+        run: |
+          flutter build ios --flavor prod \
+            -t apps/car_and_pain/lib/main_prod.dart --no-codesign \
+            --obfuscate --split-debug-info=build/symbols/${{ github.ref_name }} \
+            --build-number=${{ github.run_number }}
+        # TODO: match(readonly) + upload_to_testflight via fastlane once the iOS
+        # flavor schemes + signing certs are set up.
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ios-symbols-${{ github.ref_name }}
+          path: build/symbols

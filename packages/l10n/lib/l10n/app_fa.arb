@@ -1,0 +1,19 @@
+{
+  "@@locale": "fa",
+  "appTitle": "Car and Pain",
+  "appTagline": "درد کمتر. خودروی بیشتر.",
+  "splashPreparing": "در حال آماده‌سازی گاراژ شما…",
+  "startupErrorTitle": "شروع ناموفق بود",
+  "startupErrorRetry": "تلاش دوباره",
+  "startupFailureDatabaseOpenFailed": "پایگاه‌دادهٔ امن باز نشد.",
+  "startupFailureKeyStoreUnavailable": "انبارهٔ کلید امن در دسترس نیست.",
+  "startupFailureTimezoneInitFailed": "دادهٔ منطقهٔ زمانی بارگذاری نشد.",
+  "startupFailureAppDirsUnavailable": "فضای ذخیره‌سازی برنامه آماده نشد.",
+  "startupFailureUnknown": "هنگام شروع خطایی رخ داد.",
+  "homeTitle": "به Car and Pain خوش آمدید",
+  "homeBody": "گاراژ آفلاین شما آماده است. بخش‌های امکانات به‌زودی افزوده می‌شوند.",
+  "homeInfraLabel": "زیرساخت: {label}",
+  "statusHealthy": "سالم",
+  "statusDue": "به‌زودی سررسید",
+  "statusOverdue": "گذشته از موعد"
+}

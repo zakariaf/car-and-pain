@@ -1,0 +1,19 @@
+{
+  "@@locale": "ar",
+  "appTitle": "Car and Pain",
+  "appTagline": "ألم أقل. سيارة أكثر.",
+  "splashPreparing": "جارٍ تجهيز مرآبك…",
+  "startupErrorTitle": "تعذّر بدء التشغيل",
+  "startupErrorRetry": "إعادة المحاولة",
+  "startupFailureDatabaseOpenFailed": "تعذّر فتح قاعدة البيانات الآمنة.",
+  "startupFailureKeyStoreUnavailable": "مخزن المفاتيح الآمن غير متوفّر.",
+  "startupFailureTimezoneInitFailed": "تعذّر تحميل بيانات المنطقة الزمنية.",
+  "startupFailureAppDirsUnavailable": "تعذّر تجهيز مساحة تخزين التطبيق.",
+  "startupFailureUnknown": "حدث خطأ أثناء بدء التشغيل.",
+  "homeTitle": "مرحبًا بك في Car and Pain",
+  "homeBody": "مرآبك دون اتصال جاهز. ستُضاف غرف الميزات تاليًا.",
+  "homeInfraLabel": "البنية التحتية: {label}",
+  "statusHealthy": "سليم",
+  "statusDue": "يستحقّ قريبًا",
+  "statusOverdue": "متأخّر"
+}

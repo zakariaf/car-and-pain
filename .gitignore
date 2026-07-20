@@ -2,21 +2,68 @@
 .DS_Store
 Thumbs.db
 
-# Editors
+# Editors / IDE
 .vscode/
 .idea/
 *.swp
+*.iml
 
-# Node / tooling (for future implementation)
-node_modules/
-dist/
-build/
+# Logs / env
+*.log
 .env
 .env.local
-*.log
 
-# Mobile build artifacts (future)
+# ── Flutter / Dart ────────────────────────────────────────────────────────
+.dart_tool/
+.packages
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+build/
+coverage/
+doc/api/
+
+# FVM (the .fvmrc pin IS committed; the resolved SDK cache is not)
+.fvm/
+
+# Per-package pubspec.lock must never exist — only the ONE root lockfile is
+# committed. Ignore any stray member lockfiles.
+apps/*/pubspec.lock
+packages/*/pubspec.lock
+
+# ── Generated code (gitignored, regenerated via build_runner / gen-l10n) ──
+# Regenerate; never commit or hand-edit these.
+*.g.dart
+*.freezed.dart
+*.drift.dart
+*.mocks.dart
+*.config.dart
+# gen-l10n output for the l10n package
+packages/l10n/lib/src/generated/
+
+# ── Android ───────────────────────────────────────────────────────────────
 *.apk
 *.aab
-*.ipa
+*.jks
+*.keystore
 .gradle/
+apps/car_and_pain/android/.gradle/
+apps/car_and_pain/android/app/debug/
+apps/car_and_pain/android/app/profile/
+apps/car_and_pain/android/app/release/
+apps/car_and_pain/android/local.properties
+apps/car_and_pain/android/key.properties
+
+# ── iOS ───────────────────────────────────────────────────────────────────
+*.ipa
+apps/car_and_pain/ios/Pods/
+apps/car_and_pain/ios/.symlinks/
+apps/car_and_pain/ios/Flutter/Flutter.framework
+apps/car_and_pain/ios/Flutter/Flutter.podspec
+apps/car_and_pain/ios/Flutter/ephemeral/
+apps/car_and_pain/ios/Runner/GeneratedPluginRegistrant.*
+**/xcuserdata/
+
+# ── Release symbols (archived per-tag as CI artifacts, not committed) ──────
+build/symbols/

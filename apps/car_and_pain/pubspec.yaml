@@ -1,0 +1,51 @@
+name: car_and_pain
+description: >-
+  Car and Pain — the thin runnable app shell. Two flavor entrypoints
+  (main_dev/main_prod) → shared bootstrap composition root, the single GoRouter,
+  and ~25 feature folders. Offline-first, account-free, no telemetry.
+publish_to: none
+# x.y.z+BUILD — the build number is injected from CI (never hand-bumped).
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.24.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # ── Workspace packages (the five frozen foundations) ─────────────────────
+  core:
+    path: ../../packages/core
+  data:
+    path: ../../packages/data
+  notifications:
+    path: ../../packages/notifications
+  l10n:
+    path: ../../packages/l10n
+  design_system:
+    path: ../../packages/design_system
+
+  # ── The ONE framework dependency: Riverpod (DI + state) ──────────────────
+  flutter_riverpod: ^3.0.0
+  riverpod_annotation: ^3.0.0
+
+  # ── First-party / kept runtime deps ──────────────────────────────────────
+  go_router: ^14.0.0 # first-party router (invariant: go_router only)
+  path_provider: ^2.1.0 # first-party; resolves app-private directories
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  build_runner: ^2.4.0
+  riverpod_generator: ^3.0.0
+  custom_lint: ^0.8.0
+  riverpod_lint: ^3.0.0
+
+flutter:
+  uses-material-design: true

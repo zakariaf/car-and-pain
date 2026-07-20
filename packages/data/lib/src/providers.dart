@@ -5,6 +5,11 @@ import 'diagnostics/diagnostics_repository.dart';
 import 'infra/app_dirs.dart';
 import 'infra/app_time_zone.dart';
 import 'infra/secure_key_store.dart';
+import 'ledger/ledger_repository.dart';
+import 'repositories/fuel_repository.dart';
+import 'repositories/vehicles_repository.dart';
+import 'taxonomy/taxonomy.dart';
+import 'trash/trash_repository.dart';
 
 /// Placeholder root providers for async-initialized infrastructure.
 ///
@@ -38,4 +43,25 @@ final appTimeZoneProvider = Provider<AppTimeZone>(
 /// in F1 and is the template every real repository provider follows in F2.
 final diagnosticsRepositoryProvider = Provider<DiagnosticsRepository>(
   (ref) => AppDiagnosticsRepository(ref.watch(appDatabaseProvider)),
+);
+
+// ── Feature repositories (keepAlive by default via plain Provider) ──────────
+final vehiclesRepositoryProvider = Provider<VehiclesRepository>(
+  (ref) => VehiclesRepository(ref.watch(appDatabaseProvider)),
+);
+
+final ledgerRepositoryProvider = Provider<LedgerRepository>(
+  (ref) => LedgerRepository(ref.watch(appDatabaseProvider)),
+);
+
+final fuelRepositoryProvider = Provider<FuelRepository>(
+  (ref) => FuelRepository(ref.watch(appDatabaseProvider)),
+);
+
+final trashRepositoryProvider = Provider<TrashRepository>(
+  (ref) => TrashRepository(ref.watch(appDatabaseProvider)),
+);
+
+final taxonomyRepositoryProvider = Provider<TaxonomyRepository>(
+  (ref) => TaxonomyRepository(ref.watch(appDatabaseProvider)),
 );

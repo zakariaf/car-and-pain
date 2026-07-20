@@ -25,6 +25,7 @@ mixin AuditColumns on Table {
 /// The hub. Every operational record references a vehicle. Rich powertrain
 /// fields are added by M2; F2 defines the backbone + per-vehicle unit/currency
 /// overrides (canonical storage is unaffected by these display preferences).
+@DataClassName('VehicleRow')
 class Vehicles extends Table with AuditColumns {
   TextColumn get nickname => text()();
   TextColumn get make => text().nullable()();
@@ -134,6 +135,7 @@ class Reminders extends Table with AuditColumns {
 /// The shared custom taxonomy: service types, expense categories, trip
 /// categories, tags, and cost-centres — one table with a `kind` discriminator.
 /// Custom user rows map to a fixed `analyticBucket` so reports stay stable.
+@DataClassName('CategoryRow')
 class Categories extends Table with AuditColumns {
   // service | expense | trip | tag | costCentre.
   TextColumn get kind => text()();

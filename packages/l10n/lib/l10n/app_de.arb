@@ -28,5 +28,14 @@
   "validationOdometerDuplicate": "Diese Ablesung sieht wie ein Duplikat aus",
   "validationOverCapacity": "Die Menge überschreitet das Tankvolumen",
   "validationFutureDated": "Dieses Datum liegt in der Zukunft",
-  "validationEconomyOutlier": "Der Verbrauch sieht ungewöhnlich aus"
+  "validationEconomyOutlier": "Der Verbrauch sieht ungewöhnlich aus",
+  "urgencyCalm": "Gesund",
+  "urgencyScheduled": "Geplant",
+  "urgencySoon": "Bald fällig",
+  "urgencyPressing": "Dringend",
+  "urgencyOverdue": "Überfällig",
+  "roomCockpit": "Cockpit",
+  "roomGarage": "Garage",
+  "roomPitlane": "Boxengasse",
+  "exhaleDone": "Erledigt — jetzt ruhig"
 }

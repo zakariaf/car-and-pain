@@ -28,5 +28,14 @@
   "validationOdometerDuplicate": "تبدو هذه القراءة مكرّرة",
   "validationOverCapacity": "الكمية تتجاوز سعة الخزان",
   "validationFutureDated": "هذا التاريخ في المستقبل",
-  "validationEconomyOutlier": "يبدو استهلاك الوقود غير معتاد"
+  "validationEconomyOutlier": "يبدو استهلاك الوقود غير معتاد",
+  "urgencyCalm": "سليم",
+  "urgencyScheduled": "مجدول",
+  "urgencySoon": "يستحقّ قريبًا",
+  "urgencyPressing": "ملحّ",
+  "urgencyOverdue": "متأخّر",
+  "roomCockpit": "القمرة",
+  "roomGarage": "المرآب",
+  "roomPitlane": "حارة الصيانة",
+  "exhaleDone": "تم — الآن هادئ"
 }

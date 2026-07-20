@@ -28,5 +28,14 @@
   "validationOdometerDuplicate": "Ce relevé semble être un doublon",
   "validationOverCapacity": "Le volume dépasse la capacité du réservoir",
   "validationFutureDated": "Cette date est dans le futur",
-  "validationEconomyOutlier": "La consommation semble inhabituelle"
+  "validationEconomyOutlier": "La consommation semble inhabituelle",
+  "urgencyCalm": "Bon état",
+  "urgencyScheduled": "Planifié",
+  "urgencySoon": "Bientôt dû",
+  "urgencyPressing": "Pressant",
+  "urgencyOverdue": "En retard",
+  "roomCockpit": "Cockpit",
+  "roomGarage": "Garage",
+  "roomPitlane": "Stand",
+  "exhaleDone": "Terminé — tout est calme"
 }

@@ -1,0 +1,8 @@
+# Per-package builder scoping: riverpod codegen only runs over lib/src, so a
+# change in one feature doesn't regenerate the whole app.
+targets:
+  $default:
+    builders:
+      riverpod_generator:
+        generate_for:
+          - lib/src/**.dart

@@ -1,0 +1,22 @@
+name: core
+description: >-
+  Car and Pain's crown-jewel package: pure Dart value objects (Money, Distance,
+  Volume, EngineHours), canonical-units math, the sealed Result/Failure kernel,
+  and the Clock port. Flutter-free, plugin-free, IO-free — sits at the bottom of
+  the dependency DAG.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+
+# REQUIRED on every workspace member so pub links locally into one lockfile.
+resolution: workspace
+
+# NO runtime dependencies. `core` is pure Dart by contract (F1-T10): no flutter,
+# no intl, no drift, no dart:io. Conversion/formatting lives in l10n; storage in
+# data. Do not add a runtime dependency here without changing that contract.
+dependencies: {}
+
+dev_dependencies:
+  test: ^1.25.0

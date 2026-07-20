@@ -1,0 +1,19 @@
+{
+  "@@locale": "ckb",
+  "appTitle": "Car and Pain",
+  "appTagline": "ئازاری کەمتر. ئۆتۆمبێلی زیاتر.",
+  "splashPreparing": "گەراجەکەت ئامادە دەکرێت…",
+  "startupErrorTitle": "دەستپێکردن سەرکەوتوو نەبوو",
+  "startupErrorRetry": "دووبارە هەوڵبدەرەوە",
+  "startupFailureDatabaseOpenFailed": "بنکەدراوە پارێزراوەکە نەکرایەوە.",
+  "startupFailureKeyStoreUnavailable": "کۆگای کلیلی پارێزراو بەردەست نییە.",
+  "startupFailureTimezoneInitFailed": "داتای ناوچەی کاتی بار نەکرا.",
+  "startupFailureAppDirsUnavailable": "بۆشایی هەڵگرتنی ئەپەکە ئامادە نەکرا.",
+  "startupFailureUnknown": "لە کاتی دەستپێکردندا هەڵەیەک ڕوویدا.",
+  "homeTitle": "بەخێربێیت بۆ Car and Pain",
+  "homeBody": "گەراجی ئۆفلاینەکەت ئامادەیە. ژوورەکانی تایبەتمەندی بەم زووانە دێن.",
+  "homeInfraLabel": "ژێرخان: {label}",
+  "statusHealthy": "تەندروست",
+  "statusDue": "بەم زووانە کاتی",
+  "statusOverdue": "دواکەوتوو"
+}

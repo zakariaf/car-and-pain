@@ -1,0 +1,22 @@
+name: design_system
+description: >-
+  Car and Pain's PULSE design system: warm-paper/ink dual-theme tokens, the
+  urgency/temperature ramp, RTL-aware Directional-only widgets, redundant
+  (never-colour-alone) status encoding, and (later) Semantics-annotated
+  CustomPainter charts and the accessible lock UI.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+  flutter: ">=3.24.0"
+
+resolution: workspace
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter

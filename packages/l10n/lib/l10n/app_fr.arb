@@ -1,0 +1,19 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Car and Pain",
+  "appTagline": "Moins de peine. Plus de voiture.",
+  "splashPreparing": "Préparation de votre garage…",
+  "startupErrorTitle": "Échec du démarrage",
+  "startupErrorRetry": "Réessayer",
+  "startupFailureDatabaseOpenFailed": "La base de données sécurisée n'a pas pu être ouverte.",
+  "startupFailureKeyStoreUnavailable": "Le coffre de clés sécurisé est indisponible.",
+  "startupFailureTimezoneInitFailed": "Les données de fuseau horaire n'ont pas pu être chargées.",
+  "startupFailureAppDirsUnavailable": "Le stockage de l'application n'a pas pu être préparé.",
+  "startupFailureUnknown": "Une erreur est survenue au démarrage.",
+  "homeTitle": "Bienvenue dans Car and Pain",
+  "homeBody": "Votre garage hors ligne est prêt. Les espaces de fonctionnalités arrivent bientôt.",
+  "homeInfraLabel": "Infrastructure : {label}",
+  "statusHealthy": "Bon état",
+  "statusDue": "Bientôt dû",
+  "statusOverdue": "En retard"
+}

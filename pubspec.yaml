@@ -1,0 +1,25 @@
+name: car_and_pain_workspace
+description: >-
+  Car and Pain — offline-first, account-free vehicle-ownership app.
+  Root of a native Dart pub workspace; Melos orchestrates scripts/CI on top.
+publish_to: none
+version: 0.1.0
+
+environment:
+  # Pub workspaces need Dart 3.6+. Pinned verified-stable toolchain in .fvmrc.
+  sdk: ^3.6.0
+
+# Native Dart pub workspace: pub links members locally into ONE shared lockfile.
+# Melos is layered on top for script-running/CI only — it does NOT do the linking.
+workspace:
+  - apps/car_and_pain
+  - packages/core
+  - packages/data
+  - packages/notifications
+  - packages/l10n
+  - packages/design_system
+
+# Dev-only tooling that must resolve workspace-wide (never ships in the binary).
+# very_good_analysis backs the shared `include:` in the root analysis_options.yaml.
+dev_dependencies:
+  very_good_analysis: ^7.0.0

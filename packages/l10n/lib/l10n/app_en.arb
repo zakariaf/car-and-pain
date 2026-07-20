@@ -1,0 +1,73 @@
+{
+  "@@locale": "en",
+  "appTitle": "Car and Pain",
+  "@appTitle": {
+    "description": "The application name (brand — not translated)."
+  },
+  "appTagline": "Less pain. More car.",
+  "@appTagline": {
+    "description": "One-line tagline shown on the splash screen."
+  },
+  "splashPreparing": "Preparing your garage…",
+  "@splashPreparing": {
+    "description": "Shown while the app initializes at launch."
+  },
+  "startupErrorTitle": "Couldn't start",
+  "@startupErrorTitle": {
+    "description": "Title of the recoverable startup-error screen."
+  },
+  "startupErrorRetry": "Try again",
+  "@startupErrorRetry": {
+    "description": "Button that retries app initialization."
+  },
+  "startupFailureDatabaseOpenFailed": "The secure database couldn't be opened.",
+  "@startupFailureDatabaseOpenFailed": {
+    "description": "Startup error for code startup.database_open_failed."
+  },
+  "startupFailureKeyStoreUnavailable": "The secure key store is unavailable.",
+  "@startupFailureKeyStoreUnavailable": {
+    "description": "Startup error for code startup.key_store_unavailable."
+  },
+  "startupFailureTimezoneInitFailed": "The time zone data couldn't be loaded.",
+  "@startupFailureTimezoneInitFailed": {
+    "description": "Startup error for code startup.timezone_init_failed."
+  },
+  "startupFailureAppDirsUnavailable": "App storage couldn't be prepared.",
+  "@startupFailureAppDirsUnavailable": {
+    "description": "Startup error for code startup.app_dirs_unavailable."
+  },
+  "startupFailureUnknown": "Something went wrong during startup.",
+  "@startupFailureUnknown": {
+    "description": "Fallback startup error for an unmapped code."
+  },
+  "homeTitle": "Welcome to Car and Pain",
+  "@homeTitle": {
+    "description": "Heading on the placeholder home screen."
+  },
+  "homeBody": "Your offline garage is ready. Feature rooms arrive next.",
+  "@homeBody": {
+    "description": "Body text on the placeholder home screen."
+  },
+  "homeInfraLabel": "Infrastructure: {label}",
+  "@homeInfraLabel": {
+    "description": "Diagnostics line proving DI + i18n are wired in F1.",
+    "placeholders": {
+      "label": {
+        "type": "String",
+        "example": "placeholder-db@/data/app.db"
+      }
+    }
+  },
+  "statusHealthy": "Healthy",
+  "@statusHealthy": {
+    "description": "Status label (paired with a distinct icon + shape)."
+  },
+  "statusDue": "Due soon",
+  "@statusDue": {
+    "description": "Status label (paired with a distinct icon + shape)."
+  },
+  "statusOverdue": "Overdue",
+  "@statusOverdue": {
+    "description": "Status label (paired with a distinct icon + shape)."
+  }
+}

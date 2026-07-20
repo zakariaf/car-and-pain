@@ -1,0 +1,11 @@
+# gen-l10n configuration for the l10n package. Output is gitignored and
+# regenerated via `flutter gen-l10n` (the melos `l10n` script), which runs
+# BEFORE analyze in CI.
+arb-dir: lib/l10n
+template-arb-file: app_en.arb
+output-dir: lib/src/generated
+output-localization-file: app_localizations.dart
+output-class: AppLocalizations
+# Non-nullable getter: AppLocalizations.of(context) is guaranteed present
+# because we always register the delegate and supply supported locales.
+nullable-getter: false

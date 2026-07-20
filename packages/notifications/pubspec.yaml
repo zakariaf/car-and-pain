@@ -1,0 +1,21 @@
+name: notifications
+description: >-
+  Car and Pain's one local-notification engine: the NotificationGateway port
+  (real + fake) and the pure, clock-injected ReminderScheduler. Flutter-free
+  scheduling logic; the real gateway (flutter_local_notifications) is wired in
+  the app. For F1 this is the port + a fake so the seam exists.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+
+resolution: workspace
+
+dependencies:
+  core:
+    path: ../core
+
+dev_dependencies:
+  test: ^1.25.0
+# NOTE: flutter_local_notifications / timezone / flutter_timezone arrive in F5.

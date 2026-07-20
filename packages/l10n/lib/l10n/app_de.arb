@@ -1,0 +1,19 @@
+{
+  "@@locale": "de",
+  "appTitle": "Car and Pain",
+  "appTagline": "Weniger Schmerz. Mehr Auto.",
+  "splashPreparing": "Deine Garage wird vorbereitet…",
+  "startupErrorTitle": "Start fehlgeschlagen",
+  "startupErrorRetry": "Erneut versuchen",
+  "startupFailureDatabaseOpenFailed": "Die sichere Datenbank konnte nicht geöffnet werden.",
+  "startupFailureKeyStoreUnavailable": "Der sichere Schlüsselspeicher ist nicht verfügbar.",
+  "startupFailureTimezoneInitFailed": "Die Zeitzonendaten konnten nicht geladen werden.",
+  "startupFailureAppDirsUnavailable": "Der App-Speicher konnte nicht vorbereitet werden.",
+  "startupFailureUnknown": "Beim Start ist ein Fehler aufgetreten.",
+  "homeTitle": "Willkommen bei Car and Pain",
+  "homeBody": "Deine Offline-Garage ist bereit. Die Funktionsräume folgen als Nächstes.",
+  "homeInfraLabel": "Infrastruktur: {label}",
+  "statusHealthy": "In Ordnung",
+  "statusDue": "Bald fällig",
+  "statusOverdue": "Überfällig"
+}

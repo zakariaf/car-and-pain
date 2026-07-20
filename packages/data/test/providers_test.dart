@@ -29,16 +29,13 @@ void main() {
   });
 
   test('diagnosticsRepository consumes the injected database via DI', () {
+    final db = AppDatabase.memory();
     final container = ProviderContainer(
-      overrides: [
-        appDatabaseProvider.overrideWithValue(
-          const PlaceholderAppDatabase('/x/app.db'),
-        ),
-      ],
+      overrides: [appDatabaseProvider.overrideWithValue(db)],
     );
     addTearDown(container.dispose);
 
     final repo = container.read(diagnosticsRepositoryProvider);
-    expect(repo.databaseLabel(), 'placeholder-db@/x/app.db');
+    expect(repo.databaseLabel(), 'car-and-pain schema v1');
   });
 }

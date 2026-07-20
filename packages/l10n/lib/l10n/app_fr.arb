@@ -15,5 +15,18 @@
   "homeInfraLabel": "Infrastructure : {label}",
   "statusHealthy": "Bon état",
   "statusDue": "Bientôt dû",
-  "statusOverdue": "En retard"
+  "statusOverdue": "En retard",
+  "trashTitle": "Corbeille",
+  "trashEmpty": "La corbeille est vide",
+  "trashRestore": "Restaurer",
+  "trashDeleteNow": "Supprimer maintenant",
+  "trashEmptyAll": "Vider la corbeille",
+  "trashExpiresIn": "{days, plural, =0{Suppression aujourd’hui} one{Suppression dans 1 jour} other{Suppression dans {days} jours}}",
+  "trashEntityName": "{type, select, vehicles{Véhicule} fuel_entries{Plein} service_entries{Entretien} expenses{Dépense} trips{Trajet} reminders{Rappel} other{Élément}}",
+  "validationOdometerRegression": "Le relevé est inférieur à un précédent",
+  "validationOdometerRollover": "Le compteur semble avoir fait un tour complet",
+  "validationOdometerDuplicate": "Ce relevé semble être un doublon",
+  "validationOverCapacity": "Le volume dépasse la capacité du réservoir",
+  "validationFutureDated": "Cette date est dans le futur",
+  "validationEconomyOutlier": "La consommation semble inhabituelle"
 }

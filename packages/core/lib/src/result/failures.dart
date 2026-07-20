@@ -289,6 +289,34 @@ final class AppDirsUnavailable extends StartupFailure {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
+// FX boundary (currency conversion with dated, user-entered rates).
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Failures raised while converting between currencies.
+sealed class FxFailure extends Failure {
+  const FxFailure();
+}
+
+/// No user-entered rate exists for the requested currency pair (offline; rates
+/// are never fetched). The UI prompts the user to enter one.
+final class NoFxRate extends FxFailure {
+  const NoFxRate({required this.from, required this.to});
+
+  final String from;
+  final String to;
+
+  @override
+  String get code => 'fx.no_rate';
+
+  @override
+  bool operator ==(Object other) =>
+      other is NoFxRate && other.from == from && other.to == to;
+
+  @override
+  int get hashCode => Object.hash(code, from, to);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
 // Compute boundary (Isolate.run / compute engines).
 // ─────────────────────────────────────────────────────────────────────────
 

@@ -15,5 +15,18 @@
   "homeInfraLabel": "Infrastruktur: {label}",
   "statusHealthy": "In Ordnung",
   "statusDue": "Bald fällig",
-  "statusOverdue": "Überfällig"
+  "statusOverdue": "Überfällig",
+  "trashTitle": "Papierkorb",
+  "trashEmpty": "Papierkorb ist leer",
+  "trashRestore": "Wiederherstellen",
+  "trashDeleteNow": "Jetzt löschen",
+  "trashEmptyAll": "Papierkorb leeren",
+  "trashExpiresIn": "{days, plural, =0{Wird heute gelöscht} one{Wird in 1 Tag gelöscht} other{Wird in {days} Tagen gelöscht}}",
+  "trashEntityName": "{type, select, vehicles{Fahrzeug} fuel_entries{Tankvorgang} service_entries{Service} expenses{Ausgabe} trips{Fahrt} reminders{Erinnerung} other{Element}}",
+  "validationOdometerRegression": "Der Kilometerstand ist niedriger als ein vorheriger",
+  "validationOdometerRollover": "Der Kilometerzähler scheint übergelaufen zu sein",
+  "validationOdometerDuplicate": "Diese Ablesung sieht wie ein Duplikat aus",
+  "validationOverCapacity": "Die Menge überschreitet das Tankvolumen",
+  "validationFutureDated": "Dieses Datum liegt in der Zukunft",
+  "validationEconomyOutlier": "Der Verbrauch sieht ungewöhnlich aus"
 }

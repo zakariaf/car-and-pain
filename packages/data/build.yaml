@@ -1,0 +1,12 @@
+# Scope drift_dev codegen to the db/ directory so unrelated edits don't
+# regenerate it.
+targets:
+  $default:
+    builders:
+      drift_dev:
+        generate_for:
+          - lib/src/db/**.dart
+        options:
+          # snake_case SQL names + typed data classes mapped by repositories.
+          sql:
+            dialect: sqlite

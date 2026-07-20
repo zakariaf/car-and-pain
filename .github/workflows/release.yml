@@ -21,6 +21,7 @@ jobs:
       - name: Codegen
         run: |
           (cd packages/l10n && flutter gen-l10n)
+          (cd packages/data && dart run build_runner build --delete-conflicting-outputs)
           (cd apps/car_and_pain && dart run build_runner build --delete-conflicting-outputs)
       - name: Build appbundle (prod, obfuscated)
         run: |
@@ -51,6 +52,7 @@ jobs:
       - name: Codegen
         run: |
           (cd packages/l10n && flutter gen-l10n)
+          (cd packages/data && dart run build_runner build --delete-conflicting-outputs)
           (cd apps/car_and_pain && dart run build_runner build --delete-conflicting-outputs)
       - name: Real-font golden lane (Persian/Arabic shaping)
         run: cd apps/car_and_pain && flutter test --tags golden-realfont || true

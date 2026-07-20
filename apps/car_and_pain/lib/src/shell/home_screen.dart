@@ -2,6 +2,7 @@ import 'package:data/data.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:l10n/l10n.dart';
 
 /// The F1 placeholder home. Proves the whole stack is wired: DI (reads the
@@ -46,6 +47,12 @@ class HomeScreen extends ConsumerWidget {
                     label: l10n.statusOverdue,
                   ),
                 ],
+              ),
+              const SizedBox(height: PulseTokens.s4),
+              OutlinedButton.icon(
+                onPressed: () => context.push('/trash'),
+                icon: const Icon(Icons.delete_outline),
+                label: Text(l10n.trashTitle),
               ),
               const SizedBox(height: PulseTokens.s4),
               Text(

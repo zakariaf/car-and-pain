@@ -69,5 +69,81 @@
   "statusOverdue": "Overdue",
   "@statusOverdue": {
     "description": "Status label (paired with a distinct icon + shape)."
-  }
+  },
+  "trashTitle": "Trash",
+  "@trashTitle": {
+    "description": "Title of the Trash screen."
+  },
+  "trashEmpty": "Trash is empty",
+  "@trashEmpty": {
+    "description": "Empty-state message when nothing is trashed."
+  },
+  "trashRestore": "Restore",
+  "@trashRestore": {
+    "description": "Button that restores a trashed item."
+  },
+  "trashDeleteNow": "Delete now",
+  "@trashDeleteNow": {
+    "description": "Button that permanently purges a single trashed item."
+  },
+  "trashEmptyAll": "Empty trash",
+  "@trashEmptyAll": {
+    "description": "Button that purges all expired trashed items."
+  },
+  "trashExpiresIn": "{days, plural, =0{Auto-deletes today} one{Auto-deletes in 1 day} other{Auto-deletes in {days} days}}",
+  "@trashExpiresIn": {
+    "description": "Retention countdown for a trashed item.",
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "trashEntityName": "{type, select, vehicles{Vehicle} fuel_entries{Fuel entry} service_entries{Service} expenses{Expense} trips{Trip} reminders{Reminder} other{Item}}",
+  "@trashEntityName": {
+    "description": "Human label for a trashed entity type.",
+    "placeholders": {
+      "type": { "type": "String" }
+    }
+  },
+  "validationOdometerRegression": "Reading is lower than a previous one",
+  "@validationOdometerRegression": {
+    "description": "Warning for a regressing odometer reading."
+  },
+  "validationOdometerRollover": "The odometer looks like it rolled over",
+  "@validationOdometerRollover": {
+    "description": "Warning for a suspected odometer rollover."
+  },
+  "validationOdometerDuplicate": "This reading looks like a duplicate",
+  "@validationOdometerDuplicate": {
+    "description": "Warning for a duplicate odometer reading."
+  },
+  "validationOverCapacity": "Volume exceeds the tank capacity",
+  "@validationOverCapacity": {
+    "description": "Warning when a fuel volume exceeds tank size."
+  },
+  "validationFutureDated": "This date is in the future",
+  "@validationFutureDated": {
+    "description": "Warning for a future-dated entry."
+  },
+  "validationEconomyOutlier": "Fuel economy looks unusual",
+  "@validationEconomyOutlier": {
+    "description": "Warning for an implausible economy value."
+  },
+  "urgencyCalm": "Healthy",
+  "@urgencyCalm": { "description": "Urgency u0 label." },
+  "urgencyScheduled": "Scheduled",
+  "@urgencyScheduled": { "description": "Urgency u1 label." },
+  "urgencySoon": "Due soon",
+  "@urgencySoon": { "description": "Urgency u2 label." },
+  "urgencyPressing": "Pressing",
+  "@urgencyPressing": { "description": "Urgency u3 label." },
+  "urgencyOverdue": "Overdue",
+  "@urgencyOverdue": { "description": "Urgency u4 label." },
+  "roomCockpit": "Cockpit",
+  "@roomCockpit": { "description": "Rooms nav: the Now room." },
+  "roomGarage": "Garage",
+  "@roomGarage": { "description": "Rooms nav: the care & history room." },
+  "roomPitlane": "Pit-lane",
+  "@roomPitlane": { "description": "Rooms nav: the what's-due room." },
+  "exhaleDone": "Done — now calm",
+  "@exhaleDone": { "description": "Exhale live announcement on completion." }
 }

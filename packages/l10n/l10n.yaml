@@ -9,3 +9,10 @@ output-class: AppLocalizations
 # Non-nullable getter: AppLocalizations.of(context) is guaranteed present
 # because we always register the delegate and supply supported locales.
 nullable-getter: false
+
+# Missing-key policy (F4-T1): every locale ARB MUST cover the full set of
+# app_en.arb message keys — no silent English fallback in shipped locales. This
+# is ENFORCED, not advisory: `tool/check_arb_coverage.dart` (a blocking CI gate)
+# fails the build if any locale is missing a template key or carries an orphan.
+# gen-l10n itself would fall back to en for a missing key; the gate makes that
+# impossible to merge.

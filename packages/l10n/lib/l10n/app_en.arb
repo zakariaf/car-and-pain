@@ -94,14 +94,18 @@
   "@trashExpiresIn": {
     "description": "Retention countdown for a trashed item.",
     "placeholders": {
-      "days": { "type": "int" }
+      "days": {
+        "type": "int"
+      }
     }
   },
   "trashEntityName": "{type, select, vehicles{Vehicle} fuel_entries{Fuel entry} service_entries{Service} expenses{Expense} trips{Trip} reminders{Reminder} other{Item}}",
   "@trashEntityName": {
     "description": "Human label for a trashed entity type.",
     "placeholders": {
-      "type": { "type": "String" }
+      "type": {
+        "type": "String"
+      }
     }
   },
   "validationOdometerRegression": "Reading is lower than a previous one",
@@ -129,21 +133,91 @@
     "description": "Warning for an implausible economy value."
   },
   "urgencyCalm": "Healthy",
-  "@urgencyCalm": { "description": "Urgency u0 label." },
+  "@urgencyCalm": {
+    "description": "Urgency u0 label."
+  },
   "urgencyScheduled": "Scheduled",
-  "@urgencyScheduled": { "description": "Urgency u1 label." },
+  "@urgencyScheduled": {
+    "description": "Urgency u1 label."
+  },
   "urgencySoon": "Due soon",
-  "@urgencySoon": { "description": "Urgency u2 label." },
+  "@urgencySoon": {
+    "description": "Urgency u2 label."
+  },
   "urgencyPressing": "Pressing",
-  "@urgencyPressing": { "description": "Urgency u3 label." },
+  "@urgencyPressing": {
+    "description": "Urgency u3 label."
+  },
   "urgencyOverdue": "Overdue",
-  "@urgencyOverdue": { "description": "Urgency u4 label." },
+  "@urgencyOverdue": {
+    "description": "Urgency u4 label."
+  },
   "roomCockpit": "Cockpit",
-  "@roomCockpit": { "description": "Rooms nav: the Now room." },
+  "@roomCockpit": {
+    "description": "Rooms nav: the Now room."
+  },
   "roomGarage": "Garage",
-  "@roomGarage": { "description": "Rooms nav: the care & history room." },
+  "@roomGarage": {
+    "description": "Rooms nav: the care & history room."
+  },
   "roomPitlane": "Pit-lane",
-  "@roomPitlane": { "description": "Rooms nav: the what's-due room." },
+  "@roomPitlane": {
+    "description": "Rooms nav: the what's-due room."
+  },
   "exhaleDone": "Done — now calm",
-  "@exhaleDone": { "description": "Exhale live announcement on completion." }
+  "@exhaleDone": {
+    "description": "Exhale live announcement on completion."
+  },
+  "settingsTitle": "Language & format",
+  "@settingsTitle": {
+    "description": "Title of the language & format settings screen."
+  },
+  "settingsLanguage": "Language",
+  "@settingsLanguage": {
+    "description": "Section header: app language picker."
+  },
+  "settingsCalendar": "Calendar",
+  "@settingsCalendar": {
+    "description": "Section header: calendar system picker."
+  },
+  "settingsNumerals": "Numerals",
+  "@settingsNumerals": {
+    "description": "Section header: numeral system picker."
+  },
+  "settingsPreview": "Preview",
+  "@settingsPreview": {
+    "description": "Section header: live sample of the chosen format."
+  },
+  "languageSystemDefault": "System default",
+  "@languageSystemDefault": {
+    "description": "Option: follow the device/OS language."
+  },
+  "calendarGregorian": "Gregorian",
+  "@calendarGregorian": {
+    "description": "Calendar name: Gregorian."
+  },
+  "calendarJalali": "Solar Hijri",
+  "@calendarJalali": {
+    "description": "Calendar name: Jalali / Solar Hijri."
+  },
+  "calendarHijri": "Hijri",
+  "@calendarHijri": {
+    "description": "Calendar name: Islamic / Hijri (tabular)."
+  },
+  "calendarHebrew": "Hebrew",
+  "@calendarHebrew": {
+    "description": "Calendar name: Hebrew."
+  },
+  "numeralWestern": "Western",
+  "@numeralWestern": {
+    "description": "Numeral system: Western Arabic digits 0-9."
+  },
+  "numeralEasternArabic": "Eastern Arabic",
+  "@numeralEasternArabic": {
+    "description": "Numeral system: Eastern-Arabic digits."
+  },
+  "numeralPersian": "Persian",
+  "@numeralPersian": {
+    "description": "Numeral system: Persian digits."
+  }
 }

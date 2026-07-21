@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
+import '../settings/settings_screen.dart';
 import '../startup/startup_gate.dart';
 
 /// The **single** GoRouter for the whole app (invariant: go_router only, one
@@ -23,6 +24,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/gallery',
         builder: (context, state) => const PulseGallery(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const SettingsScreen(),
       ),
     ],
   );

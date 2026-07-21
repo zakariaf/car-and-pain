@@ -16,4 +16,14 @@ export 'src/localization.dart'
         carAndPainLocalizationsDelegates,
         carAndPainSupportedLocales,
         isRtlLocale;
+export 'src/numerals/numeral_format.dart' show NumeralFormat, NumeralParser;
+export 'src/numerals/numeral_presets.dart'
+    show
+        NumeralPreset,
+        defaultNumeralSystemFor,
+        numeralPresetFor,
+        resolveNumeralFormat,
+        resolveNumeralParser;
+export 'src/numerals/numeral_system.dart'
+    show GroupingStyle, NumeralSystem, foldDigitsToAscii, groupInteger;
 export 'src/pulse_labels.dart' show pulseLabel;

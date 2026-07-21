@@ -20,6 +20,10 @@ dependencies:
     sdk: flutter
   # Pinned transitively by flutter_localizations; `any` avoids a version clash.
   intl: any
+  core:
+    # Pure-Dart kernel: canonical Instant/Clock for calendar math, Result/Failure
+    # for typed parse/validation boundaries.
+    path: ../core
 
 dev_dependencies:
   flutter_test:

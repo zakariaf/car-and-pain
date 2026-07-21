@@ -32,9 +32,24 @@ run the command above; don't chase the symptom.
    names and ICU structure (plurals via `{count, plural, ...}`, never string
    concatenation; Arabic needs the six CLDR forms).
 3. Run `melos run l10n`, then analyze.
+4. Reference it in UI as `AppLocalizations.of(context).<key>` — never a literal.
 
-## Arriving later (F4)
+## Gates (F4) — both blocking in CI
 
-Own Gregorian/Jalali/Hijri conversion math, Western/Eastern-Arabic/Persian
-numeral shaping with Indian grouping, `٫`/`٬` normalization to ASCII before math,
-bidi-isolation helpers, and bundled Vazirmatn/Noto fonts.
+- **ARB coverage** (`tool/check_arb_coverage.dart`): every locale must cover
+  exactly the `app_en.arb` message keys — no missing key (silent English
+  fallback), no orphan. Enforces the missing-key policy from `l10n.yaml`.
+- **String externalization** (`tool/check_no_hardcoded_strings.sh`): fails the
+  build on a hardcoded user-facing string literal (`Text('…')`, `hintText:`,
+  `labelText:`, `Tooltip`/`SnackBar` messages) in UI code. Route it through the
+  ARB pipeline instead. For a genuinely non-localizable literal (debug text, a
+  canonical code) append `// i18n-ignore` on the line — greppable, use sparingly.
+  The dev-only `gallery/` and generated sources are exempt.
+
+## Engine (F4)
+
+Own Gregorian/Jalali/Hijri/Hebrew conversion math (`CalendarDate`),
+Western/Eastern-Arabic/Persian numeral shaping with Indian grouping and
+`٫`/`٬`→ASCII input normalization (`NumeralFormat`/`NumeralParser`),
+bidi-isolation helpers (`ltrIsolate`/`stripBidi`), and bundled
+Hanken Grotesk + Vazirmatn fonts (see `design_system`).

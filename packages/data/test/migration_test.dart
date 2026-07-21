@@ -1,6 +1,9 @@
 import 'dart:io';
 
+import 'package:core/core.dart';
 import 'package:data/data.dart';
+import 'package:drift/drift.dart' hide isNull;
+import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -30,10 +33,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 1 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 2 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 1);
+    expect(db.schemaVersion, 2);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -53,6 +56,7 @@ void main() {
         'categories',
         'rollups',
         'attachments',
+        'settings',
       ]),
     );
 
@@ -73,5 +77,45 @@ void main() {
     final key =
         rollupIdx.firstWhere((r) => r.read<String>('name') == 'idx_rollup_key');
     expect(key.read<int>('uq'), 1);
+  });
+
+  test('v1 → v2 forward migration creates settings and preserves data',
+      () async {
+    final dir = Directory.systemTemp.createTempSync('cap_mig2');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final path = '${dir.path}/app.sqlite';
+
+    // Build a v2 DB, seed a vehicle, then rewind the on-disk schema to v1
+    // (drop settings + set user_version = 1) to simulate an existing install.
+    final setup = AppDatabase(NativeDatabase(File(path)));
+    final v = (await VehiclesRepository(setup).add(nickname: 'Keeper'))
+        .valueOrNull!;
+    await setup.customStatement('DROP TABLE settings');
+    await setup.customStatement('PRAGMA user_version = 1');
+    await setup.close();
+
+    // Reopen: drift sees v1 < v2 and runs the guarded forward migration.
+    final upgraded = AppDatabase(NativeDatabase(File(path)));
+    addTearDown(upgraded.close);
+    final created = await upgraded
+        .customSelect(
+          "SELECT name FROM sqlite_master WHERE type='table' AND name='settings'",
+        )
+        .get();
+    expect(created, hasLength(1), reason: 'migration created settings');
+
+    // The pre-existing vehicle survived the upgrade untouched.
+    final rows = await upgraded
+        .customSelect(
+          'SELECT id FROM vehicles WHERE id = ?',
+          variables: [Variable<String>(v.id)],
+        )
+        .get();
+    expect(rows, hasLength(1));
+
+    // …and the new table is immediately usable.
+    final settings = SettingsRepository(upgraded);
+    expect((await settings.set('locale', 'fa')).isOk, isTrue);
+    expect(await settings.get('locale'), 'fa');
   });
 }

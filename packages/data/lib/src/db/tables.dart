@@ -175,3 +175,16 @@ class Attachments extends Table with AuditColumns {
   TextColumn get linkedEntityId => text()();
   IntColumn get refCount => integer().withDefault(const Constant(1))();
 }
+
+/// App-global key/value settings (F4-T2): the app-controlled locale, calendar
+/// system, numeral system, and future display preferences. Not per-vehicle and
+/// never trashed, so it carries no [AuditColumns] — just a typed key and its
+/// string value. Added at schema v2 (see `migrations/steps.dart`).
+@DataClassName('SettingRow')
+class Settings extends Table {
+  TextColumn get key => text()();
+  TextColumn get value => text()();
+
+  @override
+  Set<Column> get primaryKey => {key};
+}

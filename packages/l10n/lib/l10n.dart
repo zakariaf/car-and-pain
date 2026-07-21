@@ -14,6 +14,7 @@ export 'src/calendars/calendar.dart'
     show
         CalendarDate,
         CalendarSystem,
+        defaultCalendarFor,
         isLeapYear,
         monthLength,
         monthsInYear,

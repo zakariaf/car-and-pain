@@ -9,6 +9,16 @@ import 'julian_day.dart';
 /// canonical UTC [Instant]; these are display projections.
 enum CalendarSystem { gregorian, jalali, hijri, hebrew }
 
+/// The calendar a locale resolves to before any user override (F4-T2): Persian
+/// → Jalali, Arabic → Hijri, everything else → Gregorian. Sorani (ckb) defaults
+/// to Gregorian (its speakers span Jalali and Gregorian regions); users pick in
+/// settings.
+CalendarSystem defaultCalendarFor(String languageCode) => switch (languageCode) {
+      'fa' => CalendarSystem.jalali,
+      'ar' => CalendarSystem.hijri,
+      _ => CalendarSystem.gregorian,
+    };
+
 // ── Gregorian helpers (the other three live in their own files) ─────────────
 bool _gregLeap(int y) => (y % 4 == 0 && y % 100 != 0) || y % 400 == 0;
 

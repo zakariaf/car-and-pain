@@ -21,6 +21,7 @@ part 'app_database.g.dart';
     Categories,
     Rollups,
     Attachments,
+    Settings,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -34,7 +35,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -47,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
           // failure — SQLite has no true down-migration.
           final snapshot = await snapshotGuard?.take();
           try {
-            await runForwardMigrations(m, from: from, to: to);
+            await runForwardMigrations(m, this, from: from, to: to);
           } catch (_) {
             if (snapshot != null) await snapshotGuard?.restore(snapshot);
             rethrow;

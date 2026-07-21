@@ -179,5 +179,12 @@ void main() {
       final f = resolveNumeralFormat('en', system: NumeralSystem.persian);
       expect(f.formatInt(123), toSet('123', _persian));
     });
+
+    test('numeralPresetFor bundles system + format + parser', () {
+      final p = numeralPresetFor('fa');
+      expect(p.system, NumeralSystem.persian);
+      expect(p.format.formatInt(5), toSet('5', _persian));
+      expect(p.parser.parseInt(toSet('42', _persian)), 42);
+    });
   });
 }

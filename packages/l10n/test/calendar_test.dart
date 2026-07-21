@@ -61,6 +61,24 @@ void main() {
     }
   });
 
+  group('wide-range round-trips (far from the epochs)', () {
+    // A broad stepped sweep (~1400 BCE .. ~4300 CE) exercises the Gregorian/
+    // Hijri/Hebrew inverses far from their epochs. Jalali is excluded: the
+    // Jalaali break table is only defined ~560–3800 CE (it is covered densely
+    // in its valid range above).
+    for (final sys in [
+      CalendarSystem.gregorian,
+      CalendarSystem.hijri,
+      CalendarSystem.hebrew,
+    ]) {
+      test('fromJdn(jdn).jdn == jdn across a wide range for $sys', () {
+        for (var jdn = 1000000; jdn <= 3500000; jdn += 97) {
+          expect(CalendarDate.fromJdn(sys, jdn).jdn, jdn);
+        }
+      });
+    }
+  });
+
   group('cross-system consistency (sampled days)', () {
     test('greg -> X -> greg is identity', () {
       for (var jdn = 2400000; jdn <= 2470000; jdn += 137) {
@@ -145,6 +163,24 @@ void main() {
       final d = CalendarDate.fromInstant(late, CalendarSystem.gregorian,
           utcOffsetMinutes: 210);
       expect(d, _g(2020, 3, 21));
+    });
+  });
+
+  group('defaults + value semantics', () {
+    test('defaultCalendarFor per locale', () {
+      expect(defaultCalendarFor('fa'), CalendarSystem.jalali);
+      expect(defaultCalendarFor('ar'), CalendarSystem.hijri);
+      expect(defaultCalendarFor('en'), CalendarSystem.gregorian);
+      expect(defaultCalendarFor('ckb'), CalendarSystem.gregorian);
+    });
+
+    test('CalendarDate has value equality and a readable toString', () {
+      final a = _g(2020, 3, 20);
+      final b = _g(2020, 3, 20);
+      expect(a, b);
+      expect({a, b}, hasLength(1)); // exercises hashCode + ==
+      expect(a.toString(), contains('gregorian'));
+      expect(a.toString(), contains('2020'));
     });
   });
 

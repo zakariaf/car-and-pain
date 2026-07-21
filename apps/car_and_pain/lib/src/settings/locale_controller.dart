@@ -55,26 +55,22 @@ T? _enumByName<T extends Enum>(List<T> values, String? name) {
   return null;
 }
 
-/// The language in effect: the chosen locale, else the device locale resolved
-/// against the supported set (mirrors what MaterialApp will display).
-String _effectiveLanguage(String? localeTag) {
-  if (localeTag != null && localeTag.isNotEmpty) {
-    return _parseLocale(localeTag).languageCode;
-  }
-  final resolved = basicLocaleListResolution(
-    WidgetsBinding.instance.platformDispatcher.locales,
-    carAndPainSupportedLocales,
-  );
-  return resolved.languageCode;
-}
-
-/// The resolved preferences, recomputed whenever the settings table changes.
-final localizationPrefsProvider = Provider<LocalizationPrefs>((ref) {
-  final map = ref.watch(settingsMapProvider).asData?.value ?? const {};
+/// Pure resolution of preferences from the stored settings [map] plus the
+/// device's [deviceLocales] preference order. Extracted from the provider so it
+/// is deterministic and testable without any async, binding, or StreamProvider.
+/// The effective language is the chosen locale, else the device locale resolved
+/// against the supported set (mirroring what MaterialApp displays).
+LocalizationPrefs resolveLocalizationPrefs(
+  Map<String, String> map,
+  List<Locale> deviceLocales,
+) {
   final localeTag = map[SettingsKeys.locale];
   final locale =
       (localeTag == null || localeTag.isEmpty) ? null : _parseLocale(localeTag);
-  final lang = _effectiveLanguage(localeTag);
+  final lang = locale != null
+      ? locale.languageCode
+      : basicLocaleListResolution(deviceLocales, carAndPainSupportedLocales)
+          .languageCode;
   return LocalizationPrefs(
     locale: locale,
     languageCode: lang,
@@ -83,6 +79,15 @@ final localizationPrefsProvider = Provider<LocalizationPrefs>((ref) {
     numeralSystem:
         _enumByName(NumeralSystem.values, map[SettingsKeys.numeral]) ??
             defaultNumeralSystemFor(lang),
+  );
+}
+
+/// The resolved preferences, recomputed whenever the settings table changes.
+final localizationPrefsProvider = Provider<LocalizationPrefs>((ref) {
+  final map = ref.watch(settingsMapProvider).asData?.value ?? const {};
+  return resolveLocalizationPrefs(
+    map,
+    WidgetsBinding.instance.platformDispatcher.locales,
   );
 });
 

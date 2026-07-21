@@ -7,12 +7,15 @@
 library;
 
 // ── Theme / tokens / motion / urgency ──────────────────────────────────────
+export 'src/theme/font_licenses.dart' show registerFontLicenses;
 export 'src/theme/pulse_motion.dart' show PulseMotion;
 export 'src/theme/pulse_theme.dart'
     show
         buildPulseTextTheme,
+        pulseArabicFont,
         pulseDarkScheme,
         pulseDarkTheme,
+        pulseLatinFont,
         pulseLightScheme,
         pulseLightTheme,
         pulseTheme;

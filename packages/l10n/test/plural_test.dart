@@ -10,8 +10,7 @@ import 'package:l10n/l10n.dart';
 Future<AppLocalizations> _load(String lang) =>
     AppLocalizations.delegate.load(Locale(lang));
 
-String _norm(String s) =>
-    s.replaceAll(RegExp('[0-9٠-٩۰-۹]'), '#');
+String _norm(String s) => s.replaceAll(RegExp('[0-9٠-٩۰-۹]'), '#');
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -27,9 +26,8 @@ void main() {
   test('Arabic resolves all SIX CLDR plural forms distinctly', () async {
     final l = await _load('ar');
     // zero/one/two/few/many/other must each pick a different template.
-    final templates = [0, 1, 2, 3, 11, 100]
-        .map((n) => _norm(l.trashExpiresIn(n)))
-        .toSet();
+    final templates =
+        [0, 1, 2, 3, 11, 100].map((n) => _norm(l.trashExpiresIn(n))).toSet();
     expect(templates, hasLength(6), reason: 'six Arabic forms: $templates');
     // Spot-check the fixed (placeholder-free) forms by their distinctive word.
     expect(l.trashExpiresIn(0), contains('اليوم')); // zero: "today"

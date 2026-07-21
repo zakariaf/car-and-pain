@@ -13,7 +13,8 @@ enum CalendarSystem { gregorian, jalali, hijri, hebrew }
 /// → Jalali, Arabic → Hijri, everything else → Gregorian. Sorani (ckb) defaults
 /// to Gregorian (its speakers span Jalali and Gregorian regions); users pick in
 /// settings.
-CalendarSystem defaultCalendarFor(String languageCode) => switch (languageCode) {
+CalendarSystem defaultCalendarFor(String languageCode) =>
+    switch (languageCode) {
       'fa' => CalendarSystem.jalali,
       'ar' => CalendarSystem.hijri,
       _ => CalendarSystem.gregorian,

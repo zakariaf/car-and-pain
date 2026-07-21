@@ -88,8 +88,8 @@ void main() {
     // Build a v2 DB, seed a vehicle, then rewind the on-disk schema to v1
     // (drop settings + set user_version = 1) to simulate an existing install.
     final setup = AppDatabase(NativeDatabase(File(path)));
-    final v = (await VehiclesRepository(setup).add(nickname: 'Keeper'))
-        .valueOrNull!;
+    final v =
+        (await VehiclesRepository(setup).add(nickname: 'Keeper')).valueOrNull!;
     await setup.customStatement('DROP TABLE settings');
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
@@ -105,12 +105,10 @@ void main() {
     expect(created, hasLength(1), reason: 'migration created settings');
 
     // The pre-existing vehicle survived the upgrade untouched.
-    final rows = await upgraded
-        .customSelect(
-          'SELECT id FROM vehicles WHERE id = ?',
-          variables: [Variable<String>(v.id)],
-        )
-        .get();
+    final rows = await upgraded.customSelect(
+      'SELECT id FROM vehicles WHERE id = ?',
+      variables: [Variable<String>(v.id)],
+    ).get();
     expect(rows, hasLength(1));
 
     // …and the new table is immediately usable.

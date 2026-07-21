@@ -10,6 +10,15 @@
 /// `melos l10n` script if imports of `AppLocalizations` fail to resolve.
 library;
 
+export 'src/calendars/calendar.dart'
+    show
+        CalendarDate,
+        CalendarSystem,
+        isLeapYear,
+        monthLength,
+        monthsInYear,
+        tryCalendarDate;
+export 'src/calendars/calendar_names.dart' show monthName;
 export 'src/generated/app_localizations.dart';
 export 'src/localization.dart'
     show

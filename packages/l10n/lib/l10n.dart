@@ -10,6 +10,7 @@
 /// `melos l10n` script if imports of `AppLocalizations` fail to resolve.
 library;
 
+export 'src/bidi/bidi.dart' show isolate, ltrIsolate, rtlIsolate, stripBidi;
 export 'src/calendars/calendar.dart'
     show
         CalendarDate,

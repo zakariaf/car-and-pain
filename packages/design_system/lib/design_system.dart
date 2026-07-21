@@ -44,6 +44,7 @@ export 'src/widgets/charts.dart'
         PulseLineChart,
         pulseChartRamp;
 export 'src/widgets/exhale.dart' show Exhale, ExhaleSettle, coolOneNotch;
+export 'src/widgets/ltr_text.dart' show LtrText;
 export 'src/widgets/pulse_button.dart' show PulseButton, PulseButtonVariant;
 export 'src/widgets/pulse_card.dart' show PulseCard, UStripePainter;
 export 'src/widgets/pulse_line.dart'

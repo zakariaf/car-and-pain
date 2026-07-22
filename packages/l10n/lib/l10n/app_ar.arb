@@ -53,5 +53,10 @@
   "numeralPersian": "الفارسية",
   "notifDueOn": "يُستحق {date}",
   "notifDueEstimated": "حوالي {date}",
-  "notifDigest": "{count, plural, zero{لا تذكيرات مستحقة} one{تذكير واحد مستحق} two{تذكيران مستحقان} few{{count} تذكيرات مستحقة} many{{count} تذكيرًا مستحقًا} other{{count} تذكير مستحق}}"
+  "notifDigest": "{count, plural, zero{لا تذكيرات مستحقة} one{تذكير واحد مستحق} two{تذكيران مستحقان} few{{count} تذكيرات مستحقة} many{{count} تذكيرًا مستحقًا} other{{count} تذكير مستحق}}",
+  "notifPermTitle": "لا تفوّت أي موعد استحقاق",
+  "notifPermBody": "يذكّرك Car and Pain بالصيانة والمستندات والمهام في وقتها وبدون إنترنت. اسمح بالإشعارات لتصلك.",
+  "notifPermExactBody": "لكي تنطلق التذكيرات الحسّاسة للوقت بدقة، اسمح بالمنبّهات الدقيقة.",
+  "notifPermAllow": "السماح",
+  "notifPermOpenSettings": "فتح الإعدادات"
 }

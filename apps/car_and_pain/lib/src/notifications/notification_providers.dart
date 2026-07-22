@@ -7,6 +7,7 @@ import 'package:notifications/notifications.dart';
 import '../settings/locale_controller.dart';
 import 'l10n_notification_copy.dart';
 import 'notification_service.dart';
+import 'permission_service.dart';
 import 'reminder_scheduler.dart';
 
 /// The notification façade — created and initialized once at bootstrap (prod),
@@ -16,6 +17,11 @@ final notificationServiceProvider = Provider<NotificationService>(
   (ref) => throw UnimplementedError(
     'override notificationServiceProvider in bootstrap()',
   ),
+);
+
+/// The shared permission surface (F5-T6), used by onboarding + reminder creation.
+final permissionServiceProvider = Provider<PermissionService>(
+  (ref) => const PermissionService(),
 );
 
 /// The pure [NotificationGateway] the scheduler/reconciler talk to — the real

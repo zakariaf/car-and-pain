@@ -246,5 +246,25 @@
         "type": "int"
       }
     }
+  },
+  "notifPermTitle": "Never miss a due date",
+  "@notifPermTitle": {
+    "description": "Permission rationale sheet title."
+  },
+  "notifPermBody": "Car and Pain reminds you — service, documents, tasks — right on time, fully offline. Allow notifications to get them.",
+  "@notifPermBody": {
+    "description": "Why the app needs the notification permission."
+  },
+  "notifPermExactBody": "For time-critical reminders to fire exactly on time, allow exact alarms.",
+  "@notifPermExactBody": {
+    "description": "Why the app needs the exact-alarm permission."
+  },
+  "notifPermAllow": "Allow",
+  "@notifPermAllow": {
+    "description": "Button: proceed to the OS permission prompt."
+  },
+  "notifPermOpenSettings": "Open settings",
+  "@notifPermOpenSettings": {
+    "description": "Button: deep-link to system settings."
   }
 }

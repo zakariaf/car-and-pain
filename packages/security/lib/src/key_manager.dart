@@ -99,6 +99,21 @@ final class KeyManager {
   static String toHexKey(List<int> masterKey) =>
       masterKey.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
 
+  /// Re-form a user-typed recovery code into the exact grouping [createRecovery]
+  /// emitted, so entry survives lost dashes, lowercase, and stray spaces. The
+  /// same characters always regroup to the same string the envelope was wrapped
+  /// under — anything outside the alphabet is dropped.
+  static String formatRecoveryInput(String raw) {
+    final cleaned =
+        raw.toUpperCase().split('').where(_alphabet.contains).join();
+    final groups = <String>[];
+    for (var i = 0; i < cleaned.length; i += 5) {
+      final end = i + 5 > cleaned.length ? cleaned.length : i + 5;
+      groups.add(cleaned.substring(i, end));
+    }
+    return groups.join('-');
+  }
+
   Future<SecretKey> _deriveKek(
     String secret,
     List<int> salt,

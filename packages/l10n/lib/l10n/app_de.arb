@@ -233,5 +233,8 @@
   "ledgerSourceExpense": "Ausgabe",
   "ledgerSourceTrip": "Fahrt",
   "ledgerSourceTire": "Reifen",
-  "ledgerSourceImport": "Import"
+  "ledgerSourceImport": "Import",
+  "garageSearch": "Suchen",
+  "garageSetDefault": "Als Standard festlegen",
+  "garageDefaultBadge": "Standard"
 }

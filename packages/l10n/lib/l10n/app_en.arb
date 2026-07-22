@@ -1021,5 +1021,17 @@
   "ledgerSourceImport": "Import",
   "@ledgerSourceImport": {
     "description": "Ledger source: import"
+  },
+  "garageSearch": "Search",
+  "@garageSearch": {
+    "description": "Garage search field"
+  },
+  "garageSetDefault": "Set as default",
+  "@garageSetDefault": {
+    "description": "Pin as default vehicle"
+  },
+  "garageDefaultBadge": "Default",
+  "@garageDefaultBadge": {
+    "description": "Default-vehicle badge"
   }
 }

@@ -233,5 +233,8 @@
   "ledgerSourceExpense": "خەرجی",
   "ledgerSourceTrip": "گەشت",
   "ledgerSourceTire": "تایە",
-  "ledgerSourceImport": "هاوردن"
+  "ledgerSourceImport": "هاوردن",
+  "garageSearch": "گەڕان",
+  "garageSetDefault": "وەک بنەڕەت دابنێ",
+  "garageDefaultBadge": "بنەڕەت"
 }

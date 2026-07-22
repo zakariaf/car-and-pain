@@ -233,5 +233,8 @@
   "ledgerSourceExpense": "مصروف",
   "ledgerSourceTrip": "رحلة",
   "ledgerSourceTire": "إطار",
-  "ledgerSourceImport": "استيراد"
+  "ledgerSourceImport": "استيراد",
+  "garageSearch": "بحث",
+  "garageSetDefault": "تعيين كافتراضي",
+  "garageDefaultBadge": "افتراضي"
 }

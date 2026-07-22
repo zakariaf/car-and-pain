@@ -233,5 +233,8 @@
   "ledgerSourceExpense": "Dépense",
   "ledgerSourceTrip": "Trajet",
   "ledgerSourceTire": "Pneu",
-  "ledgerSourceImport": "Import"
+  "ledgerSourceImport": "Import",
+  "garageSearch": "Rechercher",
+  "garageSetDefault": "Définir par défaut",
+  "garageDefaultBadge": "Par défaut"
 }

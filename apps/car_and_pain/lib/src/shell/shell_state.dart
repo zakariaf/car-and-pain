@@ -52,6 +52,13 @@ final vehiclesStreamProvider = StreamProvider<List<Vehicle>>(
   (ref) => ref.watch(vehiclesRepositoryProvider).watchAll(),
 );
 
+/// The whole garage — every non-trashed vehicle (active AND non-active), for
+/// the Garage Room's management surface (M2-T5). Active-scope filtering for
+/// dashboards/stats uses [activeVehiclesProvider] instead.
+final garageVehiclesProvider = Provider<List<Vehicle>>(
+  (ref) => ref.watch(vehiclesStreamProvider).asData?.value ?? const [],
+);
+
 /// The active (non-sold/archived) vehicles the scope operates over.
 final activeVehiclesProvider = Provider<List<Vehicle>>((ref) {
   final all = ref.watch(vehiclesStreamProvider).asData?.value ?? const [];

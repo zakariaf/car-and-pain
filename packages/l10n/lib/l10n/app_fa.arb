@@ -233,5 +233,8 @@
   "ledgerSourceExpense": "هزینه",
   "ledgerSourceTrip": "سفر",
   "ledgerSourceTire": "لاستیک",
-  "ledgerSourceImport": "درون‌ریزی"
+  "ledgerSourceImport": "درون‌ریزی",
+  "garageSearch": "جستجو",
+  "garageSetDefault": "تنظیم به‌عنوان پیش‌فرض",
+  "garageDefaultBadge": "پیش‌فرض"
 }

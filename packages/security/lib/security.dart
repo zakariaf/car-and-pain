@@ -9,3 +9,4 @@ library;
 
 export 'src/key_envelope.dart' show Argon2idParams, KeyEnvelope;
 export 'src/key_manager.dart' show KeyManager;
+export 'src/unlock_policy.dart' show LockPolicy, PinThrottle, ThrottleState;

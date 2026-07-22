@@ -166,6 +166,104 @@ final class SchemaVersionMismatch extends ImportFailure {
   int get hashCode => Object.hash(code, expected, found);
 }
 
+/// A restored attachment blob's content checksum does not match its manifest
+/// entry (F8-T7) — corrupt or mis-mapped media is refused, never silently
+/// attached. Carries the offending id and the expected/found digests.
+final class AttachmentChecksumMismatch extends ImportFailure {
+  const AttachmentChecksumMismatch({
+    required this.attachmentId,
+    required this.expected,
+    required this.found,
+  });
+
+  final String attachmentId;
+  final String expected;
+  final String found;
+
+  @override
+  String get code => 'import.attachment_checksum_mismatch';
+
+  @override
+  bool operator ==(Object other) =>
+      other is AttachmentChecksumMismatch &&
+      other.attachmentId == attachmentId &&
+      other.expected == expected &&
+      other.found == found;
+
+  @override
+  int get hashCode => Object.hash(code, attachmentId, expected, found);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Attachment / media boundary (F8: capture, processing, blob store).
+// ─────────────────────────────────────────────────────────────────────────
+
+/// The media pipeline / blob-store boundary. Errors here are typed values —
+/// the intake flow degrades to a manual fallback, never a crash.
+sealed class AttachmentFailure extends Failure {
+  const AttachmentFailure();
+}
+
+/// The picked/received media type is not one the pipeline can handle.
+final class UnsupportedMediaType extends AttachmentFailure {
+  const UnsupportedMediaType(this.mimeType);
+
+  final String mimeType;
+
+  @override
+  String get code => 'attachment.unsupported_type';
+
+  @override
+  bool operator ==(Object other) =>
+      other is UnsupportedMediaType && other.mimeType == mimeType;
+
+  @override
+  int get hashCode => Object.hash(code, mimeType);
+}
+
+/// Compression / thumbnail / transcode failed for a staged file (e.g. a clip
+/// that cannot be transcoded to the bounded profile).
+final class MediaProcessingFailed extends AttachmentFailure {
+  const MediaProcessingFailed();
+
+  @override
+  String get code => 'attachment.processing_failed';
+
+  @override
+  bool operator ==(Object other) => other is MediaProcessingFailed;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
+/// A referenced blob is absent from the store (orphaned row / missing file).
+final class BlobNotFound extends AttachmentFailure {
+  const BlobNotFound();
+
+  @override
+  String get code => 'attachment.blob_not_found';
+
+  @override
+  bool operator ==(Object other) => other is BlobNotFound;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
+/// A blob read/write against the app-private store failed at the OS level.
+final class BlobIoFailed extends AttachmentFailure {
+  const BlobIoFailed();
+
+  @override
+  String get code => 'attachment.io_failed';
+
+  @override
+  bool operator ==(Object other) => other is BlobIoFailed;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
 // ─────────────────────────────────────────────────────────────────────────
 // Notification boundary (packages/notifications scheduler/gateway).
 // ─────────────────────────────────────────────────────────────────────────

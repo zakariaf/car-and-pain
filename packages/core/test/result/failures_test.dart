@@ -45,6 +45,24 @@ void main() {
       ),
       (failure: const ComputeFailure(), code: 'compute.failed'),
       (failure: const UnknownFailure(), code: 'unknown'),
+      (
+        failure: const AttachmentChecksumMismatch(
+          attachmentId: 'a1',
+          expected: 'abc',
+          found: 'def',
+        ),
+        code: 'import.attachment_checksum_mismatch',
+      ),
+      (
+        failure: const UnsupportedMediaType('text/plain'),
+        code: 'attachment.unsupported_type',
+      ),
+      (
+        failure: const MediaProcessingFailed(),
+        code: 'attachment.processing_failed',
+      ),
+      (failure: const BlobNotFound(), code: 'attachment.blob_not_found'),
+      (failure: const BlobIoFailed(), code: 'attachment.io_failed'),
     ];
     for (final c in cases) {
       test('${c.failure.runtimeType} => ${c.code}', () {
@@ -71,6 +89,49 @@ void main() {
       const SchemaVersionMismatch(expected: 3, found: 2),
       isNot(equals(const SchemaVersionMismatch(expected: 3, found: 1))),
     );
+  });
+
+  test('attachment/media failures are value-equal by their params (F8)', () {
+    // Parameterless singletons.
+    for (final f in const <AttachmentFailure>[
+      MediaProcessingFailed(),
+      BlobNotFound(),
+      BlobIoFailed(),
+    ]) {
+      expect(f, equals(f));
+      expect(f.hashCode, f.code.hashCode);
+    }
+    expect(const BlobNotFound(), isNot(equals(const BlobIoFailed())));
+
+    // Parameterised: equal params ⇒ equal, differing params ⇒ not.
+    expect(const UnsupportedMediaType('image/png'),
+        equals(const UnsupportedMediaType('image/png')));
+    expect(const UnsupportedMediaType('image/png'),
+        isNot(equals(const UnsupportedMediaType('image/jpeg'))));
+    expect(const UnsupportedMediaType('a').hashCode,
+        const UnsupportedMediaType('a').hashCode);
+
+    const same = AttachmentChecksumMismatch(
+        attachmentId: 'a1', expected: 'x', found: 'y');
+    expect(
+        same,
+        equals(const AttachmentChecksumMismatch(
+            attachmentId: 'a1', expected: 'x', found: 'y')));
+    expect(
+        same,
+        isNot(equals(const AttachmentChecksumMismatch(
+            attachmentId: 'a2', expected: 'x', found: 'y'))));
+    expect(same.attachmentId, 'a1');
+    expect(same.hashCode, isA<int>());
+
+    // A sealed AttachmentFailure switch is exhaustive without a default.
+    String describe(AttachmentFailure f) => switch (f) {
+          UnsupportedMediaType(:final mimeType) => 'unsupported:$mimeType',
+          MediaProcessingFailed() => 'processing',
+          BlobNotFound() => 'missing',
+          BlobIoFailed() => 'io',
+        };
+    expect(describe(const UnsupportedMediaType('x/y')), 'unsupported:x/y');
   });
 
   test('a sealed DbFailure switch is exhaustive without a default', () {

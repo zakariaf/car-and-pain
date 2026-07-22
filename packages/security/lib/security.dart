@@ -7,6 +7,7 @@
 /// storage, biometrics, and DB keying are wired in the app.
 library;
 
+export 'src/blob_sealer.dart' show BlobSealer, SealedBlob;
 export 'src/kdf_calibrator.dart' show KdfCalibrator;
 export 'src/key_envelope.dart' show Argon2idParams, KeyEnvelope;
 export 'src/key_manager.dart' show KeyManager;

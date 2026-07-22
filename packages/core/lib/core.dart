@@ -15,9 +15,13 @@ export 'src/money/money.dart' show Money, RialTomanView;
 export 'src/result/failures.dart'
     show
         AppDirsUnavailable,
+        AttachmentChecksumMismatch,
+        AttachmentFailure,
         BackupFailure,
         BackupVerifyFailed,
         BackupWriteFailed,
+        BlobIoFailed,
+        BlobNotFound,
         ComputeFailure,
         ConstraintViolation,
         CorruptArchive,
@@ -30,6 +34,7 @@ export 'src/result/failures.dart'
         FxFailure,
         ImportFailure,
         KeyStoreUnavailable,
+        MediaProcessingFailed,
         NoFxRate,
         NotFound,
         NotificationFailure,
@@ -44,6 +49,7 @@ export 'src/result/failures.dart'
         TransactionRolledBack,
         UnknownFailure,
         UnlockThrottled,
+        UnsupportedMediaType,
         ValidationFailure,
         WrongSecret;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
@@ -67,6 +73,7 @@ export 'src/scheduling/scheduled_notification.dart'
     show ReminderScheduleDef, ScheduledNotification;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
+export 'src/units/byte_size.dart' show ByteSize, ByteSizeUnit;
 export 'src/units/distance.dart' show Distance, DistanceUnit;
 export 'src/units/energy.dart' show Energy, EnergyUnit;
 export 'src/units/engine_hours.dart' show EngineHours;

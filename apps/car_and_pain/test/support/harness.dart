@@ -1,5 +1,7 @@
 import 'package:car_and_pain/src/app.dart';
 import 'package:car_and_pain/src/flavor.dart';
+import 'package:car_and_pain/src/notifications/notification_providers.dart';
+import 'package:car_and_pain/src/routing/deep_link_listener.dart';
 import 'package:car_and_pain/src/routing/pending_location.dart';
 import 'package:car_and_pain/src/security/biometric_authenticator.dart';
 import 'package:car_and_pain/src/security/security_providers.dart';
@@ -55,6 +57,7 @@ Widget testApp(
   Map<String, String> settings = const {},
   bool reduceMotion = false,
   String? pendingLocation,
+  Stream<String?>? deepLinkTaps,
 }) {
   return ProviderScope(
     overrides: [
@@ -63,6 +66,10 @@ Widget testApp(
       if (pendingLocation != null)
         pendingLocationProvider
             .overrideWithValue(PendingDeepLink(pendingLocation)),
+      // Warm-app notification taps are fed off a controllable stream so the
+      // deep-link path is drivable without the OS plugin.
+      if (deepLinkTaps != null)
+        notificationTapProvider.overrideWith((ref) => deepLinkTaps),
       appDatabaseProvider.overrideWithValue(database ?? AppDatabase.memory()),
       secureKeyStoreProvider.overrideWithValue(const FakeSecureKeyStore()),
       appDirsProvider.overrideWithValue(_dirs),
@@ -87,7 +94,9 @@ Widget testApp(
     // still reach every descendant.
     child: ReducedMotionScope(
       reduce: reduceMotion,
-      child: const CarAndPainApp(),
+      child: deepLinkTaps == null
+          ? const CarAndPainApp()
+          : const DeepLinkListener(child: CarAndPainApp()),
     ),
   );
 }

@@ -32,7 +32,9 @@ final homeReadinessProvider = FutureProvider<ReadinessSummary>((ref) async {
     reminders.add(ReminderDue(
       reminderId: d.id,
       title: d.title,
-      due: engine.evaluate(d.rule, odometer: ledger),
+      // Odometer & engine-hours share the ledger timeline — pass both, matching
+      // the notification scheduler, so hour-based rules aren't silently calm.
+      due: engine.evaluate(d.rule, odometer: ledger, hours: ledger),
     ));
   }
 

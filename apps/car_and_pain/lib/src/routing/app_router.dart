@@ -187,9 +187,24 @@ String? _redirect(Ref ref, String location) {
     location: location,
     pendingLocation: pending.location,
   ));
-  // Consume the deep link the moment it becomes the destination, so a later
-  // lock/unlock bounce doesn't re-navigate to it.
-  if (target != null && target == pending.location) pending.take();
+
+  // The lock gate is about to cover a real (non-gate) location — remember it so
+  // unlock returns the user to their place instead of dumping them at the
+  // Cockpit. A cold-start deep link (already pending) is never clobbered.
+  if (target == AppLocations.lock &&
+      pending.location == null &&
+      !AppLocations.gateLocations.contains(location)) {
+    pending.location = location;
+  }
+
+  // Consume the pending target once we've arrived at it — either the redirect
+  // is sending us there now, or we're already sitting on it with nothing more
+  // to do — so a later lock/unlock bounce never re-navigates to a stale target.
+  if (pending.location != null &&
+      (target == pending.location ||
+          (target == null && location == pending.location))) {
+    pending.take();
+  }
   return target;
 }
 

@@ -40,8 +40,12 @@ String? appRedirect(RedirectInput input) {
   if (input.startupError) {
     return _to(input.location, AppLocations.startupError);
   }
-  // App-lock gate — a null (still-resolving) lock is treated as locked.
-  if (input.locked ?? true) return _to(input.location, AppLocations.lock);
+  // App-lock gate. While the lock is still RESOLVING (null) hold on the neutral
+  // splash — never the PIN screen — so a user with app-lock disabled never sees
+  // a spurious unlock flash; either way no protected content paints. Once it
+  // resolves, a true lock shows the unlock screen.
+  if (input.locked == null) return _to(input.location, AppLocations.splash);
+  if (input.locked!) return _to(input.location, AppLocations.lock);
   // First run: no vehicle and onboarding not yet completed → onboarding.
   if (!input.onboardingDone && !input.hasVehicle) {
     return _to(input.location, AppLocations.onboarding);

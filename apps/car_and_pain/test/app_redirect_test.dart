@@ -31,9 +31,19 @@ void main() {
       expect(appRedirect(_in(startupError: true)), AppLocations.startupError);
     });
 
-    test('a locked (or still-resolving) app routes to lock', () {
+    test('a locked app routes to the unlock screen', () {
       expect(appRedirect(_in(locked: true)), AppLocations.lock);
-      expect(appRedirect(_in(locked: null)), AppLocations.lock); // resolving
+    });
+
+    test('a still-resolving lock holds on splash, not a PIN flash', () {
+      // null = lock state not yet resolved → neutral splash (no protected
+      // content, and no spurious unlock screen for a disabled-lock user).
+      expect(appRedirect(_in(locked: null)), AppLocations.splash);
+      // Idempotent once already on splash.
+      expect(
+        appRedirect(_in(locked: null, location: AppLocations.splash)),
+        isNull,
+      );
     });
 
     test('first run (no vehicle, onboarding not done) routes to onboarding',

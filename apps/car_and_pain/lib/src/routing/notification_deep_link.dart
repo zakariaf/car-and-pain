@@ -11,6 +11,9 @@ import 'app_locations.dart';
 String? mapNotificationPayload(String? payload) {
   final p = payload?.trim();
   if (p == null || p.isEmpty) return null;
+  // Our ids are plain path segments — a query, fragment, or percent-escape is
+  // never legitimate here, so reject them outright rather than forwarding.
+  if (p.contains('?') || p.contains('#') || p.contains('%')) return null;
 
   // A single Room root is always safe.
   const rooms = {

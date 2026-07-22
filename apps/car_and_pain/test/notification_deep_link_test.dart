@@ -44,6 +44,10 @@ void main() {
       '/garage/v1/reminders/',
       '/garage/v1/service/s1',
       '/garage/v1/reminders/r1/extra',
+      // Query / fragment / percent-escape are never legitimate here.
+      '/garage/v1/reminders/r1?a=b',
+      '/garage/v1#frag',
+      '/garage/%2e%2e/reminders/r1',
       // Not a known root, not garage.
       '/fuel/f1',
       'garage/v1', // no leading slash

@@ -7,16 +7,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 Future<Uint8List> _makePng(int w, int h) async {
   final recorder = ui.PictureRecorder();
-  final canvas = Canvas(recorder);
   // A two-tone image so downscaling has real content to filter.
-  canvas.drawRect(
-    Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
-    Paint()..color = const Color(0xFF2266AA),
-  );
-  canvas.drawRect(
-    Rect.fromLTWH(0, 0, w / 2, h / 2),
-    Paint()..color = const Color(0xFFEE8844),
-  );
+  Canvas(recorder)
+    ..drawRect(
+      Rect.fromLTWH(0, 0, w.toDouble(), h.toDouble()),
+      Paint()..color = const Color(0xFF2266AA),
+    )
+    ..drawRect(
+      Rect.fromLTWH(0, 0, w / 2, h / 2),
+      Paint()..color = const Color(0xFFEE8844),
+    );
   final image = await recorder.endRecording().toImage(w, h);
   final data = await image.toByteData(format: ui.ImageByteFormat.png);
   return data!.buffer.asUint8List();

@@ -266,5 +266,103 @@
   "notifPermOpenSettings": "Open settings",
   "@notifPermOpenSettings": {
     "description": "Button: deep-link to system settings."
+  },
+  "settingsSecurity": "Security & lock",
+  "@settingsSecurity": {
+    "description": "Settings entry that opens the security & app-lock screen."
+  },
+  "securityTitle": "Security & lock",
+  "@securityTitle": {
+    "description": "Title of the security & app-lock screen."
+  },
+  "securityAppLock": "App lock",
+  "@securityAppLock": {
+    "description": "Toggle label: require unlock to open the app."
+  },
+  "securityAppLockDesc": "Require a PIN or biometrics to open the app",
+  "@securityAppLockDesc": {
+    "description": "Subtitle explaining the app-lock toggle."
+  },
+  "securityBiometric": "Biometric unlock",
+  "@securityBiometric": {
+    "description": "Toggle label: allow fingerprint/face unlock alongside the PIN."
+  },
+  "securityAutoLock": "Auto-lock",
+  "@securityAutoLock": {
+    "description": "Setting: how soon the app re-locks after leaving the foreground."
+  },
+  "securityAutoLockImmediate": "Immediately",
+  "@securityAutoLockImmediate": {
+    "description": "Auto-lock option: lock the instant the app is hidden."
+  },
+  "securityAutoLock1Min": "After 1 minute",
+  "@securityAutoLock1Min": {
+    "description": "Auto-lock option: lock one minute after leaving the app."
+  },
+  "securityAutoLock5Min": "After 5 minutes",
+  "@securityAutoLock5Min": {
+    "description": "Auto-lock option: lock five minutes after leaving the app."
+  },
+  "securitySetPin": "Set PIN",
+  "@securitySetPin": {
+    "description": "Button: create an app-lock PIN."
+  },
+  "securityChangePin": "Change PIN",
+  "@securityChangePin": {
+    "description": "Button: change the existing app-lock PIN."
+  },
+  "securityChoosePin": "Choose a PIN",
+  "@securityChoosePin": {
+    "description": "Prompt for the first PIN entry when setting one."
+  },
+  "securityConfirmPin": "Re-enter your PIN",
+  "@securityConfirmPin": {
+    "description": "Prompt to confirm the chosen PIN."
+  },
+  "securityPinMismatch": "PINs don't match — try again",
+  "@securityPinMismatch": {
+    "description": "Error shown when the two PIN entries differ."
+  },
+  "securityRecovery": "Recovery code",
+  "@securityRecovery": {
+    "description": "Section title for the offline recovery code."
+  },
+  "securityRecoveryDesc": "Make your data recoverable if you forget your PIN or lose this device",
+  "@securityRecoveryDesc": {
+    "description": "Subtitle explaining the recovery section."
+  },
+  "securityRecoveryWarning": "Keep this code somewhere safe. Without it and your PIN, your data cannot be recovered — nothing is stored on a server.",
+  "@securityRecoveryWarning": {
+    "description": "Un-skippable data-loss warning shown with the recovery code."
+  },
+  "securityRecoverySaved": "I've saved it",
+  "@securityRecoverySaved": {
+    "description": "Button: acknowledge that the recovery code has been saved."
+  },
+  "appLockPrompt": "Enter PIN to unlock",
+  "@appLockPrompt": {
+    "description": "Prompt shown on the app-lock unlock screen."
+  },
+  "appLockUseBiometric": "Use biometrics",
+  "@appLockUseBiometric": {
+    "description": "Button on the unlock screen that triggers the biometric prompt."
+  },
+  "appLockWrongPin": "Incorrect PIN",
+  "@appLockWrongPin": {
+    "description": "Error shown after an incorrect PIN on the unlock screen."
+  },
+  "appLockLockedFor": "Too many attempts — try again in {time}",
+  "@appLockLockedFor": {
+    "description": "Throttle countdown on the unlock screen; time is a preformatted m:ss string.",
+    "placeholders": {
+      "time": {
+        "type": "String",
+        "example": "0:31"
+      }
+    }
+  },
+  "appLockBiometricReason": "Unlock Car and Pain",
+  "@appLockBiometricReason": {
+    "description": "Reason string the OS shows in the biometric prompt."
   }
 }

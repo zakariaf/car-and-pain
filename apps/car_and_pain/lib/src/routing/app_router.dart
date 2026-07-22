@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
+import '../security/security_settings_screen.dart';
 import '../settings/settings_screen.dart';
 import '../startup/startup_gate.dart';
 
@@ -28,6 +29,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings',
         builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/security',
+        builder: (context, state) => const SecuritySettingsScreen(),
       ),
     ],
   );

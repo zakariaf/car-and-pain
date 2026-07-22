@@ -237,6 +237,78 @@ final class PendingCapExceeded extends NotificationFailure {
 }
 
 // ─────────────────────────────────────────────────────────────────────────
+// Security boundary (master key, unlock, secure storage) — F7.
+// ─────────────────────────────────────────────────────────────────────────
+
+/// Failures across the at-rest security core (key wrap/unwrap, unlock, secure
+/// storage). No raw secret or partial key ever crosses this boundary.
+sealed class SecurityFailure extends Failure {
+  const SecurityFailure();
+}
+
+/// The passphrase / PIN / recovery code was wrong, or the wrapped-key envelope
+/// was tampered with — the AES-GCM auth tag failed. Never yields a partial key.
+final class WrongSecret extends SecurityFailure {
+  const WrongSecret();
+
+  @override
+  String get code => 'security.wrong_secret';
+
+  @override
+  bool operator ==(Object other) => other is WrongSecret;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
+/// The stored envelope/item is malformed or of an unknown scheme version —
+/// distinct from a wrong-secret case.
+final class EnvelopeCorrupt extends SecurityFailure {
+  const EnvelopeCorrupt();
+
+  @override
+  String get code => 'security.envelope_corrupt';
+
+  @override
+  bool operator ==(Object other) => other is EnvelopeCorrupt;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
+/// A secure-storage read/write failed at the platform boundary.
+final class SecureStorageFailed extends SecurityFailure {
+  const SecureStorageFailed();
+
+  @override
+  String get code => 'security.storage_failed';
+
+  @override
+  bool operator ==(Object other) => other is SecureStorageFailed;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
+/// Unlock is throttled after too many failed attempts; [retryAtMillis] is the
+/// UTC epoch-millis when another attempt is allowed.
+final class UnlockThrottled extends SecurityFailure {
+  const UnlockThrottled(this.retryAtMillis);
+
+  final int retryAtMillis;
+
+  @override
+  String get code => 'security.throttled';
+
+  @override
+  bool operator ==(Object other) =>
+      other is UnlockThrottled && other.retryAtMillis == retryAtMillis;
+
+  @override
+  int get hashCode => Object.hash(code, retryAtMillis);
+}
+
+// ─────────────────────────────────────────────────────────────────────────
 // Startup boundary (apps/car_and_pain bootstrap composition root).
 // ─────────────────────────────────────────────────────────────────────────
 

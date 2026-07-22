@@ -19,7 +19,7 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # ── Workspace packages (the five frozen foundations) ─────────────────────
+  # ── Workspace packages (the frozen foundations) ──────────────────────────
   core:
     path: ../../packages/core
   data:
@@ -30,6 +30,8 @@ dependencies:
     path: ../../packages/l10n
   design_system:
     path: ../../packages/design_system
+  security:
+    path: ../../packages/security
 
   # ── The ONE framework dependency: Riverpod (DI + state) ──────────────────
   flutter_riverpod: ^3.0.0
@@ -47,6 +49,16 @@ dependencies:
   timezone: ^0.10.0 # tz database for zoned firing
   flutter_timezone: ^4.0.0 # resolve the device zone
   permission_handler: ^12.0.0 # POST_NOTIFICATIONS / SCHEDULE_EXACT_ALARM
+
+  # ── Security & app-lock (F7): sanctioned native deps per invariant-#11.
+  # security-critical native work (keystore, biometrics, native KDF). NOT
+  # telemetry; no INTERNET. On-device QA flagged where hardware is required.
+  flutter_secure_storage: ^9.2.0 # Keychain / Android Keystore for envelopes
+  local_auth: ^2.3.0 # biometric / device-credential unlock prompt
+  # Native AES-GCM + Argon2id acceleration. The plugin auto-registers its
+  # backend when present — no Dart call is needed (enable() is deprecated) — so
+  # there is deliberately no import; its value is the faster native KDF at unlock.
+  cryptography_flutter: ^2.3.0
 
 dev_dependencies:
   flutter_test:

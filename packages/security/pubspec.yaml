@@ -1,0 +1,25 @@
+name: security
+description: >-
+  Car and Pain's at-rest security core (F7): the master-key lifecycle (CSPRNG
+  256-bit key, Argon2id KEK, AES-256-GCM wrap/unwrap, one-time recovery code,
+  passphrase re-wrap), the versioned wrapped-key envelope, and the pure PIN
+  throttling + lock-timeout logic — all Result-typed, no plugins. Native KDF/AES
+  acceleration, secure storage, biometrics, and DB keying are wired in the app.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+
+resolution: workspace
+
+dependencies:
+  core:
+    path: ../core
+  # The sanctioned crypto binding (F7): AES-256-GCM key wrapping + Argon2id KEK.
+  # Native acceleration (cryptography_flutter) is enabled in the app; this
+  # pure-Dart API keeps the security core unit-testable on the host.
+  cryptography: ^2.7.0
+
+dev_dependencies:
+  test: ^1.25.0

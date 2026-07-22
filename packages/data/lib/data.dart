@@ -12,6 +12,7 @@ export 'src/db/database_factory.dart' show openAppDatabase;
 export 'src/db/migrations/snapshot_guard.dart' show SnapshotGuard;
 export 'src/db/open_connection.dart'
     show ensureSqlCipherLoaded, openEncryptedExecutor;
+export 'src/db/rekey.dart' show rekeyDatabaseFile;
 export 'src/diagnostics/diagnostics_repository.dart'
     show AppDiagnosticsRepository, DiagnosticsRepository;
 export 'src/domain/vehicle.dart' show Vehicle;

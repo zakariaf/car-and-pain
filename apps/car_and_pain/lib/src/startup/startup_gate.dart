@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../security/app_lock_gate.dart';
 import '../shell/home_screen.dart';
 import 'splash_screen.dart';
 import 'startup_controller.dart';
@@ -24,7 +25,9 @@ class StartupGate extends ConsumerWidget {
         onRetry: () => ref.invalidate(startupControllerProvider),
       ),
       data: (result) => switch (result) {
-        Ok() => const HomeScreen(),
+        // The shell is covered by the app-lock gate (F7): it decides whether to
+        // show the unlock screen before any protected content mounts.
+        Ok() => const AppLockGate(child: HomeScreen()),
         Err(:final failure) => StartupErrorScreen(
             failure: failure,
             onRetry: () => ref.invalidate(startupControllerProvider),

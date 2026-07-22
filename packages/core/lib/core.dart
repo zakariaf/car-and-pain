@@ -36,6 +36,8 @@ export 'src/energy/ev_calc.dart'
         chargeCostMinor,
         energyFromSocJoules,
         wallEnergyJoules;
+export 'src/energy/fuel_projection.dart'
+    show fuelRangeMetres, nextFillOdometreMetres, risingConsumptionAnomaly;
 export 'src/ledger/ledger.dart' show LedgerEngine, LedgerReading, LedgerSource;
 export 'src/money/currency.dart' show Currency;
 export 'src/money/fx.dart'

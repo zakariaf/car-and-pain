@@ -233,4 +233,108 @@ void main() {
       expect((due as Due).next.fireAt, _utc(2026, 1, 2, 7));
     });
   });
+
+  group('coverage edges (F5-T8)', () {
+    final engine = NextDueEngine(clock: FixedClock(_utc(2026, 1, 1).utc));
+    final rateClock = FixedClock(_utc(2026, 1, 11).utc);
+    final rateEngine =
+        NextDueEngine(clock: rateClock, ledger: LedgerEngine(clock: rateClock));
+    final odo = [_r(_utc(2026, 1, 1), 0), _r(_utc(2026, 1, 11), 1000000)];
+    final hrs = [_r(_utc(2026, 1, 1), 0), _r(_utc(2026, 1, 11), 600)];
+
+    test('recurring rule with no completion uses the first occurrence', () {
+      final due = engine.evaluate(
+        ScheduleRule(
+          kind: TriggerKind.date,
+          dueDate: _utc(2026, 5, 1),
+          recurrence: const Recurrence(1, RecurrenceUnit.months),
+        ),
+      );
+      expect((due as Due).next.dueAt, _utc(2026, 5, 1)); // not re-anchored
+    });
+
+    test('whichever-first weighs the engine-hours dimension', () {
+      final due = rateEngine.evaluate(
+        ScheduleRule(
+          kind: TriggerKind.whicheverFirst,
+          dueDate: _utc(2026, 3, 1),
+          dueEngineMinutes: 1200,
+        ),
+        hours: hrs,
+      );
+      expect((due as Due).next.dueAt, _utc(2026, 1, 21)); // hours beat the date
+    });
+
+    test('whichever-first with only insufficient dimensions → insufficient',
+        () {
+      final due = engine.evaluate(
+        const ScheduleRule(
+          kind: TriggerKind.whicheverFirst,
+          dueOdometerMetres: 100000,
+        ),
+      );
+      expect(due, isA<InsufficientData>());
+    });
+
+    test('distance-expressed lead moves the fire time by the usage rate', () {
+      final due = rateEngine.evaluate(
+        const ScheduleRule(
+          kind: TriggerKind.distance,
+          dueOdometerMetres: 2000000,
+          leadDistanceMetres: 200000, // 2 days at 100 km/day
+        ),
+        odometer: odo,
+      );
+      expect((due as Due).next.fireAt, _utc(2026, 1, 19));
+    });
+
+    test('non-wrap quiet hours shift a firing to the delivery time', () {
+      final due = engine.evaluate(
+        ScheduleRule(
+          kind: TriggerKind.date,
+          dueDate: _utc(2026, 1, 1, 2), // 02:00, inside 01:00–06:00
+          quietHours: const QuietHours(
+            startMinute: 60,
+            endMinute: 360,
+            deliverAtMinute: 360,
+          ),
+        ),
+      );
+      expect((due as Due).next.fireAt, _utc(2026, 1, 1, 6));
+    });
+
+    test('NextDue value semantics + toString', () {
+      final a = NextDue(
+        fireAt: _utc(2026, 1, 1),
+        dueAt: _utc(2026, 1, 2),
+        confidence: DueConfidence.exact,
+      );
+      final b = NextDue(
+        fireAt: _utc(2026, 1, 1),
+        dueAt: _utc(2026, 1, 2),
+        confidence: DueConfidence.exact,
+      );
+      expect(a, b);
+      expect({a, b}, hasLength(1));
+      expect(a.toString(), contains('exact'));
+    });
+
+    test('ScheduledNotification + ReminderScheduleDef construct', () {
+      const n = ScheduledNotification(
+        id: 1,
+        when: Instant.fromEpochMillis(0),
+        title: 't',
+        body: 'b',
+      );
+      expect(n.channelId, 'info');
+      const def = ReminderScheduleDef(
+        id: 'r',
+        vehicleId: 'v',
+        title: 't',
+        severity: 'info',
+        rule: ScheduleRule(kind: TriggerKind.date),
+      );
+      expect(def.rule.kind, TriggerKind.date);
+    });
+  });
 }

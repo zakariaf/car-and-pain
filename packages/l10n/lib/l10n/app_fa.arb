@@ -139,5 +139,16 @@
   "recoveryRedeem": "استفاده از کد بازیابی",
   "recoveryRedeemDesc": "بازیابی دسترسی در صورت فراموشی رمز پین",
   "recoveryRedeemDone": "دسترسی بازگردانده شد",
-  "recoveryRedeemInvalid": "کد نامعتبر یا قبلاً استفاده‌شده"
+  "recoveryRedeemInvalid": "کد نامعتبر یا قبلاً استفاده‌شده",
+  "roomCockpitSub": "اکنون",
+  "roomGarageSub": "خودروهای شما",
+  "roomPitlaneSub": "سررسیدها",
+  "readinessLabel": "آمادگی",
+  "quickAdd": "افزودن",
+  "homeEmptyTitle": "برای شروع، نخستین خودروی خود را اضافه کنید",
+  "homeEmptyCta": "افزودن خودرو",
+  "onboardingTitle": "خوش آمدید",
+  "discardChangesTitle": "تغییرات نادیده گرفته شود؟",
+  "discardChangesBody": "تغییرات ذخیره‌نشدهٔ شما از دست خواهد رفت.",
+  "discardAction": "نادیده گرفتن"
 }

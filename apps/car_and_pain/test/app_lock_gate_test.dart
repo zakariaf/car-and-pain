@@ -1,15 +1,18 @@
 import 'package:car_and_pain/src/security/app_lock_screen.dart';
-import 'package:car_and_pain/src/shell/home_screen.dart';
+import 'package:car_and_pain/src/shell/shell_placeholders.dart';
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:security/security.dart';
 
 import 'support/harness.dart';
 
+/// The app-lock gate is now a router redirect to `/lock` (M1-T1): a configured
+/// lock covers the whole app until the correct PIN clears it, after which the
+/// redirect falls through the remaining gates (here: onboarding, since the test
+/// DB is empty). A wrong PIN keeps `/lock` mounted.
 void main() {
-  testWidgets('a configured lock hides the shell behind the unlock screen',
-      (tester) async {
-    final store = InMemorySecureStore();
+  Future<void> pumpLocked(
+      WidgetTester tester, InMemorySecureStore store) async {
     final vault = SecureVault(store);
     await vault.savePin('1234');
     await vault.saveLockPrefs(const LockPrefs(enabled: true));
@@ -18,23 +21,19 @@ void main() {
       testApp(FakeStartupInitializer(Ok(fakeInfra())), secureStore: store),
     );
     await tester.pumpAndSettle();
+  }
 
-    // The shell is not mounted; the unlock screen covers it.
+  testWidgets('a configured lock hides the app behind the unlock screen',
+      (tester) async {
+    await pumpLocked(tester, InMemorySecureStore());
+
     expect(find.byType(AppLockScreen), findsOneWidget);
-    expect(find.byType(HomeScreen), findsNothing);
+    expect(find.byType(OnboardingScreen), findsNothing);
   });
 
-  testWidgets('the correct PIN reveals the shell', (tester) async {
-    final store = InMemorySecureStore();
-    final vault = SecureVault(store);
-    await vault.savePin('1234');
-    await vault.saveLockPrefs(const LockPrefs(enabled: true));
-
-    await tester.pumpWidget(
-      testApp(FakeStartupInitializer(Ok(fakeInfra())), secureStore: store),
-    );
-    await tester.pumpAndSettle();
-    expect(find.byType(HomeScreen), findsNothing);
+  testWidgets('the correct PIN reveals the app', (tester) async {
+    await pumpLocked(tester, InMemorySecureStore());
+    expect(find.byType(OnboardingScreen), findsNothing);
 
     // Tap the four digits on the pad (en → western glyphs).
     for (final d in ['1', '2', '3', '4']) {
@@ -44,19 +43,11 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AppLockScreen), findsNothing);
-    expect(find.byType(HomeScreen), findsOneWidget);
+    expect(find.byType(OnboardingScreen), findsOneWidget);
   });
 
-  testWidgets('a wrong PIN keeps the shell locked', (tester) async {
-    final store = InMemorySecureStore();
-    final vault = SecureVault(store);
-    await vault.savePin('1234');
-    await vault.saveLockPrefs(const LockPrefs(enabled: true));
-
-    await tester.pumpWidget(
-      testApp(FakeStartupInitializer(Ok(fakeInfra())), secureStore: store),
-    );
-    await tester.pumpAndSettle();
+  testWidgets('a wrong PIN keeps the app locked', (tester) async {
+    await pumpLocked(tester, InMemorySecureStore());
 
     for (final d in ['0', '0', '0', '0']) {
       await tester.tap(find.text(d));
@@ -64,7 +55,7 @@ void main() {
     }
     await tester.pumpAndSettle();
 
-    expect(find.byType(HomeScreen), findsNothing);
+    expect(find.byType(OnboardingScreen), findsNothing);
     expect(find.byType(AppLockScreen), findsOneWidget);
   });
 }

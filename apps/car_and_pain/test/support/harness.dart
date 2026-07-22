@@ -3,6 +3,7 @@ import 'package:car_and_pain/src/flavor.dart';
 import 'package:car_and_pain/src/security/biometric_authenticator.dart';
 import 'package:car_and_pain/src/security/security_providers.dart';
 import 'package:car_and_pain/src/settings/locale_controller.dart';
+import 'package:car_and_pain/src/shell/shell_state.dart';
 import 'package:car_and_pain/src/startup/app_infra.dart';
 import 'package:car_and_pain/src/startup/startup_initializer.dart';
 import 'package:core/core.dart';
@@ -48,6 +49,7 @@ Widget testApp(
   StartupInitializer initializer, {
   AppDatabase? database,
   SecureStore? secureStore,
+  List<Vehicle> vehicles = const [],
 }) {
   return ProviderScope(
     overrides: [
@@ -64,10 +66,12 @@ Widget testApp(
       // A no-hardware biometric fake so the gate never reaches the local_auth
       // plugin channel (which would make resolution non-deterministic in tests).
       biometricAuthenticatorProvider.overrideWithValue(const _NoBiometric()),
-      // Feed localization off a synchronous fixed stream so widget tests don't
-      // open a Drift .watch() (which leaves a pending timer at teardown).
+      // Feed localization + the vehicle list off synchronous fixed streams so
+      // widget tests don't open a Drift .watch() (which leaves a pending timer
+      // at teardown). The router redirect and shell read these directly.
       settingsMapProvider
           .overrideWith((ref) => Stream.value(const <String, String>{})),
+      vehiclesStreamProvider.overrideWith((ref) => Stream.value(vehicles)),
     ],
     child: const CarAndPainApp(),
   );

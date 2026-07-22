@@ -13,6 +13,10 @@ import 'logging/app_log.dart';
 import 'notifications/notification_providers.dart';
 import 'notifications/notification_reconciler.dart';
 import 'notifications/notification_service.dart';
+import 'routing/deep_link_listener.dart';
+import 'routing/notification_deep_link.dart';
+import 'routing/pending_location.dart';
+import 'security/app_lock_lifecycle.dart';
 import 'startup/app_infra.dart';
 import 'startup/startup_controller.dart';
 
@@ -37,6 +41,12 @@ Future<void> bootstrap(Flavor flavor) async {
     log.error('notifications.init', failure, StackTrace.current);
   }
 
+  // If a notification cold-launched the app, seed the router's initial location
+  // with its (validated) deep-link target so it lands there once the gates clear
+  // (M1-T6). A normal launch or a malformed payload leaves this null.
+  final launchLocation =
+      mapNotificationPayload(await notifications.launchPayload());
+
   // Sync framework errors — keep the console/red-screen in debug, log locally.
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
@@ -55,6 +65,8 @@ Future<void> bootstrap(Flavor flavor) async {
         overrides: [
           flavorProvider.overrideWithValue(flavor),
           notificationServiceProvider.overrideWithValue(notifications),
+          if (launchLocation != null)
+            pendingLocationProvider.overrideWithValue(launchLocation),
           // Wire the resolved infrastructure into the placeholder `data`
           // providers. Read only after the startup gate reaches its ready
           // state (the shell mounts after AsyncData(Ok)).
@@ -63,7 +75,13 @@ Future<void> bootstrap(Flavor flavor) async {
           appDirsProvider.overrideWith((ref) => _infra(ref).dirs),
           appTimeZoneProvider.overrideWith((ref) => _infra(ref).timeZone),
         ],
-        child: const NotificationReconciler(child: CarAndPainApp()),
+        // The lock lifecycle observer and deep-link listener live for the whole
+        // session, above the router but under the scope (M1-T1/T6).
+        child: const AppLockLifecycleObserver(
+          child: DeepLinkListener(
+            child: NotificationReconciler(child: CarAndPainApp()),
+          ),
+        ),
       ),
     ),
     (error, stack) => log.error('zone', error, stack),

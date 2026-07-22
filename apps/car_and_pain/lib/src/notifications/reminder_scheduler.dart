@@ -2,6 +2,8 @@ import 'package:core/core.dart';
 import 'package:data/data.dart';
 import 'package:notifications/notifications.dart';
 
+import '../routing/app_locations.dart';
+
 /// Builds the localized title/body for a due reminder and for a grouped digest.
 /// Injected so the orchestration stays testable without the l10n runtime; the
 /// real implementation resolves the active locale/calendar/numeral (F5-T5).
@@ -98,6 +100,8 @@ final class ReminderScheduler {
           title: c.title,
           body: c.body,
           channelId: def.severity,
+          // Tapping a single reminder deep-links to its detail (M1-T6).
+          payload: AppLocations.reminderDetail(def.vehicleId, def.id),
         ));
       } else {
         group.sort((a, b) =>
@@ -111,6 +115,8 @@ final class ReminderScheduler {
           title: c.title,
           body: c.body,
           groupKey: 'digest#$day',
+          // A digest spans several reminders → land on the Pit-lane (what's due).
+          payload: AppLocations.pitlane,
         ));
       }
     });

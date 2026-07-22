@@ -364,5 +364,89 @@
   "appLockBiometricReason": "Unlock Car and Pain",
   "@appLockBiometricReason": {
     "description": "Reason string the OS shows in the biometric prompt."
+  },
+  "byteSize": "{unit, select, b{{value} B} kb{{value} KB} mb{{value} MB} gb{{value} GB} tb{{value} TB} other{{value} B}}",
+  "@byteSize": {
+    "description": "A file size with its unit; value is preformatted with the user's numerals.",
+    "placeholders": {
+      "unit": { "type": "String" },
+      "value": { "type": "String" }
+    }
+  },
+  "attachmentCount": "{count, plural, =0{No attachments} one{{formatted} attachment} other{{formatted} attachments}}",
+  "@attachmentCount": {
+    "description": "Count of attachments; formatted is the count in the user's numerals.",
+    "placeholders": {
+      "count": { "type": "int" },
+      "formatted": { "type": "String" }
+    }
+  },
+  "attachmentsTitle": "Attachments",
+  "@attachmentsTitle": { "description": "Title of the attachment gallery." },
+  "attachmentsEmpty": "No attachments yet",
+  "@attachmentsEmpty": { "description": "Empty state for a record with no attachments." },
+  "attachmentsAdd": "Add",
+  "@attachmentsAdd": { "description": "Button to add an attachment." },
+  "attachmentsLocked": "Attachments are locked",
+  "@attachmentsLocked": { "description": "Shown when encrypted attachments need an unlock." },
+  "attachmentUnlock": "Unlock",
+  "@attachmentUnlock": { "description": "Button to unlock encrypted attachments." },
+  "attachmentOpenExternally": "Open externally",
+  "@attachmentOpenExternally": { "description": "Open an attachment in another app." },
+  "attachmentUnsupported": "This file can't be previewed here",
+  "@attachmentUnsupported": { "description": "Fallback for a type with no in-app viewer." },
+  "attachmentLoadError": "Couldn't load this attachment",
+  "@attachmentLoadError": { "description": "Error state when a blob fails to load." },
+  "attachmentRemove": "Remove",
+  "@attachmentRemove": { "description": "Remove an attachment from a record." },
+  "attachmentKind": "{kind, select, image{Photo} pdf{PDF} video{Video} other{File}}",
+  "@attachmentKind": {
+    "description": "The media kind label for a redundant (non-colour) type cue.",
+    "placeholders": { "kind": { "type": "String" } }
+  },
+  "attachmentAddTitle": "Add attachment",
+  "@attachmentAddTitle": { "description": "Title of the capture/import source sheet." },
+  "attachmentSourceCamera": "Camera",
+  "@attachmentSourceCamera": { "description": "Capture a photo with the camera." },
+  "attachmentSourceGallery": "Photo library",
+  "@attachmentSourceGallery": { "description": "Pick from the device photo library." },
+  "attachmentSourceFiles": "Files",
+  "@attachmentSourceFiles": { "description": "Pick an arbitrary file (PDF, etc.)." },
+  "attachmentCameraRationale": "Allow camera access to photograph receipts and documents. You can always pick a file instead.",
+  "@attachmentCameraRationale": { "description": "Rationale before the camera permission prompt." },
+  "attachmentPermissionFallback": "Camera unavailable — pick a file instead",
+  "@attachmentPermissionFallback": { "description": "Shown when camera permission is denied." },
+  "settingsStorage": "Storage",
+  "@settingsStorage": { "description": "Settings entry opening the storage surface." },
+  "storageTitle": "Storage",
+  "@storageTitle": { "description": "Title of the storage screen." },
+  "storageUsage": "Usage",
+  "@storageUsage": { "description": "Section label for the size roll-up." },
+  "storageTotal": "Total",
+  "@storageTotal": { "description": "Total attachment storage used." },
+  "storageEncryption": "Encrypt attachments",
+  "@storageEncryption": { "description": "Toggle for at-rest attachment encryption." },
+  "storageEncryptionDesc": "Seal attachment files on disk with your master key",
+  "@storageEncryptionDesc": { "description": "Subtitle for the encryption toggle." },
+  "storageReclaim": "Reclaim space",
+  "@storageReclaim": { "description": "Action to run attachment garbage collection." },
+  "storageReclaimDesc": "Delete orphaned files past the trash window",
+  "@storageReclaimDesc": { "description": "Subtitle for the reclaim action." },
+  "storageReclaimConfirm": "Delete orphaned files and free {size}?",
+  "@storageReclaimConfirm": {
+    "description": "Confirmation before a GC sweep; size is preformatted.",
+    "placeholders": { "size": { "type": "String" } }
+  },
+  "storageReclaimed": "Reclaimed {size}",
+  "@storageReclaimed": {
+    "description": "Success message after a GC sweep.",
+    "placeholders": { "size": { "type": "String" } }
+  },
+  "storageNothingToReclaim": "Nothing to reclaim",
+  "@storageNothingToReclaim": { "description": "GC found no orphans." },
+  "attachmentOwnerLabel": "{type, select, vehicle{Vehicles} fuel_entry{Fuel} service_entry{Service} expense{Expenses} document{Documents} incident{Incidents} other{Other}}",
+  "@attachmentOwnerLabel": {
+    "description": "Owner-type label for the storage by-type breakdown.",
+    "placeholders": { "type": { "type": "String" } }
   }
 }

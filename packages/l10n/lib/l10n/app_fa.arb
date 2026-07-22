@@ -236,5 +236,20 @@
   "ledgerSourceImport": "درون‌ریزی",
   "garageSearch": "جستجو",
   "garageSetDefault": "تنظیم به‌عنوان پیش‌فرض",
-  "garageDefaultBadge": "پیش‌فرض"
+  "garageDefaultBadge": "پیش‌فرض",
+  "fuelAddTitle": "ثبت سوخت‌گیری",
+  "fuelEditTitle": "ویرایش سوخت‌گیری",
+  "fuelVolume": "حجم (لیتر)",
+  "fuelPricePerUnit": "قیمت هر لیتر",
+  "fuelTotalCost": "مجموع",
+  "fuelFullTank": "باک پر",
+  "fuelMissedFill": "سوخت‌گیری قبلی جا افتاد",
+  "fuelExcludeEconomy": "خارج از محاسبه مصرف",
+  "fuelStation": "پمپ بنزین",
+  "fuelEnergyKwh": "انرژی (کیلووات‌ساعت)",
+  "fuelStartSoc": "شارژ آغاز (٪)",
+  "fuelEndSoc": "شارژ پایان (٪)",
+  "fuelHomeCharge": "شارژ خانگی",
+  "fuelFree": "رایگان",
+  "fuelSectionCharge": "شارژ"
 }

@@ -1033,5 +1033,65 @@
   "garageDefaultBadge": "Default",
   "@garageDefaultBadge": {
     "description": "Default-vehicle badge"
+  },
+  "fuelAddTitle": "Log fill",
+  "@fuelAddTitle": {
+    "description": "Log-fill title"
+  },
+  "fuelEditTitle": "Edit fill",
+  "@fuelEditTitle": {
+    "description": "Edit-fill title"
+  },
+  "fuelVolume": "Volume (L)",
+  "@fuelVolume": {
+    "description": "Volume field"
+  },
+  "fuelPricePerUnit": "Price / L",
+  "@fuelPricePerUnit": {
+    "description": "Unit price field"
+  },
+  "fuelTotalCost": "Total",
+  "@fuelTotalCost": {
+    "description": "Total cost field"
+  },
+  "fuelFullTank": "Full tank",
+  "@fuelFullTank": {
+    "description": "Full-tank toggle"
+  },
+  "fuelMissedFill": "Missed the previous fill",
+  "@fuelMissedFill": {
+    "description": "Missed-fill flag"
+  },
+  "fuelExcludeEconomy": "Exclude from economy",
+  "@fuelExcludeEconomy": {
+    "description": "Exclude-from-economy flag"
+  },
+  "fuelStation": "Station",
+  "@fuelStation": {
+    "description": "Station field"
+  },
+  "fuelEnergyKwh": "Energy (kWh)",
+  "@fuelEnergyKwh": {
+    "description": "Charge energy field"
+  },
+  "fuelStartSoc": "Start of charge (%)",
+  "@fuelStartSoc": {
+    "description": "Start SoC field"
+  },
+  "fuelEndSoc": "End of charge (%)",
+  "@fuelEndSoc": {
+    "description": "End SoC field"
+  },
+  "fuelHomeCharge": "Home charge",
+  "@fuelHomeCharge": {
+    "description": "Home-charge toggle"
+  },
+  "fuelFree": "Free",
+  "@fuelFree": {
+    "description": "Free-fill toggle"
+  },
+  "fuelSectionCharge": "Charge",
+  "@fuelSectionCharge": {
+    "description": "Charge section"
   }
 }

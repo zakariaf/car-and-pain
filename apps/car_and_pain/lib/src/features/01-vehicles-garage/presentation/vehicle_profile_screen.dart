@@ -39,6 +39,11 @@ class VehicleProfileScreen extends ConsumerWidget {
       title: vehicle.nickname,
       actions: [
         IconButton(
+          icon: const Icon(Icons.local_gas_station_outlined),
+          tooltip: l10n.fuelAddTitle,
+          onPressed: () => context.push(AppLocations.logFuel(vehicleId)),
+        ),
+        IconButton(
           icon: const Icon(Icons.edit_outlined),
           tooltip: l10n.vehicleEdit,
           onPressed: () => context.push(AppLocations.editVehicle(vehicleId)),

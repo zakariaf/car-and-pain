@@ -236,5 +236,20 @@
   "ledgerSourceImport": "استيراد",
   "garageSearch": "بحث",
   "garageSetDefault": "تعيين كافتراضي",
-  "garageDefaultBadge": "افتراضي"
+  "garageDefaultBadge": "افتراضي",
+  "fuelAddTitle": "تسجيل تعبئة",
+  "fuelEditTitle": "تعديل التعبئة",
+  "fuelVolume": "الكمية (لتر)",
+  "fuelPricePerUnit": "السعر / لتر",
+  "fuelTotalCost": "الإجمالي",
+  "fuelFullTank": "خزان ممتلئ",
+  "fuelMissedFill": "فاتت التعبئة السابقة",
+  "fuelExcludeEconomy": "استبعاد من الاقتصاد",
+  "fuelStation": "المحطة",
+  "fuelEnergyKwh": "الطاقة (ك.و.س)",
+  "fuelStartSoc": "بدء الشحن (٪)",
+  "fuelEndSoc": "نهاية الشحن (٪)",
+  "fuelHomeCharge": "شحن منزلي",
+  "fuelFree": "مجاني",
+  "fuelSectionCharge": "شحن"
 }

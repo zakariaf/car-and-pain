@@ -81,4 +81,19 @@ void main() {
     expect(await fuel.watchByVehicle(vehicleId).first, hasLength(1));
     expect((await fuel.economyReport(vehicleId)).pending, isTrue);
   });
+
+  test('soft-delete reverses the rollups it bumped (incremental == rebuild)',
+      () async {
+    final id = await fill(1000, 500000, 40000); // default cost 6000
+    Future<int> costRollup() async {
+      final rows = await (db.select(db.rollups)
+            ..where((t) => t.vehicleId.equals(vehicleId)))
+          .get();
+      return rows.where((r) => r.metric == 'costMinor').firstOrNull?.value ?? 0;
+    }
+
+    expect(await costRollup(), 6000); // bumped on add
+    await fuel.softDelete(id);
+    expect(await costRollup(), 0); // reversed on soft-delete
+  });
 }

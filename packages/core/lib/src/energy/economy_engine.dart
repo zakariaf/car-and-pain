@@ -152,9 +152,17 @@ class EconomyEngine {
 
     final sorted = [...fills]..sort((a, b) {
         final byTime = a.filledAt.epochMillis.compareTo(b.filledAt.epochMillis);
-        return byTime != 0
-            ? byTime
-            : a.odometerMetres.compareTo(b.odometerMetres);
+        if (byTime != 0) return byTime;
+        final byOdo = a.odometerMetres.compareTo(b.odometerMetres);
+        if (byOdo != 0) return byOdo;
+        // A total, order-independent tie-break so two fills sharing the same
+        // (time, odometer) — e.g. a date-only import collapsing to midnight —
+        // never sort by input order: a partial folds in BEFORE the full that
+        // closes the interval, then by volume/cost.
+        final byFull = (a.isFullTank ? 1 : 0).compareTo(b.isFullTank ? 1 : 0);
+        if (byFull != 0) return byFull;
+        final byVol = a.volumeMl.compareTo(b.volumeMl);
+        return byVol != 0 ? byVol : a.costMinor.compareTo(b.costMinor);
       });
 
     final intervals = <ConsumptionInterval>[];

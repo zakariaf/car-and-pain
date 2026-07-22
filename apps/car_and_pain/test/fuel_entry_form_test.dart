@@ -97,6 +97,28 @@ void main() {
     expect(find.text('Volume (L)'), findsNothing);
   });
 
+  testWidgets('enter-any-two also derives volume from price + total',
+      (tester) async {
+    await pump(tester);
+    await tester.enterText(
+        find.widgetWithText(TextField, 'Price / L'), '1.759');
+    await tester.enterText(find.widgetWithText(TextField, 'Total'), '70.36');
+    await tester.pumpAndSettle();
+    // €70.36 ÷ €1.759/L = 40 L → the volume field fills in.
+    expect(find.widgetWithText(TextField, '40.000'), findsOneWidget);
+  });
+
+  testWidgets('a liquid fill with no volume is blocked (never saves 0 mL)',
+      (tester) async {
+    await pump(tester);
+    await tester.enterText(find.widgetWithText(TextField, 'Odometer'), '12000');
+    // No volume entered.
+    await tester.tap(find.widgetWithText(TextButton, 'Save'));
+    await tester.pumpAndSettle();
+    expect(await db.select(db.fuelEntries).get(), isEmpty); // nothing persisted
+    expect(find.text('home'), findsNothing); // stayed on the form
+  });
+
   testWidgets('save writes a fuel entry + ledger row', (tester) async {
     await pump(tester);
     await tester.enterText(find.widgetWithText(TextField, 'Odometer'), '12000');

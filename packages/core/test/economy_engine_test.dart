@@ -134,6 +134,22 @@ void main() {
     });
   });
 
+  test('fills tied on (time, odometer) sort deterministically, not by order',
+      () {
+    // A full + a partial sharing the same timestamp AND odometer (e.g. a
+    // date-only import collapsing to midnight) must yield the same report
+    // regardless of input order.
+    final f0 = _fill(1000, 0, 40000);
+    final a = _fill(2000, 500000, 40000); // full
+    final b = _fill(2000, 500000, 20000, full: false); // partial, tied with a
+    final f3 = _fill(3000, 1000000, 20000);
+    final r1 = engine.compute([f0, a, b, f3]);
+    final r2 = engine.compute([f0, b, a, f3]);
+    expect(r2.intervals, r1.intervals); // identical despite the swap
+    expect(
+        r1.intervals.map((i) => i.volumeMl), [60000, 20000]); // partial folds
+  });
+
   test('a backdated (out-of-order) insert is deterministic', () {
     final ordered = [
       _fill(1000, 0, 40000),

@@ -116,6 +116,16 @@ class _FuelFormState extends ConsumerState<FuelEntryFormScreen> {
             .formatScaled(r.priceThousandths, 3);
         _computing = false;
       }
+    } else if (price != null && total != null && _volume.text.trim().isEmpty) {
+      // The third enter-any-two case: price + total derive the volume.
+      final r = completeFill(
+          exponent: exp, priceThousandths: price, totalMinor: total);
+      if (r != null) {
+        _computing = true;
+        _volume.text =
+            ref.read(activeNumeralFormatProvider).formatScaled(r.volumeMl, 3);
+        _computing = false;
+      }
     }
     unawaited(_saveDraft());
   }
@@ -194,6 +204,10 @@ class _FuelFormState extends ConsumerState<FuelEntryFormScreen> {
     final parser = ref.read(activeNumeralParserProvider);
     final odo = parser.parseScaled(_odometer.text, 3); // km → metres
     if (odo == null) return;
+    // A liquid fill must carry a volume — never silently persist volumeMl = 0
+    // (it would fold a phantom 0-mL fill into the economy interval).
+    final liquidVol = _isCharge ? null : parser.parseScaled(_volume.text, 3);
+    if (!_isCharge && (liquidVol == null || liquidVol <= 0)) return;
     setState(() => _busy = true);
 
     final exp = _exponent();
@@ -286,7 +300,11 @@ class _FuelFormState extends ConsumerState<FuelEntryFormScreen> {
               contentPadding: EdgeInsets.zero,
             ),
           ] else ...[
-            _field(_volume, l10n.fuelVolume, number: true),
+            _field(_volume, l10n.fuelVolume,
+                number: true,
+                error: _submitted && _volume.text.trim().isEmpty
+                    ? l10n.vehicleNameRequired
+                    : null),
             SwitchListTile.adaptive(
               value: _fullTank,
               onChanged: (v) => setState(() => _fullTank = v),

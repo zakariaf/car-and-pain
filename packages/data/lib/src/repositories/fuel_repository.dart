@@ -165,7 +165,7 @@ class FuelRepository extends BaseRepository {
         final cur = await (db.select(db.fuelEntries)
               ..where((t) => t.id.equals(id)))
             .getSingleOrNull();
-        if (cur == null) return false;
+        if (cur == null || cur.isDeleted) return false;
         await (db.update(db.fuelEntries)..where((t) => t.id.equals(id))).write(
           FuelEntriesCompanion(
             isDeleted: const Value(true),
@@ -175,6 +175,22 @@ class FuelRepository extends BaseRepository {
             rowRevision: Value(cur.rowRevision + 1),
           ),
         );
+        // Reverse the additive rollups this entry bumped on `add`, so the
+        // incremental rollups still equal a from-scratch rebuild (which excludes
+        // tombstoned rows) and dashboards never count a trashed fill.
+        final period = monthPeriodKey(cur.filledAt);
+        await _rollups.bump(
+            vehicleId: cur.vehicleId,
+            period: period,
+            metric: 'costMinor',
+            delta: -cur.totalCostMinor,
+            now: now);
+        await _rollups.bump(
+            vehicleId: cur.vehicleId,
+            period: period,
+            metric: 'fuelMl',
+            delta: -cur.volumeMl,
+            now: now);
         return true;
       });
       return found ? const Ok(null) : const Err(NotFound('fuel_entry'));

@@ -89,4 +89,6 @@ export 'src/units/pressure.dart' show Pressure, PressureUnit;
 export 'src/units/temperature.dart' show Temperature, TemperatureUnit;
 export 'src/units/unit_preference.dart' show UnitPreferences, resolveUnit;
 export 'src/units/volume.dart' show Volume, VolumeUnit;
+export 'src/vehicle/powertrain.dart'
+    show EnergyType, PowertrainProfile, VehicleField, VehicleType;
 export 'src/vin/vin_decoder.dart' show VinDecodeResult, VinDecoder, VinRegion;

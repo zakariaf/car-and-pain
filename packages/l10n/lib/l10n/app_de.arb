@@ -50,5 +50,13 @@
   "calendarHebrew": "Hebräisch",
   "numeralWestern": "Westlich",
   "numeralEasternArabic": "Ostarabisch",
-  "numeralPersian": "Persisch"
+  "numeralPersian": "Persisch",
+  "notifDueOn": "Fällig {date}",
+  "notifDueEstimated": "Ca. {date}",
+  "notifDigest": "{count, plural, =1{1 Erinnerung fällig} other{{count} Erinnerungen fällig}}",
+  "notifPermTitle": "Keinen Termin verpassen",
+  "notifPermBody": "Car and Pain erinnert dich pünktlich an Service, Dokumente und Aufgaben – vollständig offline. Erlaube Benachrichtigungen.",
+  "notifPermExactBody": "Damit zeitkritische Erinnerungen exakt auslösen, erlaube exakte Alarme.",
+  "notifPermAllow": "Erlauben",
+  "notifPermOpenSettings": "Einstellungen öffnen"
 }

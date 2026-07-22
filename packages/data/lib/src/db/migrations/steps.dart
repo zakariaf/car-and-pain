@@ -18,6 +18,19 @@ Future<void> runForwardMigrations(
     switch (v) {
       case 1: // 1 → 2: the app-global key/value settings store (F4-T2).
         await m.createTable(db.settings);
+      case 2: // 2 → 3: notification-engine schedule fields + projection (F5-T2).
+        final r = db.reminders;
+        await m.addColumn(r, r.dueEngineMinutes);
+        await m.addColumn(r, r.completedAt);
+        await m.addColumn(r, r.recurrenceEvery);
+        await m.addColumn(r, r.recurrenceUnit);
+        await m.addColumn(r, r.leadMinutes);
+        await m.addColumn(r, r.leadDistanceMetres);
+        await m.addColumn(r, r.severity);
+        await m.addColumn(r, r.quietStartMinute);
+        await m.addColumn(r, r.quietEndMinute);
+        await m.addColumn(r, r.quietDeliverMinute);
+        await m.createTable(db.scheduledNotifications);
       // Future versions append their `case N` block here.
     }
   }

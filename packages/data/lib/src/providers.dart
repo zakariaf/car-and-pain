@@ -6,6 +6,7 @@ import 'infra/app_dirs.dart';
 import 'infra/app_time_zone.dart';
 import 'infra/secure_key_store.dart';
 import 'ledger/ledger_repository.dart';
+import 'notifications/notification_schedule_repository.dart';
 import 'repositories/fuel_repository.dart';
 import 'repositories/vehicles_repository.dart';
 import 'settings/settings_repository.dart';
@@ -69,4 +70,9 @@ final taxonomyRepositoryProvider = Provider<TaxonomyRepository>(
 
 final settingsRepositoryProvider = Provider<SettingsRepository>(
   (ref) => SettingsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final notificationScheduleRepositoryProvider =
+    Provider<NotificationScheduleRepository>(
+  (ref) => NotificationScheduleRepository(ref.watch(appDatabaseProvider)),
 );

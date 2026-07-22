@@ -32,6 +32,7 @@ export 'src/result/failures.dart'
         NoFxRate,
         NotFound,
         NotificationFailure,
+        NotificationScheduleFailed,
         PendingCapExceeded,
         PermissionDenied,
         SchemaVersionMismatch,
@@ -42,6 +43,23 @@ export 'src/result/failures.dart'
         ValidationFailure;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
 export 'src/result/validation.dart' show FieldError, Validation;
+export 'src/scheduling/ics_export.dart' show IcsEvent, buildIcsCalendar;
+export 'src/scheduling/next_due_engine.dart' show NextDueEngine;
+export 'src/scheduling/schedule_rule.dart'
+    show
+        Due,
+        DueConfidence,
+        DueResult,
+        InsufficientData,
+        NextDue,
+        NoDue,
+        QuietHours,
+        Recurrence,
+        RecurrenceUnit,
+        ScheduleRule,
+        TriggerKind;
+export 'src/scheduling/scheduled_notification.dart'
+    show ReminderScheduleDef, ScheduledNotification;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
 export 'src/units/distance.dart' show Distance, DistanceUnit;

@@ -6,5 +6,10 @@
 /// `flutter_local_notifications`-backed gateway arrive in F5.
 library;
 
+// ScheduledNotification now lives in core (shared by the data layer); re-export
+// it so `import 'package:notifications/...'` callers still see it.
+export 'package:core/core.dart' show ScheduledNotification;
 export 'src/notification_gateway.dart'
-    show FakeNotificationGateway, NotificationGateway, ScheduledNotification;
+    show FakeNotificationGateway, NotificationGateway;
+export 'src/reconciler.dart'
+    show ReconcileResult, Reconciler, stableNotificationId;

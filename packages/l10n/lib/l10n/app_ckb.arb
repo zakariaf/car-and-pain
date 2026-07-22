@@ -50,5 +50,13 @@
   "calendarHebrew": "عیبری",
   "numeralWestern": "ڕۆژئاوایی",
   "numeralEasternArabic": "عەرەبی",
-  "numeralPersian": "فارسی"
+  "numeralPersian": "فارسی",
+  "notifDueOn": "کاتی {date}",
+  "notifDueEstimated": "نزیکەی {date}",
+  "notifDigest": "{count, plural, one{{count} بیرخەرەوەی کاتی} other{{count} بیرخەرەوەی کاتی}}",
+  "notifPermTitle": "هیچ کاتێک لەدەست مەدە",
+  "notifPermBody": "کار ئەند پەین لە کاتی خۆیدا و بە تەواوی بێ ئینتەرنێت خزمەتگوزاری و بەڵگەنامە و ئەرکەکان بیرت دەخاتەوە. ڕێگە بە ئاگادارکردنەوەکان بدە.",
+  "notifPermExactBody": "بۆ ئەوەی بیرخەرەوە کاتییەکان بەدروستی کار بکەن، ئاژیرە وردەکان ڕێگەپێبدە.",
+  "notifPermAllow": "ڕێگەدان",
+  "notifPermOpenSettings": "کردنەوەی ڕێکخستنەکان"
 }

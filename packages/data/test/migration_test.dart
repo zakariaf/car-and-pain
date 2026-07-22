@@ -33,10 +33,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 2 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 3 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 2);
+    expect(db.schemaVersion, 3);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -57,6 +57,7 @@ void main() {
         'rollups',
         'attachments',
         'settings',
+        'scheduled_notifications',
       ]),
     );
 
@@ -79,30 +80,61 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v2 forward migration creates settings and preserves data',
+  test('v1 → v3 forward migration adds settings + schedule schema, keeps data',
       () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
 
-    // Build a v2 DB, seed a vehicle, then rewind the on-disk schema to v1
-    // (drop settings + set user_version = 1) to simulate an existing install.
+    // Build a fresh (v3) DB, seed a vehicle, then rewind the on-disk schema to
+    // v1 — drop the v2/v3 additions (settings, scheduled_notifications, and the
+    // F5 reminder columns) and set user_version = 1 — to simulate an old install.
     final setup = AppDatabase(NativeDatabase(File(path)));
     final v =
         (await VehiclesRepository(setup).add(nickname: 'Keeper')).valueOrNull!;
     await setup.customStatement('DROP TABLE settings');
+    await setup.customStatement('DROP TABLE scheduled_notifications');
+    const f5Columns = [
+      'due_engine_minutes',
+      'completed_at',
+      'recurrence_every',
+      'recurrence_unit',
+      'lead_minutes',
+      'lead_distance_metres',
+      'severity',
+      'quiet_start_minute',
+      'quiet_end_minute',
+      'quiet_deliver_minute',
+    ];
+    for (final c in f5Columns) {
+      await setup.customStatement('ALTER TABLE reminders DROP COLUMN $c');
+    }
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
 
-    // Reopen: drift sees v1 < v2 and runs the guarded forward migration.
+    // Reopen: drift sees v1 < v3 and runs both guarded forward steps.
     final upgraded = AppDatabase(NativeDatabase(File(path)));
     addTearDown(upgraded.close);
-    final created = await upgraded
-        .customSelect(
-          "SELECT name FROM sqlite_master WHERE type='table' AND name='settings'",
-        )
+
+    Future<int> tableCount(String name) async => (await upgraded
+            .customSelect(
+              "SELECT name FROM sqlite_master WHERE type='table' AND name='$name'",
+            )
+            .get())
+        .length;
+    expect(await tableCount('settings'), 1);
+    expect(await tableCount('scheduled_notifications'), 1);
+
+    // The re-added reminder columns are back (a smoke insert with an F5 column).
+    await upgraded.customStatement(
+      'INSERT INTO reminders (id, created_at, updated_at, vehicle_id, title, '
+      "trigger_type, severity) VALUES ('rem1', 0, 0, ?, 'x', 'date', 'overdue')",
+      [v.id],
+    );
+    final rem = await upgraded
+        .customSelect("SELECT severity FROM reminders WHERE id = 'rem1'")
         .get();
-    expect(created, hasLength(1), reason: 'migration created settings');
+    expect(rem.single.read<String>('severity'), 'overdue');
 
     // The pre-existing vehicle survived the upgrade untouched.
     final rows = await upgraded.customSelect(
@@ -111,9 +143,8 @@ void main() {
     ).get();
     expect(rows, hasLength(1));
 
-    // …and the new table is immediately usable.
-    final settings = SettingsRepository(upgraded);
-    expect((await settings.set('locale', 'fa')).isOk, isTrue);
-    expect(await settings.get('locale'), 'fa');
+    // …and the new settings table is immediately usable.
+    expect(
+        (await SettingsRepository(upgraded).set('locale', 'fa')).isOk, isTrue);
   });
 }

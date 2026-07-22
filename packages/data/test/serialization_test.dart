@@ -79,6 +79,39 @@ void main() {
     expect(restored['numeral'], 'persian');
   });
 
+  test('reminders round-trip including the F5 schedule fields (F5-T7)',
+      () async {
+    final db = AppDatabase.memory();
+    addTearDown(db.close);
+    final v = (await VehiclesRepository(db).add(nickname: 'X')).valueOrNull!;
+    await db.customStatement(
+      'INSERT INTO reminders (id, created_at, updated_at, vehicle_id, title, '
+      'trigger_type, severity, recurrence_every, recurrence_unit, lead_minutes) '
+      "VALUES ('rem', 0, 0, ?, 'Oil', 'date', 'overdue', 6, 'months', 120)",
+      [v.id],
+    );
+
+    final doc = await CanonicalCodec(db).export();
+    final db2 = AppDatabase.memory();
+    addTearDown(db2.close);
+    expect((await CanonicalCodec(db2).import(doc)).isOk, isTrue);
+
+    final r = (await db2
+            .customSelect(
+              'SELECT severity, recurrence_every, recurrence_unit, '
+              "lead_minutes FROM reminders WHERE id = 'rem'",
+            )
+            .get())
+        .single;
+    expect(r.read<String>('severity'), 'overdue');
+    expect(r.read<int>('recurrence_every'), 6);
+    expect(r.read<String>('recurrence_unit'), 'months');
+    expect(r.read<int>('lead_minutes'), 120);
+    // The projection is rebuildable, so a restore re-arms it via reconcileAll
+    // (proven by the ReminderScheduler orchestration tests) rather than shipping
+    // stale OS entries in the archive.
+  });
+
   test('an older archive without settings imports to first-run defaults',
       () async {
     final db = AppDatabase.memory();

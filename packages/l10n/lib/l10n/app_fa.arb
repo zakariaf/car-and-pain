@@ -50,5 +50,13 @@
   "calendarHebrew": "عبری",
   "numeralWestern": "غربی",
   "numeralEasternArabic": "عربی",
-  "numeralPersian": "فارسی"
+  "numeralPersian": "فارسی",
+  "notifDueOn": "سررسید {date}",
+  "notifDueEstimated": "حدود {date}",
+  "notifDigest": "{count, plural, one{{count} یادآور سررسید شده} other{{count} یادآور سررسید شده}}",
+  "notifPermTitle": "هیچ سررسیدی را از دست ندهید",
+  "notifPermBody": "کار اند پین به‌موقع و کاملاً آفلاین سرویس، مدارک و کارها را یادآوری می‌کند. برای دریافت، اعلان‌ها را مجاز کنید.",
+  "notifPermExactBody": "برای اجرای دقیق یادآورهای حساس به زمان، هشدارهای دقیق را مجاز کنید.",
+  "notifPermAllow": "اجازه",
+  "notifPermOpenSettings": "باز کردن تنظیمات"
 }

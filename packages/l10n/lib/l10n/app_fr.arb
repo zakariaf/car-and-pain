@@ -50,5 +50,13 @@
   "calendarHebrew": "Hébreu",
   "numeralWestern": "Occidentaux",
   "numeralEasternArabic": "Arabes orientaux",
-  "numeralPersian": "Persans"
+  "numeralPersian": "Persans",
+  "notifDueOn": "Échéance {date}",
+  "notifDueEstimated": "Env. {date}",
+  "notifDigest": "{count, plural, =1{1 rappel dû} other{{count} rappels dus}}",
+  "notifPermTitle": "Ne manquez aucune échéance",
+  "notifPermBody": "Car and Pain vous rappelle entretien, documents et tâches à temps, entièrement hors ligne. Autorisez les notifications.",
+  "notifPermExactBody": "Pour que les rappels critiques se déclenchent à l'heure exacte, autorisez les alarmes exactes.",
+  "notifPermAllow": "Autoriser",
+  "notifPermOpenSettings": "Ouvrir les réglages"
 }

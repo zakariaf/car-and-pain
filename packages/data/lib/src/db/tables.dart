@@ -129,7 +129,44 @@ class Reminders extends Table with AuditColumns {
   TextColumn get triggerType => text()();
   IntColumn get dueDate => integer().nullable()();
   IntColumn get dueOdometerMetres => integer().nullable()();
+  // F5-T2: engine-hour threshold (whole minutes) + completion anchor.
+  IntColumn get dueEngineMinutes => integer().nullable()();
+  IntColumn get completedAt => integer().nullable()();
+  // Recurrence: `every` + unit (days|weeks|months|years); null = one-off.
+  IntColumn get recurrenceEvery => integer().nullable()();
+  TextColumn get recurrenceUnit => text().nullable()();
+  // Lead-times (fire early): whole minutes + distance-expressed metres.
+  IntColumn get leadMinutes => integer().withDefault(const Constant(0))();
+  IntColumn get leadDistanceMetres => integer().nullable()();
+  // Severity → channel: overdue | dueSoon | documents | info.
+  TextColumn get severity => text().withDefault(const Constant('info'))();
+  // Quiet-hours (local minutes from midnight) + preferred delivery minute.
+  IntColumn get quietStartMinute => integer().nullable()();
+  IntColumn get quietEndMinute => integer().nullable()();
+  IntColumn get quietDeliverMinute => integer().nullable()();
   TextColumn get status => text().withDefault(const Constant('active'))();
+}
+
+/// The derived OS-notification projection (F5-T2): one row per concrete pending
+/// entry with its deterministic id, computed fire instant, the already-localized
+/// copy that was armed, the severity channel, and a digest group key.
+/// Rebuildable from [Reminders] + the ledger; a pure projection, so it carries
+/// no audit/tombstone columns.
+@DataClassName('ScheduledNotificationRow')
+class ScheduledNotifications extends Table {
+  IntColumn get notifId => integer()();
+  // Nullable, no FK: a digest entry spans several reminders, and the whole
+  // projection is wiped + rebuilt on every reconcile, so referential cleanup
+  // isn't needed.
+  TextColumn get reminderId => text().nullable()();
+  IntColumn get fireAt => integer()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  TextColumn get channel => text().withDefault(const Constant('info'))();
+  TextColumn get groupKey => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {notifId};
 }
 
 /// The shared custom taxonomy: service types, expense categories, trip

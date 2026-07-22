@@ -39,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

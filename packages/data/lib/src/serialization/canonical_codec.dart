@@ -90,7 +90,7 @@ class CanonicalCodec {
           .toList(),
       (j) => db
           .into(db.fuelEntries)
-          .insert(FuelEntry.fromJson(j), mode: InsertMode.insertOrReplace),
+          .insert(FuelEntryRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
     _Entity(
       'service_entries',

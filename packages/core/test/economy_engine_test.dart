@@ -92,7 +92,7 @@ void main() {
 
     test(r'a free ($0) fill still counts its volume in economy', () {
       final r = engine.compute([
-        _fill(1000, 0, 40000, cost: 6000),
+        _fill(1000, 0, 40000),
         _fill(2000, 500000, 40000, cost: 0), // free top-up
       ]);
       expect(r.intervals, hasLength(1));

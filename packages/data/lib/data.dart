@@ -50,6 +50,7 @@ export 'src/diagnostics/diagnostics_repository.dart'
     show AppDiagnosticsRepository, DiagnosticsRepository;
 export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
+export 'src/domain/fuel_entry.dart' show FuelEntry;
 export 'src/domain/vehicle.dart' show Vehicle;
 export 'src/infra/app_dirs.dart' show AppDirs;
 export 'src/infra/app_time_zone.dart' show AppTimeZone;

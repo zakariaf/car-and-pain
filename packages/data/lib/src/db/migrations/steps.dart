@@ -76,6 +76,31 @@ Future<void> runForwardMigrations(
         await m.createTable(db.plateHistory);
         await m.createTable(db.valuationHistory);
         await m.createTable(db.stateOfHealthLog);
+      case 5: // 5 → 6: M3 unified fuel/charge fields on fuel_entries.
+        final fe = db.fuelEntries;
+        for (final col in [
+          fe.fuelType,
+          fe.octaneGrade,
+          fe.secondaryFuelType,
+          fe.volumeUnit,
+          fe.pricePerUnitThousandths,
+          fe.isFree,
+          fe.chargerType,
+          fe.connectorType,
+          fe.startSocPct,
+          fe.endSocPct,
+          fe.isHomeCharge,
+          fe.energyFromWallJoules,
+          fe.network,
+          fe.stationId,
+          fe.stationName,
+          fe.paymentMethod,
+          fe.tripId,
+          fe.tags,
+          fe.receiptAttachmentId,
+        ]) {
+          await m.addColumn(fe, col);
+        }
       // Future versions append their `case N` block here.
     }
   }

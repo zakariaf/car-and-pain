@@ -2,6 +2,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../attachments/storage_settings_screen.dart';
+import '../backup/backup_recovery_screen.dart';
+import '../backup/recovery_redeem_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/security_settings_screen.dart';
@@ -38,6 +40,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/settings/storage',
         builder: (context, state) => const StorageSettingsScreen(),
+      ),
+      GoRoute(
+        path: '/settings/backup',
+        builder: (context, state) => const BackupRecoveryScreen(),
+      ),
+      GoRoute(
+        path: '/settings/recovery',
+        builder: (context, state) => const RecoveryRedeemScreen(),
       ),
     ],
   );

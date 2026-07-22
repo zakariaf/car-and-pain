@@ -114,6 +114,52 @@ void main() {
         isA<EnvelopeCorrupt>());
   });
 
+  test('redeemRecovery is single-use: the second attempt fails closed',
+      () async {
+    final svc = _service();
+    final s = (await svc.setup(passphrase: 'pw', params: _fast)
+            as Ok<MasterKeySetup, SecurityFailure>)
+        .value;
+
+    // First redemption returns the master key.
+    expect(_ok(await svc.redeemRecovery(s.recoveryCode)), s.masterKey);
+    // The code is consumed — a second redemption no longer works.
+    expect((await svc.redeemRecovery(s.recoveryCode) as Err).failure,
+        isA<SecurityFailure>());
+    // Passphrase unlock still works (only the recovery escrow was consumed).
+    expect(_ok(await svc.unlockWithPassphrase('pw')), s.masterKey);
+  });
+
+  test('redeemAndReissue consumes the old code and issues a working new one',
+      () async {
+    final svc = _service();
+    final s = (await svc.setup(passphrase: 'pw', params: _fast)
+            as Ok<MasterKeySetup, SecurityFailure>)
+        .value;
+
+    final reissued = await svc.redeemAndReissue(s.recoveryCode, params: _fast);
+    final out = (reissued as Ok<RecoveryReissue, SecurityFailure>).value;
+    expect(out.masterKey, s.masterKey);
+    expect(out.recoveryCode, isNot(s.recoveryCode));
+
+    // The OLD code no longer works (single-use, invalidated by the overwrite)…
+    expect((await svc.unlockWithRecovery(s.recoveryCode) as Err).failure,
+        isA<WrongSecret>());
+    // …but the NEW code recovers the same key (recoverability never lost).
+    expect(_ok(await svc.unlockWithRecovery(out.recoveryCode)), s.masterKey);
+  });
+
+  test('redeemRecovery with a wrong code consumes nothing', () async {
+    final svc = _service();
+    final s = (await svc.setup(passphrase: 'pw', params: _fast)
+            as Ok<MasterKeySetup, SecurityFailure>)
+        .value;
+    expect((await svc.redeemRecovery('WRONG-CODE-XXXX') as Err).failure,
+        isA<WrongSecret>());
+    // The real code still redeems (nothing was consumed by the wrong attempt).
+    expect(_ok(await svc.redeemRecovery(s.recoveryCode)), s.masterKey);
+  });
+
   test('protectExistingKey wraps an already-open key without changing it',
       () async {
     final svc = _service();

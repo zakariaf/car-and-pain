@@ -19,6 +19,10 @@ dependencies:
   core:
     # Workspace-linked; the pure-Dart kernel this layer enforces at its boundary.
     path: ../core
+  security:
+    # F6 backup archive seals its payload with the SAME Argon2id KEK + AES-256-GCM
+    # primitives as the master-key hierarchy (no second crypto system).
+    path: ../security
   # Riverpod is the ONE framework dependency — DI + state. The placeholder root
   # providers live here and are overridden with real instances at bootstrap.
   flutter_riverpod: ^3.0.0

@@ -17,6 +17,29 @@ export 'src/attachments/blob_store.dart'
         InMemoryAttachmentBlobStore,
         blobRelativePath,
         contentSha256;
+export 'src/backup/archive_cipher.dart' show ArchiveCipher;
+export 'src/backup/backup_engine.dart' show BackupContents, BackupEngine;
+export 'src/backup/backup_format.dart'
+    show
+        ArchiveHeader,
+        ArchiveKdf,
+        ArchiveSummary,
+        archiveSha256,
+        assembleArchive,
+        parseArchive;
+export 'src/backup/competitor_presets.dart'
+    show
+        CompetitorPreset,
+        CsvFieldMap,
+        competitorPresets,
+        dollarsToMinorUnits,
+        fuellyFuelPreset,
+        gallonsToMillilitres,
+        isoDateToEpochMillis,
+        milesToMetres;
+export 'src/backup/csv_export.dart'
+    show csvField, exportEntitiesToCsv, rowsToCsv;
+export 'src/backup/csv_import.dart' show parseCsv, parseCsvToMaps;
 export 'src/db/app_database.dart' show AppDatabase;
 export 'src/db/database_factory.dart' show openAppDatabase;
 export 'src/db/migrations/snapshot_guard.dart' show SnapshotGuard;
@@ -33,6 +56,13 @@ export 'src/infra/app_time_zone.dart' show AppTimeZone;
 export 'src/infra/secure_key_store.dart'
     show FakeSecureKeyStore, FlutterSecureKeyStore, SecureKeyStore;
 export 'src/ledger/ledger_repository.dart' show LedgerRepository;
+export 'src/merge/lww_merge_engine.dart'
+    show
+        EntityMergeResult,
+        EntityStat,
+        LwwMergeEngine,
+        MergeConflict,
+        MergeReport;
 export 'src/notifications/notification_schedule_repository.dart'
     show NotificationScheduleRepository;
 export 'src/providers.dart'

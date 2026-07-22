@@ -114,6 +114,17 @@ final class KeyManager {
     return groups.join('-');
   }
 
+  /// Derive a raw 32-byte KEK from [secret] + [salt] under Argon2id [params] —
+  /// the SAME derivation the master-key envelope uses, exposed so the F6 backup
+  /// archive can seal its payload under a passphrase with identical parameters
+  /// (one derivation, one param source of truth). Salt is the Argon2 nonce.
+  Future<List<int>> deriveKek(
+    String secret,
+    List<int> salt,
+    Argon2idParams params,
+  ) async =>
+      (await _deriveKek(secret, salt, params)).extractBytes();
+
   Future<SecretKey> _deriveKek(
     String secret,
     List<int> salt,

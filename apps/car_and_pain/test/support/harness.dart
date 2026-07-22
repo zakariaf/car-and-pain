@@ -43,7 +43,12 @@ class FakeStartupInitializer implements StartupInitializer {
 
 /// Wraps the real [CarAndPainApp] with deterministic infra + a fake startup
 /// initializer, so widget tests drive the whole shell without touching plugins.
-Widget testApp(StartupInitializer initializer, {AppDatabase? database}) {
+/// Pass [secureStore] pre-seeded to exercise the app-lock gate.
+Widget testApp(
+  StartupInitializer initializer, {
+  AppDatabase? database,
+  SecureStore? secureStore,
+}) {
   return ProviderScope(
     overrides: [
       flavorProvider.overrideWithValue(Flavor.dev),
@@ -54,7 +59,8 @@ Widget testApp(StartupInitializer initializer, {AppDatabase? database}) {
       appTimeZoneProvider.overrideWithValue(const AppTimeZone('UTC')),
       // Security stack over an in-memory store (no Keychain/Keystore plugin):
       // with no PIN configured the app-lock gate resolves straight to unlocked.
-      secureStoreProvider.overrideWithValue(InMemorySecureStore()),
+      secureStoreProvider
+          .overrideWithValue(secureStore ?? InMemorySecureStore()),
       // A no-hardware biometric fake so the gate never reaches the local_auth
       // plugin channel (which would make resolution non-deterministic in tests).
       biometricAuthenticatorProvider.overrideWithValue(const _NoBiometric()),

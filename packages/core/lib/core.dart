@@ -14,6 +14,9 @@ export 'src/dashboard/readiness.dart'
         ReminderDue,
         aggregateReadiness,
         urgencyForDue;
+export 'src/energy/economy_engine.dart'
+    show ConsumptionInterval, EconomyEngine, EconomyReport, EnergyFill;
+export 'src/energy/energy_calc.dart' show FillAmounts, completeFill;
 export 'src/ledger/ledger.dart' show LedgerEngine, LedgerReading, LedgerSource;
 export 'src/money/currency.dart' show Currency;
 export 'src/money/fx.dart'

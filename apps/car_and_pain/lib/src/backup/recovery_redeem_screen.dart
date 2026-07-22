@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:l10n/l10n.dart';
 
+import '../security/recovery_code_screen.dart';
 import '../security/security_providers.dart';
 
 /// Redeem a one-time recovery code to regain access (F6-T7). Gated by the same
@@ -33,16 +34,32 @@ class _RecoveryRedeemScreenState extends ConsumerState<RecoveryRedeemScreen> {
   Future<void> _redeem() async {
     final l10n = AppLocalizations.of(context);
     setState(() => _busy = true);
+    // Redeem AND re-issue: the old code is consumed (single-use) and a fresh
+    // one is minted, so the owner is never left without a recovery path.
     final result = await ref
         .read(masterKeyServiceProvider)
-        .redeemRecovery(_controller.text);
+        .redeemAndReissue(_controller.text);
     if (!mounted) return;
-    setState(() {
-      _busy = false;
-      _ok = result.isOk;
-      _message =
-          result.isOk ? l10n.recoveryRedeemDone : l10n.recoveryRedeemInvalid;
-    });
+    switch (result) {
+      case Ok(:final value):
+        setState(() {
+          _busy = false;
+          _ok = true;
+          _message = l10n.recoveryRedeemDone;
+        });
+        // Surface the replacement code once, behind the un-skippable warning.
+        await Navigator.of(context).push<void>(
+          MaterialPageRoute(
+            builder: (_) => RecoveryCodeScreen(code: value.recoveryCode),
+          ),
+        );
+      case Err():
+        setState(() {
+          _busy = false;
+          _ok = false;
+          _message = l10n.recoveryRedeemInvalid;
+        });
+    }
   }
 
   @override

@@ -11,7 +11,8 @@ export 'src/blob_sealer.dart' show BlobSealer, SealedBlob;
 export 'src/kdf_calibrator.dart' show KdfCalibrator;
 export 'src/key_envelope.dart' show Argon2idParams, KeyEnvelope;
 export 'src/key_manager.dart' show KeyManager;
-export 'src/master_key_service.dart' show MasterKeyService, MasterKeySetup;
+export 'src/master_key_service.dart'
+    show MasterKeyService, MasterKeySetup, RecoveryReissue;
 export 'src/redaction.dart' show RedactionSpec, redactExport;
 export 'src/secure_store.dart' show InMemorySecureStore, SecureStore;
 export 'src/secure_vault.dart' show SecureVault;

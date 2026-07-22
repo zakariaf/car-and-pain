@@ -185,34 +185,42 @@ class BackupEngine {
   }
 
   /// Restore contents into the DB (destructive replace) + materialise blobs +
-  /// re-link + orphan-clean. Guarded by a pre-restore snapshot that is restored
-  /// on any failure — a refusal never leaves partially-mutated data.
+  /// re-link. A refusal never leaves partially-mutated data.
+  ///
+  /// `CanonicalCodec.import` is itself transactional — a failure rolls back
+  /// cleanly, leaving the DB untouched — so on an import error we DISCARD the
+  /// snapshot rather than restore it: restoring a bare main-file copy under the
+  /// live WAL connection would itself destroy uncheckpointed commits. Only the
+  /// non-transactional blob phase, which runs AFTER a committed import, warrants
+  /// a snapshot rollback. The snapshot is taken after a WAL checkpoint so it
+  /// reflects the true live state, not merely the last auto-checkpoint.
   Future<Result<void, ImportFailure>> restore(BackupContents contents) async {
+    await _checkpoint();
     final snapshotPath = await db.snapshotGuard?.take();
-    var restored = false;
     try {
       final imported = await CanonicalCodec(db).import(contents.doc);
       if (imported case Err(:final failure)) {
-        restored = await _rollback(snapshotPath);
+        // Import rolled back cleanly — DB unmutated. Discard, never rollback.
+        await _discardSnapshot(snapshotPath);
         return Err(failure);
       }
+      // Past here the import is COMMITTED; a blob failure warrants a revert.
       final relinked = await AttachmentBundler(db: db, store: store)
           .restore(contents.bundle);
       if (relinked case Err(:final failure)) {
-        restored = await _rollback(snapshotPath);
+        await _rollback(snapshotPath);
         return Err(failure);
       }
       await _discardSnapshot(snapshotPath);
       return const Ok(null);
     } on Object {
-      if (!restored) await _rollback(snapshotPath);
+      await _rollback(snapshotPath);
       return const Err(CorruptArchive());
     }
   }
 
-  Future<bool> _rollback(String? snapshotPath) async {
+  Future<void> _rollback(String? snapshotPath) async {
     if (snapshotPath != null) await db.snapshotGuard?.restore(snapshotPath);
-    return true;
   }
 
   Future<void> _discardSnapshot(String? snapshotPath) async {

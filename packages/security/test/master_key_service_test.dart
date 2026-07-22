@@ -130,6 +130,25 @@ void main() {
     expect(_ok(await svc.unlockWithPassphrase('pw')), s.masterKey);
   });
 
+  test('redeemAndReissue consumes the old code and issues a working new one',
+      () async {
+    final svc = _service();
+    final s = (await svc.setup(passphrase: 'pw', params: _fast)
+            as Ok<MasterKeySetup, SecurityFailure>)
+        .value;
+
+    final reissued = await svc.redeemAndReissue(s.recoveryCode, params: _fast);
+    final out = (reissued as Ok<RecoveryReissue, SecurityFailure>).value;
+    expect(out.masterKey, s.masterKey);
+    expect(out.recoveryCode, isNot(s.recoveryCode));
+
+    // The OLD code no longer works (single-use, invalidated by the overwrite)…
+    expect((await svc.unlockWithRecovery(s.recoveryCode) as Err).failure,
+        isA<WrongSecret>());
+    // …but the NEW code recovers the same key (recoverability never lost).
+    expect(_ok(await svc.unlockWithRecovery(out.recoveryCode)), s.masterKey);
+  });
+
   test('redeemRecovery with a wrong code consumes nothing', () async {
     final svc = _service();
     final s = (await svc.setup(passphrase: 'pw', params: _fast)

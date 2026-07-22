@@ -69,6 +69,34 @@ void main() {
     expect(await store2.read(atts.single.relativePath), seed.blob);
   });
 
+  test('a failed restore (bad doc) leaves existing data intact', () async {
+    final db = AppDatabase.memory();
+    addTearDown(db.close);
+    final store = InMemoryAttachmentBlobStore();
+    await _seed(db, store);
+    final engine = BackupEngine(db: db, store: store);
+
+    // A structurally-valid archive whose canonical doc is refused by import
+    // (newer formatVersion) — restore must NOT wipe or mutate the live DB.
+    final before =
+        (await VehiclesRepository(db).watchAll().first).map((v) => v.nickname);
+    final r = await engine.restore(const BackupContents(
+      doc: {'formatVersion': 999, 'entities': <String, dynamic>{}},
+      bundle: AttachmentBundle(entries: [], blobs: {}),
+      summary: ArchiveSummary(
+        createdAtUtcMillis: 0,
+        entityCounts: {},
+        attachmentCount: 0,
+        totalAttachmentBytes: 0,
+      ),
+    ));
+    expect((r as Err).failure, isA<SchemaVersionMismatch>());
+    // Existing data is untouched — the refusal never mutated it.
+    final after =
+        (await VehiclesRepository(db).watchAll().first).map((v) => v.nickname);
+    expect(after, before);
+  });
+
   test('a wrong passphrase is refused as WrongBackupPassphrase', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);

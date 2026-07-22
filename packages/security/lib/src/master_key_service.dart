@@ -88,13 +88,33 @@ final class MasterKeyService {
   /// it so a second redemption of the same code fails. The recovered key is
   /// returned; the caller restores access and re-issues a fresh code
   /// ([regenerateRecovery]). A wrong code fails closed before anything is
-  /// consumed.
+  /// consumed. Prefer [redeemAndReissue] in a user flow so recoverability is
+  /// never left empty.
   Future<Result<List<int>, SecurityFailure>> redeemRecovery(String code) async {
     final master = await unlockWithRecovery(code);
     if (master case Err()) return master; // wrong/absent → nothing consumed
     final removed = await _vault.deleteRecovery();
     if (removed case Err(:final failure)) return Err(failure);
     return master;
+  }
+
+  /// Redeem a recovery code AND atomically re-issue a replacement (F6-T7): unlock
+  /// with [code], mint a fresh recovery code wrapping the SAME master key, and
+  /// OVERWRITE the escrow. The old code is single-use-invalidated (it can no
+  /// longer unwrap the new envelope) while recoverability is never lost — this
+  /// is overwrite-with-replacement, not delete-then-reissue, so no crash window
+  /// strands the user. Returns the recovered key + the NEW code to show once.
+  Future<Result<RecoveryReissue, SecurityFailure>> redeemAndReissue(
+    String code, {
+    Argon2idParams params = Argon2idParams.floor,
+  }) async {
+    final unlocked = await unlockWithRecovery(code);
+    if (unlocked case Err(:final failure)) return Err(failure);
+    final master = (unlocked as Ok<List<int>, SecurityFailure>).value;
+    final recovery = await _km.createRecovery(master, params: params);
+    final saved = await _vault.saveRecovery(recovery.envelope);
+    if (saved case Err(:final failure)) return Err(failure);
+    return Ok((masterKey: master, recoveryCode: recovery.code));
   }
 
   /// Re-wrap the master key under [newPassphrase] (requires the old one). The
@@ -152,3 +172,7 @@ final class MasterKeyService {
 /// The two artifacts of a first-run setup: the raw master key (to open the DB
 /// now) and the recovery code (to show the owner exactly once).
 typedef MasterKeySetup = ({List<int> masterKey, String recoveryCode});
+
+/// The result of [MasterKeyService.redeemAndReissue]: the recovered master key
+/// and the fresh replacement recovery code to surface once.
+typedef RecoveryReissue = ({List<int> masterKey, String recoveryCode});

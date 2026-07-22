@@ -93,6 +93,34 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+          _SectionLabel(l10n.settingsBackup),
+          Semantics(
+            button: true,
+            label: l10n.settingsBackup,
+            child: InkWell(
+              onTap: () => context.push('/settings/backup'),
+              borderRadius: BorderRadius.circular(PulseTokens.rCard),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: PulseTokens.s2,
+                  vertical: PulseTokens.s2,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.backup_outlined, size: 22),
+                    const SizedBox(width: PulseTokens.s2),
+                    Expanded(
+                      child: Text(
+                        l10n.backupTitle,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ),
+                    Icon(Icons.adaptive.arrow_forward, size: 18),
+                  ],
+                ),
+              ),
+            ),
+          ),
           _SectionLabel(l10n.settingsStorage),
           Semantics(
             button: true,

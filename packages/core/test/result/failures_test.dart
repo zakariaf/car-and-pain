@@ -63,6 +63,10 @@ void main() {
       ),
       (failure: const BlobNotFound(), code: 'attachment.blob_not_found'),
       (failure: const BlobIoFailed(), code: 'attachment.io_failed'),
+      (
+        failure: const WrongBackupPassphrase(),
+        code: 'import.wrong_passphrase',
+      ),
     ];
     for (final c in cases) {
       test('${c.failure.runtimeType} => ${c.code}', () {
@@ -89,6 +93,10 @@ void main() {
       const SchemaVersionMismatch(expected: 3, found: 2),
       isNot(equals(const SchemaVersionMismatch(expected: 3, found: 1))),
     );
+    expect(
+        const WrongBackupPassphrase(), equals(const WrongBackupPassphrase()));
+    expect(const WrongBackupPassphrase().hashCode,
+        const WrongBackupPassphrase().hashCode);
   });
 
   test('attachment/media failures are value-equal by their params (F8)', () {

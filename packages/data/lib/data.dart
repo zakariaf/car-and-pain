@@ -27,8 +27,19 @@ export 'src/backup/backup_format.dart'
         archiveSha256,
         assembleArchive,
         parseArchive;
+export 'src/backup/competitor_presets.dart'
+    show
+        CompetitorPreset,
+        CsvFieldMap,
+        competitorPresets,
+        dollarsToMinorUnits,
+        fuellyFuelPreset,
+        gallonsToMillilitres,
+        isoDateToEpochMillis,
+        milesToMetres;
 export 'src/backup/csv_export.dart'
     show csvField, exportEntitiesToCsv, rowsToCsv;
+export 'src/backup/csv_import.dart' show parseCsv, parseCsvToMaps;
 export 'src/db/app_database.dart' show AppDatabase;
 export 'src/db/database_factory.dart' show openAppDatabase;
 export 'src/db/migrations/snapshot_guard.dart' show SnapshotGuard;

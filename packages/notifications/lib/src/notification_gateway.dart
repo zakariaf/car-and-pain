@@ -2,15 +2,18 @@ import 'package:core/core.dart';
 
 /// A request to schedule one local notification at an absolute [when].
 ///
-/// The pure scheduler resolves wall-clock recurrences to concrete [Instant]s
-/// (via the usage projector for distance/engine-hour rules) before handing them
-/// to the gateway — the gateway never does time math.
+/// The scheduler resolves recurrences/projections to a concrete [Instant] and
+/// localizes the copy (via the F4 i18n layer) *before* handing it to the gateway
+/// — the OS queue stores the fired strings, so the gateway does no time or text
+/// math. A locale change simply re-arms with fresh strings on the next reconcile.
 final class ScheduledNotification {
   const ScheduledNotification({
     required this.id,
     required this.when,
-    required this.titleCode,
-    required this.bodyCode,
+    required this.title,
+    required this.body,
+    this.channelId = 'info',
+    this.groupKey,
   });
 
   /// A deterministic id so reconcile is idempotent across reboots.
@@ -19,9 +22,15 @@ final class ScheduledNotification {
   /// The absolute instant to fire.
   final Instant when;
 
-  /// Localization **codes** (never user-facing strings) resolved at render time.
-  final String titleCode;
-  final String bodyCode;
+  /// Already-localized copy (built through F4; never a raw key).
+  final String title;
+  final String body;
+
+  /// The severity channel: `overdue` | `dueSoon` | `documents` | `info`.
+  final String channelId;
+
+  /// Digest grouping key; entries sharing a key collapse into one summary.
+  final String? groupKey;
 }
 
 /// The platform-scheduling port. The real implementation wraps

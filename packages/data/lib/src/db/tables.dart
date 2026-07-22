@@ -148,17 +148,19 @@ class Reminders extends Table with AuditColumns {
 }
 
 /// The derived OS-notification projection (F5-T2): one row per concrete pending
-/// entry with its deterministic id, computed fire instant, localized copy CODES
-/// (never user strings), and digest group key. Rebuildable from [Reminders] +
-/// the ledger; a pure projection, so it carries no audit/tombstone columns.
+/// entry with its deterministic id, computed fire instant, the already-localized
+/// copy that was armed, the severity channel, and a digest group key.
+/// Rebuildable from [Reminders] + the ledger; a pure projection, so it carries
+/// no audit/tombstone columns.
 @DataClassName('ScheduledNotificationRow')
 class ScheduledNotifications extends Table {
   IntColumn get notifId => integer()();
   TextColumn get reminderId =>
       text().references(Reminders, #id, onDelete: KeyAction.cascade)();
   IntColumn get fireAt => integer()();
-  TextColumn get titleCode => text()();
-  TextColumn get bodyCode => text()();
+  TextColumn get title => text()();
+  TextColumn get body => text()();
+  TextColumn get channel => text().withDefault(const Constant('info'))();
   TextColumn get groupKey => text().nullable()();
 
   @override

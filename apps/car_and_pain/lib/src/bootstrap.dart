@@ -10,6 +10,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'app.dart';
 import 'flavor.dart';
 import 'logging/app_log.dart';
+import 'notifications/notification_providers.dart';
+import 'notifications/notification_service.dart';
 import 'startup/app_infra.dart';
 import 'startup/startup_controller.dart';
 
@@ -25,6 +27,14 @@ Future<void> bootstrap(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
   registerFontLicenses(); // surface bundled OFL fonts on the licenses page
   const log = AppLog();
+
+  // Initialize the OS notification plugin + per-severity channels once (F5-T1);
+  // a failure degrades to no notifications, never a crashed startup.
+  final notifications = NotificationService();
+  final notifInit = await notifications.init();
+  if (notifInit case Err(:final failure)) {
+    log.error('notifications.init', failure, StackTrace.current);
+  }
 
   // Sync framework errors — keep the console/red-screen in debug, log locally.
   FlutterError.onError = (details) {
@@ -43,6 +53,7 @@ Future<void> bootstrap(Flavor flavor) async {
       ProviderScope(
         overrides: [
           flavorProvider.overrideWithValue(flavor),
+          notificationServiceProvider.overrideWithValue(notifications),
           // Wire the resolved infrastructure into the placeholder `data`
           // providers. Read only after the startup gate reaches its ready
           // state (the shell mounts after AsyncData(Ok)).

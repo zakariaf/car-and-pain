@@ -39,6 +39,15 @@ dependencies:
   go_router: ^14.0.0 # first-party router (invariant: go_router only)
   path_provider: ^2.1.0 # first-party; resolves app-private directories
 
+  # ── OS notifications (F5): sanctioned native deps per the invariant-#11
+  # platform-work exception. NOT analytics/telemetry; no INTERNET needed.
+  # Majors are verified-current at kickoff; live delivery/reboot need on-device
+  # QA (TODO(F5): record the verified version + OS once tested on a device).
+  flutter_local_notifications: ^19.0.0 # zonedSchedule + channels
+  timezone: ^0.10.0 # tz database for zoned firing
+  flutter_timezone: ^4.0.0 # resolve the device zone
+  permission_handler: ^12.0.0 # POST_NOTIFICATIONS / SCHEDULE_EXACT_ALARM
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

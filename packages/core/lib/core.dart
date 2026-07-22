@@ -32,6 +32,7 @@ export 'src/result/failures.dart'
         NoFxRate,
         NotFound,
         NotificationFailure,
+        NotificationScheduleFailed,
         PendingCapExceeded,
         PermissionDenied,
         SchemaVersionMismatch,

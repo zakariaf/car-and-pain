@@ -4,7 +4,10 @@ import 'dart:typed_data';
 import 'package:core/core.dart';
 import 'package:data/data.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:timezone/data/latest.dart' as tzdata;
+import 'package:timezone/timezone.dart' as tz;
 
 import '../flavor.dart';
 import 'app_infra.dart';
@@ -43,8 +46,28 @@ class AppStartupInitializer implements StartupInitializer {
       return const Err(AppDirsUnavailable());
     }
 
-    // 2. Timezone. TODO(F5): query the device zone + init the timezone database.
-    const timeZone = AppTimeZone('UTC');
+    // 2. Timezone (F5-T1): initialize the tz database and resolve the device
+    //    zone so every zoned notification fires at the correct wall-clock time.
+    final AppTimeZone timeZone;
+    try {
+      tzdata.initializeTimeZones();
+      var zoneName = 'UTC';
+      try {
+        zoneName = await FlutterTimezone.getLocalTimezone();
+      } on Object {
+        zoneName = 'UTC'; // platform lookup failed → safe default
+      }
+      try {
+        tz.setLocalLocation(tz.getLocation(zoneName));
+      } on Object {
+        zoneName = 'UTC';
+        tz.setLocalLocation(tz.getLocation('UTC'));
+      }
+      timeZone = AppTimeZone(zoneName);
+    } on Object catch (e, st) {
+      developer.log('startup.timezone', error: e, stackTrace: st);
+      return const Err(TimezoneInitFailed());
+    }
 
     // 3. Secure key store → the raw 256-bit DB key (F7 hardens recovery).
     final keyStore = FlutterSecureKeyStore();

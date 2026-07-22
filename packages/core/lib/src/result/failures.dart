@@ -175,6 +175,22 @@ sealed class NotificationFailure extends Failure {
   const NotificationFailure();
 }
 
+/// A local-notification schedule/cancel call failed at the platform boundary
+/// (the plugin threw). Wraps the plugin error so no plugin type leaks past the
+/// notification module.
+final class NotificationScheduleFailed extends NotificationFailure {
+  const NotificationScheduleFailed();
+
+  @override
+  String get code => 'notif.schedule_failed';
+
+  @override
+  bool operator ==(Object other) => other is NotificationScheduleFailed;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
 /// The user denied the notification permission.
 final class PermissionDenied extends NotificationFailure {
   const PermissionDenied();

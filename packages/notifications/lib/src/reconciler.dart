@@ -105,6 +105,7 @@ final class Reconciler {
 
   static bool _changed(ScheduledNotification a, ScheduledNotification b) =>
       a.when != b.when ||
-      a.titleCode != b.titleCode ||
-      a.bodyCode != b.bodyCode;
+      a.title != b.title ||
+      a.body != b.body ||
+      a.channelId != b.channelId;
 }

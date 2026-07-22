@@ -8,8 +8,8 @@ void main() {
     const n = ScheduledNotification(
       id: 1,
       when: Instant.fromEpochMillis(1_784_000_000_000),
-      titleCode: 'reminder.service_due.title',
-      bodyCode: 'reminder.service_due.body',
+      title: 'reminder.service_due.title',
+      body: 'reminder.service_due.body',
     );
 
     expect((await gateway.schedule(n)).isOk, isTrue);

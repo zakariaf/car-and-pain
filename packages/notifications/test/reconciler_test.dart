@@ -6,8 +6,8 @@ ScheduledNotification _n(int id, int day, {String body = 'b'}) =>
     ScheduledNotification(
       id: id,
       when: Instant.fromEpochMillis(day * Duration.millisecondsPerDay),
-      titleCode: 't',
-      bodyCode: body,
+      title: 't',
+      body: body,
     );
 
 void main() {

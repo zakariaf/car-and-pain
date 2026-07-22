@@ -81,10 +81,15 @@ class VehicleLedgerScreen extends ConsumerWidget {
       value: metres,
       takenAt: now,
     );
+    // The check itself failed (DB error) — abort rather than persist unchecked.
+    if (preview.isErr) return;
     final warnings = preview.valueOrNull ?? const <FieldError>[];
 
     var override = false;
-    if (warnings.isNotEmpty && context.mounted) {
+    if (warnings.isNotEmpty) {
+      // An anomaly REQUIRES explicit confirmation. If we can't show the dialog
+      // (the route was popped mid-check), abort — never persist un-acknowledged.
+      if (!context.mounted) return;
       override = await showDialog<bool>(
             context: context,
             builder: (context) => _AnomalyDialog(warnings: warnings),

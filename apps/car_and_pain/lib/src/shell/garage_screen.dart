@@ -113,12 +113,13 @@ class _VehicleRow extends ConsumerWidget {
                 ],
               ],
             ),
-            // Redundant status: non-active vehicles carry the lifecycle word here.
-            subtitle: Text(
-              isActiveStatus
-                  ? vehicle.displayModel
-                  : vehicleStatusLabel(l10n, vehicle.status),
-            ),
+            // Redundant status: non-active vehicles carry the lifecycle word
+            // here; an active vehicle shows its make/model, or nothing if unset.
+            subtitle: isActiveStatus
+                ? (vehicle.displayModel.isEmpty
+                    ? null
+                    : Text(vehicle.displayModel))
+                : Text(vehicleStatusLabel(l10n, vehicle.status)),
             trailing: PopupMenuButton<String>(
               icon: const Icon(Icons.more_vert),
               onSelected: (action) => _onAction(context, ref, action),

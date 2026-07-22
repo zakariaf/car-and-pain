@@ -70,7 +70,8 @@ class Vehicle {
   final String? coverPhotoRef;
   final bool isDefault;
 
-  /// Display label: make + model (+ trim), falling back to the nickname.
+  /// Display label from make + model (+ trim); empty when none are set (callers
+  /// that need a guaranteed label fall back to [nickname] themselves).
   String get displayModel =>
       [make, model, trim].where((s) => s != null && s.isNotEmpty).join(' ');
 

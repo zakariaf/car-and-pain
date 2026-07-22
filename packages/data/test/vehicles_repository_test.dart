@@ -128,6 +128,55 @@ void main() {
     expect((await repo.purge(id)).isErr, isTrue); // already gone → NotFound
   });
 
+  test('a tag containing a comma round-trips intact (no corruption)', () async {
+    final id = await seed();
+    await repo.update(
+        id, const VehicleEdit(tags: ['winter, studded', 'daily']));
+    final v = (await repo.getById(id)).valueOrNull!;
+    expect(v.tags, ['winter, studded', 'daily']); // not split on the comma
+  });
+
+  test(
+      'an energy switch clears the now-irrelevant capacity (VehicleEdit.clear)',
+      () async {
+    final id = await seed();
+    await repo.update(id, const VehicleEdit(batteryCapacityJoules: 216000000));
+    expect(
+        (await repo.getById(id)).valueOrNull!.batteryCapacityJoules, 216000000);
+    // Switching to a fuel powertrain clears the battery capacity.
+    await repo.update(
+      id,
+      const VehicleEdit(
+          energyType: 'gasoline', clear: {'batteryCapacityJoules'}),
+    );
+    final v = (await repo.getById(id)).valueOrNull!;
+    expect(v.batteryCapacityJoules, isNull);
+    expect(v.energyType, 'gasoline');
+  });
+
+  test('setDefault on a missing/trashed id is NotFound and keeps the default',
+      () async {
+    final a = await seed(nickname: 'A');
+    await repo.setDefault(a);
+    // A stale/nonexistent id must NOT clear the existing default.
+    expect((await repo.setDefault('ghost')).isErr, isTrue);
+    expect((await repo.getById(a)).valueOrNull!.isDefault, isTrue);
+    // A trashed vehicle cannot be pinned.
+    final b = await seed(nickname: 'B');
+    await repo.softDelete(b);
+    expect((await repo.setDefault(b)).isErr, isTrue);
+    expect((await repo.getById(a)).valueOrNull!.isDefault, isTrue);
+  });
+
+  test('lifecycle/rename writes bump row_revision (audit invariant)', () async {
+    final id = await seed();
+    final r0 = (await db.select(db.vehicles).get()).single.rowRevision;
+    await repo.rename(id, 'Renamed');
+    await repo.setStatus(id, 'archived');
+    final r1 = (await db.select(db.vehicles).get()).single.rowRevision;
+    expect(r1, greaterThanOrEqualTo(r0 + 2));
+  });
+
   test('watchGarage orders by manual sortOrder then age', () async {
     final a = await seed(nickname: 'A');
     final b = await seed(nickname: 'B');

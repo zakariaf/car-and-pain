@@ -187,7 +187,8 @@ class _IdentityCard extends StatelessWidget {
           if (vehicle.displayModel.isNotEmpty)
             _Row(l10n.vehicleMake, Text(vehicle.displayModel)),
           if (vehicle.modelYear != null)
-            _Row(l10n.vehicleYear, Text(fmt.formatInt(vehicle.modelYear!))),
+            _Row(l10n.vehicleYear,
+                Text(fmt.formatUngrouped(vehicle.modelYear!))),
           if (vehicle.vin != null) _Row(l10n.vehicleVin, LtrText(vehicle.vin!)),
           if (vehicle.licensePlate != null)
             _Row(l10n.vehiclePlate, LtrText(vehicle.licensePlate!)),

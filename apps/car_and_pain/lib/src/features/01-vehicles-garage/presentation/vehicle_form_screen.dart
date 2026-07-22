@@ -79,7 +79,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
       _make.text = v.make ?? '';
       _model.text = v.model ?? '';
       _trim.text = v.trim ?? '';
-      _year.text = v.modelYear == null ? '' : fmt.formatInt(v.modelYear!);
+      _year.text = v.modelYear == null ? '' : fmt.formatUngrouped(v.modelYear!);
       _plate.text = v.licensePlate ?? '';
       _vin.text = v.vin ?? '';
       _type = vehicleTypeFromCode(v.vehicleType);
@@ -207,6 +207,17 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
     final vinText = _vin.text.trim();
     final vinResult = vinText.isEmpty ? null : _vinDecoder.decode(vinText);
 
+    final visible = _visible;
+    // A capacity field no longer applicable to the chosen powertrain is
+    // explicitly CLEARED in the DB (not merely left unchanged), so switching an
+    // EV to petrol doesn't leave a phantom battery capacity behind.
+    final clear = <String>{
+      if (!visible.contains(VehicleField.tankCapacity)) 'tankCapacityMl',
+      if (!visible.contains(VehicleField.batteryCapacity))
+        'batteryCapacityJoules',
+      if (!visible.contains(VehicleField.usableCapacity))
+        'usableCapacityJoules',
+    };
     final edit = VehicleEdit(
       nickname: name,
       make: _textOrNull(_make),
@@ -220,16 +231,17 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
       vinChecksumValid: vinResult?.checkDigitValid,
       wmiDecoded: _wmiSummary(vinResult),
       licensePlate: _textOrNull(_plate),
-      tankCapacityMl: _visible.contains(VehicleField.tankCapacity)
+      tankCapacityMl: visible.contains(VehicleField.tankCapacity)
           ? _mlFrom(_tank, parser)
           : null,
-      batteryCapacityJoules: _visible.contains(VehicleField.batteryCapacity)
+      batteryCapacityJoules: visible.contains(VehicleField.batteryCapacity)
           ? _joulesFrom(_battery, parser)
           : null,
-      usableCapacityJoules: _visible.contains(VehicleField.usableCapacity)
+      usableCapacityJoules: visible.contains(VehicleField.usableCapacity)
           ? _joulesFrom(_usable, parser)
           : null,
       distanceTrackingEnabled: _distanceTracking,
+      clear: clear,
     );
 
     final String? id;

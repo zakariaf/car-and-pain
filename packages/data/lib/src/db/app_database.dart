@@ -12,6 +12,9 @@ part 'app_database.g.dart';
 @DriftDatabase(
   tables: [
     Vehicles,
+    PlateHistory,
+    ValuationHistory,
+    StateOfHealthLog,
     OdometerReadings,
     FuelEntries,
     ServiceEntries,
@@ -36,7 +39,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

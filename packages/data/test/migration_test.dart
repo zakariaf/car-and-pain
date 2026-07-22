@@ -6,6 +6,42 @@ import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+/// The vehicle columns added by the v4 → v5 (M2) migration step — dropped to
+/// rewind a fresh DB below its introduction.
+const _m2VehicleColumns = [
+  'trim',
+  'wheel_count',
+  'axle_config',
+  'license_plate',
+  'plate_country',
+  'vin',
+  'vin_scanned',
+  'vin_checksum_valid',
+  'wmi_decoded',
+  'paint_color',
+  'paint_code',
+  'secondary_energy_type',
+  'secondary_tank_ml',
+  'fuel_grade',
+  'usable_capacity_joules',
+  'connector_types',
+  'distance_tracking_enabled',
+  'status_changed_at',
+  'sold_date',
+  'sold_price_minor',
+  'final_odometer_metres',
+  'purchase_date',
+  'purchase_price_minor',
+  'purchase_currency',
+  'current_value_minor',
+  'group_id',
+  'tags',
+  'sort_order',
+  'cover_photo_ref',
+  'factory_specs',
+  'consumption_unit',
+];
+
 void main() {
   test('SnapshotGuard takes a pre-migration snapshot and restores on failure',
       () async {
@@ -33,10 +69,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 4 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 5 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 4);
+    expect(db.schemaVersion, 5);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -47,6 +83,9 @@ void main() {
       names,
       containsAll(<String>[
         'vehicles',
+        'plate_history',
+        'valuation_history',
+        'state_of_health_log',
         'odometer_readings',
         'fuel_entries',
         'service_entries',
@@ -80,20 +119,23 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v4 forward migration adds all later schema, keeps data', () async {
+  test('v1 → v5 forward migration adds all later schema, keeps data', () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
 
-    // Build a fresh (v4) DB, seed a vehicle, then rewind the on-disk schema to
-    // v1 — drop the v2/v3/v4 additions (settings, scheduled_notifications, the
-    // F5 reminder columns, and the F8 attachment columns) and set
-    // user_version = 1 — to simulate an old install.
+    // Build a fresh (v5) DB, seed a vehicle, then rewind the on-disk schema to
+    // v1 — drop the v2..v5 additions (settings, scheduled_notifications, the F5
+    // reminder columns, the F8 attachment columns, and the M2 vehicle columns +
+    // child tables) and set user_version = 1 — to simulate an old install.
     final setup = AppDatabase(NativeDatabase(File(path)));
     final v =
         (await VehiclesRepository(setup).add(nickname: 'Keeper')).valueOrNull!;
     await setup.customStatement('DROP TABLE settings');
     await setup.customStatement('DROP TABLE scheduled_notifications');
+    await setup.customStatement('DROP TABLE plate_history');
+    await setup.customStatement('DROP TABLE valuation_history');
+    await setup.customStatement('DROP TABLE state_of_health_log');
     const f5Columns = [
       'due_engine_minutes',
       'completed_at',
@@ -112,10 +154,14 @@ void main() {
     for (final c in ['size_bytes', 'thumbnail_relative_path', 'is_encrypted']) {
       await setup.customStatement('ALTER TABLE attachments DROP COLUMN $c');
     }
+    // The M2 (v5) vehicle columns.
+    for (final c in _m2VehicleColumns) {
+      await setup.customStatement('ALTER TABLE vehicles DROP COLUMN $c');
+    }
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
 
-    // Reopen: drift sees v1 < v4 and runs all guarded forward steps.
+    // Reopen: drift sees v1 < v5 and runs all guarded forward steps.
     final upgraded = AppDatabase(NativeDatabase(File(path)));
     addTearDown(upgraded.close);
 
@@ -127,6 +173,19 @@ void main() {
         .length;
     expect(await tableCount('settings'), 1);
     expect(await tableCount('scheduled_notifications'), 1);
+    // The M2 child tables are re-created.
+    expect(await tableCount('plate_history'), 1);
+    expect(await tableCount('valuation_history'), 1);
+    expect(await tableCount('state_of_health_log'), 1);
+    // A re-added M2 vehicle column is usable (smoke insert reads a plate back).
+    await upgraded.customStatement(
+      "UPDATE vehicles SET license_plate = 'ABC-123' WHERE id = ?",
+      [v.id],
+    );
+    final plate = await upgraded.customSelect(
+        'SELECT license_plate AS p FROM vehicles WHERE id = ?',
+        variables: [Variable<String>(v.id)]).get();
+    expect(plate.single.read<String>('p'), 'ABC-123');
 
     // The re-added reminder columns are back (a smoke insert with an F5 column).
     await upgraded.customStatement(
@@ -157,8 +216,9 @@ void main() {
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
 
-    // Fresh (v4) DB, seed an attachment row, then rewind to v3 by dropping the
-    // F8 columns and setting user_version = 3 to simulate a pre-F8 install.
+    // Fresh (v5) DB, seed an attachment row, then rewind to v3 by dropping the
+    // F8 attachment columns AND the M2 (v5) additions and setting
+    // user_version = 3 to simulate a pre-F8 install.
     final setup = AppDatabase(NativeDatabase(File(path)));
     await setup.customStatement(
       'INSERT INTO attachments (id, created_at, updated_at, sha256, '
@@ -168,10 +228,16 @@ void main() {
     for (final c in ['size_bytes', 'thumbnail_relative_path', 'is_encrypted']) {
       await setup.customStatement('ALTER TABLE attachments DROP COLUMN $c');
     }
+    await setup.customStatement('DROP TABLE plate_history');
+    await setup.customStatement('DROP TABLE valuation_history');
+    await setup.customStatement('DROP TABLE state_of_health_log');
+    for (final c in _m2VehicleColumns) {
+      await setup.customStatement('ALTER TABLE vehicles DROP COLUMN $c');
+    }
     await setup.customStatement('PRAGMA user_version = 3');
     await setup.close();
 
-    // Reopen: drift sees v3 < v4 and runs the guarded forward step.
+    // Reopen: drift sees v3 < v5 and runs the guarded forward steps (3→4, 4→5).
     final upgraded = AppDatabase(NativeDatabase(File(path)));
     addTearDown(upgraded.close);
 

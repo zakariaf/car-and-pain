@@ -86,7 +86,8 @@ export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
-export 'src/repositories/vehicles_repository.dart' show VehiclesRepository;
+export 'src/repositories/vehicles_repository.dart'
+    show VehicleEdit, VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;
 export 'src/settings/settings_repository.dart' show SettingsRepository;
 export 'src/taxonomy/taxonomy.dart' show Category, TaxonomyRepository;

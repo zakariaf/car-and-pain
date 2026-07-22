@@ -1,5 +1,6 @@
 import 'package:car_and_pain/src/app.dart';
 import 'package:car_and_pain/src/flavor.dart';
+import 'package:car_and_pain/src/routing/pending_location.dart';
 import 'package:car_and_pain/src/security/biometric_authenticator.dart';
 import 'package:car_and_pain/src/security/security_providers.dart';
 import 'package:car_and_pain/src/settings/locale_controller.dart';
@@ -8,6 +9,7 @@ import 'package:car_and_pain/src/startup/app_infra.dart';
 import 'package:car_and_pain/src/startup/startup_initializer.dart';
 import 'package:core/core.dart';
 import 'package:data/data.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:security/security.dart';
@@ -50,11 +52,17 @@ Widget testApp(
   AppDatabase? database,
   SecureStore? secureStore,
   List<Vehicle> vehicles = const [],
+  Map<String, String> settings = const {},
+  bool reduceMotion = false,
+  String? pendingLocation,
 }) {
   return ProviderScope(
     overrides: [
       flavorProvider.overrideWithValue(Flavor.dev),
       startupInitializerProvider.overrideWithValue(initializer),
+      if (pendingLocation != null)
+        pendingLocationProvider
+            .overrideWithValue(PendingDeepLink(pendingLocation)),
       appDatabaseProvider.overrideWithValue(database ?? AppDatabase.memory()),
       secureKeyStoreProvider.overrideWithValue(const FakeSecureKeyStore()),
       appDirsProvider.overrideWithValue(_dirs),
@@ -69,11 +77,18 @@ Widget testApp(
       // Feed localization + the vehicle list off synchronous fixed streams so
       // widget tests don't open a Drift .watch() (which leaves a pending timer
       // at teardown). The router redirect and shell read these directly.
-      settingsMapProvider
-          .overrideWith((ref) => Stream.value(const <String, String>{})),
+      // `settings` drives locale/scope/onboarding-complete deterministically.
+      settingsMapProvider.overrideWith((ref) => Stream.value(settings)),
       vehiclesStreamProvider.overrideWith((ref) => Stream.value(vehicles)),
     ],
-    child: const CarAndPainApp(),
+    // Force the app-level reduce-motion preference on for deterministic pumps
+    // of the breathing hero (which otherwise repeats forever → pumpAndSettle
+    // never returns). The scope sits above MaterialApp but inherited widgets
+    // still reach every descendant.
+    child: ReducedMotionScope(
+      reduce: reduceMotion,
+      child: const CarAndPainApp(),
+    ),
   );
 }
 

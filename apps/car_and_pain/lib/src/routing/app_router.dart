@@ -45,7 +45,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     navigatorKey: _rootKey,
-    initialLocation: ref.read(pendingLocationProvider) ?? AppLocations.cockpit,
+    initialLocation:
+        ref.read(pendingLocationProvider).location ?? AppLocations.cockpit,
     restorationScopeId: 'app_router',
     refreshListenable: refresh,
     redirect: (context, state) => _redirect(ref, state.matchedLocation),
@@ -172,7 +173,8 @@ String? _redirect(Ref ref, String location) {
   final ready = result?.isOk ?? false;
   final error = startup.hasError || (result?.isErr ?? false);
 
-  return appRedirect(RedirectInput(
+  final pending = ref.read(pendingLocationProvider);
+  final target = appRedirect(RedirectInput(
     startupLoading: startup.isLoading,
     startupError: error,
     locked:
@@ -183,7 +185,12 @@ String? _redirect(Ref ref, String location) {
             'true',
     hasVehicle: ready && ref.read(activeVehiclesProvider).isNotEmpty,
     location: location,
+    pendingLocation: pending.location,
   ));
+  // Consume the deep link the moment it becomes the destination, so a later
+  // lock/unlock bounce doesn't re-navigate to it.
+  if (target != null && target == pending.location) pending.take();
+  return target;
 }
 
 /// The startup-error surface as a route — it reads its typed failure from the

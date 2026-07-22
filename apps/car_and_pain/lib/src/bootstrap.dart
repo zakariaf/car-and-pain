@@ -66,7 +66,8 @@ Future<void> bootstrap(Flavor flavor) async {
           flavorProvider.overrideWithValue(flavor),
           notificationServiceProvider.overrideWithValue(notifications),
           if (launchLocation != null)
-            pendingLocationProvider.overrideWithValue(launchLocation),
+            pendingLocationProvider
+                .overrideWithValue(PendingDeepLink(launchLocation)),
           // Wire the resolved infrastructure into the placeholder `data`
           // providers. Read only after the startup gate reaches its ready
           // state (the shell mounts after AsyncData(Ok)).

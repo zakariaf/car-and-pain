@@ -10,6 +10,7 @@ class RedirectInput {
     required this.onboardingDone,
     required this.hasVehicle,
     required this.location,
+    this.pendingLocation,
   });
 
   final bool startupLoading;
@@ -22,6 +23,12 @@ class RedirectInput {
   final bool onboardingDone;
   final bool hasVehicle;
   final String location;
+
+  /// A cold-start deep-link target (M1-T6) captured before the gate bounce
+  /// through `/splash`. When the gates clear it becomes the destination instead
+  /// of the Cockpit — so a notification tap survives startup. Consumed once by
+  /// the router glue (cleared after the first successful hand-off).
+  final String? pendingLocation;
 }
 
 /// The pure, idempotent redirect precedence (M1-T1): startup → error → lock →
@@ -39,8 +46,15 @@ String? appRedirect(RedirectInput input) {
   if (!input.onboardingDone && !input.hasVehicle) {
     return _to(input.location, AppLocations.onboarding);
   }
-  // Everything passed. If we're parked on a gate route, go home.
+  // Everything passed. If we're parked on a gate route, leave it: honour a
+  // pending cold-start deep link (never a gate location itself), else go home.
   if (AppLocations.gateLocations.contains(input.location)) {
+    final pending = input.pendingLocation;
+    if (pending != null &&
+        pending != input.location &&
+        !AppLocations.gateLocations.contains(pending)) {
+      return pending;
+    }
     return AppLocations.cockpit;
   }
   return null;

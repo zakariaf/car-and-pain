@@ -9,6 +9,7 @@ RedirectInput _in({
   bool onboardingDone = true,
   bool hasVehicle = true,
   String location = AppLocations.cockpit,
+  String? pendingLocation,
 }) =>
     RedirectInput(
       startupLoading: startupLoading,
@@ -17,6 +18,7 @@ RedirectInput _in({
       onboardingDone: onboardingDone,
       hasVehicle: hasVehicle,
       location: location,
+      pendingLocation: pendingLocation,
     );
 
 void main() {
@@ -74,6 +76,41 @@ void main() {
     test('having a vehicle skips onboarding even if the flag is unset', () {
       // hasVehicle defaults true; only onboardingDone is toggled off here.
       expect(appRedirect(_in(onboardingDone: false)), isNull);
+    });
+
+    test('a pending deep link wins over home when a gate route clears', () {
+      // The cold-start deep link survives the splash bounce (M1-T6): clearing
+      // the splash gate targets the pending location, not the Cockpit.
+      expect(
+        appRedirect(_in(
+          location: AppLocations.splash,
+          pendingLocation: '/garage/v1/reminders/r7',
+        )),
+        '/garage/v1/reminders/r7',
+      );
+    });
+
+    test('a pending deep link never overrides an active gate', () {
+      // While still locked, the lock gate wins — the deep link waits.
+      expect(
+        appRedirect(_in(
+          locked: true,
+          pendingLocation: '/garage/v1/reminders/r7',
+        )),
+        AppLocations.lock,
+      );
+    });
+
+    test('a pending gate-location deep link is ignored (falls back home)', () {
+      // Defensive: a pending value that is itself a gate route can never be a
+      // deep-link destination — home wins.
+      expect(
+        appRedirect(_in(
+          location: AppLocations.splash,
+          pendingLocation: AppLocations.lock,
+        )),
+        AppLocations.cockpit,
+      );
     });
   });
 }

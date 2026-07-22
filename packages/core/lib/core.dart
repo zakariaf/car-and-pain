@@ -24,6 +24,7 @@ export 'src/result/failures.dart'
         DatabaseOpenFailed,
         DbFailure,
         DecryptFailed,
+        EnvelopeCorrupt,
         ExactAlarmDenied,
         Failure,
         FxFailure,
@@ -36,11 +37,15 @@ export 'src/result/failures.dart'
         PendingCapExceeded,
         PermissionDenied,
         SchemaVersionMismatch,
+        SecureStorageFailed,
+        SecurityFailure,
         StartupFailure,
         TimezoneInitFailed,
         TransactionRolledBack,
         UnknownFailure,
-        ValidationFailure;
+        UnlockThrottled,
+        ValidationFailure,
+        WrongSecret;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
 export 'src/result/validation.dart' show FieldError, Validation;
 export 'src/scheduling/ics_export.dart' show IcsEvent, buildIcsCalendar;

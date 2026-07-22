@@ -18,6 +18,7 @@ workspace:
   - packages/notifications
   - packages/l10n
   - packages/design_system
+  - packages/security
 
 # Dev-only tooling that must resolve workspace-wide (never ships in the binary).
 # very_good_analysis backs the shared `include:` in the root analysis_options.yaml.

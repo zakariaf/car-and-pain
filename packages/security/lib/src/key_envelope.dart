@@ -31,6 +31,23 @@ final class Argon2idParams {
         parallelism:
             parallelism < floor.parallelism ? floor.parallelism : parallelism,
       );
+
+  Argon2idParams copyWith({int? memory, int? iterations, int? parallelism}) =>
+      Argon2idParams(
+        memory: memory ?? this.memory,
+        iterations: iterations ?? this.iterations,
+        parallelism: parallelism ?? this.parallelism,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      other is Argon2idParams &&
+      other.memory == memory &&
+      other.iterations == iterations &&
+      other.parallelism == parallelism;
+
+  @override
+  int get hashCode => Object.hash(memory, iterations, parallelism);
 }
 
 /// The persisted wrapped-key envelope (F7-T1). It holds everything needed to

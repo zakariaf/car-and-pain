@@ -14,12 +14,15 @@ class CarAndPainApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // One reactive source (the encrypted settings table) drives the locale AND
+    // the script-aware theme, so a language change re-renders live (F4-T2).
+    final prefs = ref.watch(localizationPrefsProvider);
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
-      theme: pulseLightTheme,
-      darkTheme: pulseDarkTheme,
-      locale: ref.watch(localeProvider),
+      theme: pulseTheme(Brightness.light, arabicScript: prefs.isRtl),
+      darkTheme: pulseTheme(Brightness.dark, arabicScript: prefs.isRtl),
+      locale: prefs.locale,
       localizationsDelegates: carAndPainLocalizationsDelegates,
       supportedLocales: carAndPainSupportedLocales,
       routerConfig: ref.watch(appRouterProvider),

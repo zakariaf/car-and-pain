@@ -37,5 +37,18 @@
   "roomCockpit": "کابین",
   "roomGarage": "گاراژ",
   "roomPitlane": "پیت‌لِین",
-  "exhaleDone": "انجام شد — حالا آرام"
+  "exhaleDone": "انجام شد — حالا آرام",
+  "settingsTitle": "زبان و قالب",
+  "settingsLanguage": "زبان",
+  "settingsCalendar": "تقویم",
+  "settingsNumerals": "اعداد",
+  "settingsPreview": "پیش‌نمایش",
+  "languageSystemDefault": "پیش‌فرض سیستم",
+  "calendarGregorian": "میلادی",
+  "calendarJalali": "خورشیدی",
+  "calendarHijri": "قمری",
+  "calendarHebrew": "عبری",
+  "numeralWestern": "غربی",
+  "numeralEasternArabic": "عربی",
+  "numeralPersian": "فارسی"
 }

@@ -115,6 +115,18 @@ class CanonicalCodec {
           .into(db.attachments)
           .insert(Attachment.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // App-global localization/display preferences (F4-T10). Additive and
+    // FK-free: an older archive that predates it simply omits the key, and the
+    // import's `?? const []` leaves the restored app at first-run resolution.
+    // Values are canonical (locale codes / enum names), never display strings.
+    _Entity(
+      'settings',
+      () async =>
+          (await db.select(db.settings).get()).map((r) => r.toJson()).toList(),
+      (j) => db
+          .into(db.settings)
+          .insert(SettingRow.fromJson(j), mode: InsertMode.insertOrReplace),
+    ),
   ];
 
   /// Export the whole DB to a canonical, versioned document (JSON-encodable).

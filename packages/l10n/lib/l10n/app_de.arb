@@ -37,5 +37,18 @@
   "roomCockpit": "Cockpit",
   "roomGarage": "Garage",
   "roomPitlane": "Boxengasse",
-  "exhaleDone": "Erledigt — jetzt ruhig"
+  "exhaleDone": "Erledigt — jetzt ruhig",
+  "settingsTitle": "Sprache & Format",
+  "settingsLanguage": "Sprache",
+  "settingsCalendar": "Kalender",
+  "settingsNumerals": "Ziffern",
+  "settingsPreview": "Vorschau",
+  "languageSystemDefault": "Systemstandard",
+  "calendarGregorian": "Gregorianisch",
+  "calendarJalali": "Solar-Hidschri",
+  "calendarHijri": "Hidschri",
+  "calendarHebrew": "Hebräisch",
+  "numeralWestern": "Westlich",
+  "numeralEasternArabic": "Ostarabisch",
+  "numeralPersian": "Persisch"
 }

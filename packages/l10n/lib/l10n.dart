@@ -10,10 +10,31 @@
 /// `melos l10n` script if imports of `AppLocalizations` fail to resolve.
 library;
 
+export 'src/bidi/bidi.dart' show isolate, ltrIsolate, rtlIsolate, stripBidi;
+export 'src/calendars/calendar.dart'
+    show
+        CalendarDate,
+        CalendarSystem,
+        defaultCalendarFor,
+        isLeapYear,
+        monthLength,
+        monthsInYear,
+        tryCalendarDate;
+export 'src/calendars/calendar_names.dart' show monthName;
 export 'src/generated/app_localizations.dart';
 export 'src/localization.dart'
     show
         carAndPainLocalizationsDelegates,
         carAndPainSupportedLocales,
         isRtlLocale;
+export 'src/numerals/numeral_format.dart' show NumeralFormat, NumeralParser;
+export 'src/numerals/numeral_presets.dart'
+    show
+        NumeralPreset,
+        defaultNumeralSystemFor,
+        numeralPresetFor,
+        resolveNumeralFormat,
+        resolveNumeralParser;
+export 'src/numerals/numeral_system.dart'
+    show GroupingStyle, NumeralSystem, foldDigitsToAscii, groupInteger;
 export 'src/pulse_labels.dart' show pulseLabel;

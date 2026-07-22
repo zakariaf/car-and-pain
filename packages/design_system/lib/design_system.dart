@@ -7,12 +7,15 @@
 library;
 
 // ── Theme / tokens / motion / urgency ──────────────────────────────────────
+export 'src/theme/font_licenses.dart' show registerFontLicenses;
 export 'src/theme/pulse_motion.dart' show PulseMotion;
 export 'src/theme/pulse_theme.dart'
     show
         buildPulseTextTheme,
+        pulseArabicFont,
         pulseDarkScheme,
         pulseDarkTheme,
+        pulseLatinFont,
         pulseLightScheme,
         pulseLightTheme,
         pulseTheme;
@@ -41,6 +44,7 @@ export 'src/widgets/charts.dart'
         PulseLineChart,
         pulseChartRamp;
 export 'src/widgets/exhale.dart' show Exhale, ExhaleSettle, coolOneNotch;
+export 'src/widgets/ltr_text.dart' show LtrText;
 export 'src/widgets/pulse_button.dart' show PulseButton, PulseButtonVariant;
 export 'src/widgets/pulse_card.dart' show PulseCard, UStripePainter;
 export 'src/widgets/pulse_line.dart'

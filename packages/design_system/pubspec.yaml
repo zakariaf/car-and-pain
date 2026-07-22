@@ -20,3 +20,23 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+# Bundled OFL script fonts (F4-T6). Two variable families cover all six locales:
+# Hanken Grotesk for Latin (en/de/fr); Vazirmatn for the Arabic script
+# (fa/ar/ckb) incl. Persian/Sorani letterforms and Eastern-Arabic/Persian
+# digits. Declared here (design_system owns typography); referenced app-wide as
+# `packages/design_system/<family>`. Licenses recorded in
+# docs/reference/third-party-licenses.md and registered via registerFontLicenses().
+flutter:
+  fonts:
+    - family: HankenGrotesk
+      fonts:
+        - asset: fonts/HankenGrotesk-VF.ttf
+    - family: Vazirmatn
+      fonts:
+        - asset: fonts/Vazirmatn-VF.ttf
+  # OFL texts bundled as assets so registerFontLicenses() can surface them on
+  # the app's licenses page (read lazily, never embedded in Dart source).
+  assets:
+    - fonts/HankenGrotesk-OFL.txt
+    - fonts/Vazirmatn-OFL.txt

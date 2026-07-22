@@ -37,5 +37,18 @@
   "roomCockpit": "القمرة",
   "roomGarage": "المرآب",
   "roomPitlane": "حارة الصيانة",
-  "exhaleDone": "تم — الآن هادئ"
+  "exhaleDone": "تم — الآن هادئ",
+  "settingsTitle": "اللغة والتنسيق",
+  "settingsLanguage": "اللغة",
+  "settingsCalendar": "التقويم",
+  "settingsNumerals": "الأرقام",
+  "settingsPreview": "معاينة",
+  "languageSystemDefault": "افتراضي النظام",
+  "calendarGregorian": "الميلادي",
+  "calendarJalali": "الهجري الشمسي",
+  "calendarHijri": "الهجري",
+  "calendarHebrew": "العبري",
+  "numeralWestern": "الغربية",
+  "numeralEasternArabic": "العربية",
+  "numeralPersian": "الفارسية"
 }

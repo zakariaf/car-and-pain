@@ -37,5 +37,18 @@
   "roomCockpit": "کۆکپیت",
   "roomGarage": "گەراج",
   "roomPitlane": "پیت‌لەین",
-  "exhaleDone": "ئەنجامدرا — ئێستا هێمن"
+  "exhaleDone": "ئەنجامدرا — ئێستا هێمن",
+  "settingsTitle": "زمان و فۆرمات",
+  "settingsLanguage": "زمان",
+  "settingsCalendar": "ساڵنامە",
+  "settingsNumerals": "ژمارەکان",
+  "settingsPreview": "پێشبینین",
+  "languageSystemDefault": "بنەڕەتی سیستەم",
+  "calendarGregorian": "زایینی",
+  "calendarJalali": "کۆچی خۆر",
+  "calendarHijri": "کۆچی مانگ",
+  "calendarHebrew": "عیبری",
+  "numeralWestern": "ڕۆژئاوایی",
+  "numeralEasternArabic": "عەرەبی",
+  "numeralPersian": "فارسی"
 }

@@ -8,6 +8,7 @@ import 'infra/secure_key_store.dart';
 import 'ledger/ledger_repository.dart';
 import 'repositories/fuel_repository.dart';
 import 'repositories/vehicles_repository.dart';
+import 'settings/settings_repository.dart';
 import 'taxonomy/taxonomy.dart';
 import 'trash/trash_repository.dart';
 
@@ -64,4 +65,8 @@ final trashRepositoryProvider = Provider<TrashRepository>(
 
 final taxonomyRepositoryProvider = Provider<TaxonomyRepository>(
   (ref) => TaxonomyRepository(ref.watch(appDatabaseProvider)),
+);
+
+final settingsRepositoryProvider = Provider<SettingsRepository>(
+  (ref) => SettingsRepository(ref.watch(appDatabaseProvider)),
 );

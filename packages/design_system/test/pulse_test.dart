@@ -233,4 +233,25 @@ void main() {
       expect((w as Directionality).textDirection, TextDirection.ltr);
     });
   });
+
+  group('LtrText bidi isolation (F4-T5)', () {
+    testWidgets('forces LTR for a token inside an RTL screen', (tester) async {
+      const vin = 'WVWZZZ1KZAW000001';
+      await tester.pumpWidget(
+        _wrap(
+          const Directionality(
+            textDirection: TextDirection.rtl,
+            child: LtrText(vin),
+          ),
+        ),
+      );
+      expect(find.text(vin), findsOneWidget);
+      final dir = tester.widget<Directionality>(
+        find
+            .ancestor(of: find.text(vin), matching: find.byType(Directionality))
+            .first,
+      );
+      expect(dir.textDirection, TextDirection.ltr);
+    });
+  });
 }

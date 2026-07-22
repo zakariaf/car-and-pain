@@ -71,6 +71,12 @@ jobs:
       - name: Directional-geometry grep
         run: bash tool/check_directional_geometry.sh
 
+      - name: ARB coverage gate (every locale covers the en template)
+        run: dart run tool/check_arb_coverage.dart
+
+      - name: String-externalization gate (no hardcoded user-facing strings)
+        run: bash tool/check_no_hardcoded_strings.sh
+
       # The DB-header (not `SQLite format 3`) encryption test lives in the data
       # package; it skips on hosts without SQLCipher and runs on a device lane.
       #

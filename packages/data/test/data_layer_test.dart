@@ -213,6 +213,28 @@ void main() {
     });
   });
 
+  group('SettingsRepository (app-global key/value)', () {
+    test('set / get / upsert / delete, and watchAll is reactive', () async {
+      final settings = SettingsRepository(db);
+
+      // A live watcher: {} → {locale: en} → {locale: fa} as writes land.
+      final sizes = settings.watchAll().map((m) => m['locale']);
+      final seen = expectLater(sizes, emitsInOrder([null, 'en', 'fa']));
+
+      await pumpEventQueue();
+      expect((await settings.set('locale', 'en')).isOk, isTrue);
+      expect(await settings.get('locale'), 'en');
+      expect((await settings.set('locale', 'fa')).isOk, isTrue); // upsert
+      await seen;
+
+      expect(await settings.readAll(), {'locale': 'fa'});
+
+      // Passing null removes the key (revert to default).
+      expect((await settings.set('locale', null)).isOk, isTrue);
+      expect(await settings.get('locale'), isNull);
+    });
+  });
+
   group('IntegrityValidators', () {
     test('over-capacity, future-dated, collect', () {
       expect(

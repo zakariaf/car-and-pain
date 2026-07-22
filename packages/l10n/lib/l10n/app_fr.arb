@@ -37,5 +37,18 @@
   "roomCockpit": "Cockpit",
   "roomGarage": "Garage",
   "roomPitlane": "Stand",
-  "exhaleDone": "Terminé — tout est calme"
+  "exhaleDone": "Terminé — tout est calme",
+  "settingsTitle": "Langue et format",
+  "settingsLanguage": "Langue",
+  "settingsCalendar": "Calendrier",
+  "settingsNumerals": "Chiffres",
+  "settingsPreview": "Aperçu",
+  "languageSystemDefault": "Par défaut du système",
+  "calendarGregorian": "Grégorien",
+  "calendarJalali": "Hégire solaire",
+  "calendarHijri": "Hégire",
+  "calendarHebrew": "Hébreu",
+  "numeralWestern": "Occidentaux",
+  "numeralEasternArabic": "Arabes orientaux",
+  "numeralPersian": "Persans"
 }

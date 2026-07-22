@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:core/core.dart';
 import 'package:data/data.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,6 +23,7 @@ import 'startup/startup_controller.dart';
 /// first frame.
 Future<void> bootstrap(Flavor flavor) async {
   WidgetsFlutterBinding.ensureInitialized();
+  registerFontLicenses(); // surface bundled OFL fonts on the licenses page
   const log = AppLog();
 
   // Sync framework errors — keep the console/red-screen in debug, log locally.

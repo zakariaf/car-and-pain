@@ -1,5 +1,6 @@
 import 'package:car_and_pain/src/app.dart';
 import 'package:car_and_pain/src/flavor.dart';
+import 'package:car_and_pain/src/settings/locale_controller.dart';
 import 'package:car_and_pain/src/startup/app_infra.dart';
 import 'package:car_and_pain/src/startup/startup_initializer.dart';
 import 'package:core/core.dart';
@@ -48,6 +49,10 @@ Widget testApp(StartupInitializer initializer, {AppDatabase? database}) {
       secureKeyStoreProvider.overrideWithValue(const FakeSecureKeyStore()),
       appDirsProvider.overrideWithValue(_dirs),
       appTimeZoneProvider.overrideWithValue(const AppTimeZone('UTC')),
+      // Feed localization off a synchronous fixed stream so widget tests don't
+      // open a Drift .watch() (which leaves a pending timer at teardown).
+      settingsMapProvider
+          .overrideWith((ref) => Stream.value(const <String, String>{})),
     ],
     child: const CarAndPainApp(),
   );

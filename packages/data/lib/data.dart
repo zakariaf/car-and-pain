@@ -29,6 +29,7 @@ export 'src/providers.dart'
         fuelRepositoryProvider,
         ledgerRepositoryProvider,
         secureKeyStoreProvider,
+        settingsRepositoryProvider,
         taxonomyRepositoryProvider,
         trashRepositoryProvider,
         vehiclesRepositoryProvider;
@@ -38,6 +39,7 @@ export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
 export 'src/repositories/vehicles_repository.dart' show VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;
+export 'src/settings/settings_repository.dart' show SettingsRepository;
 export 'src/taxonomy/taxonomy.dart' show Category, TaxonomyRepository;
 export 'src/trash/trash_repository.dart' show TrashItem, TrashRepository;
 export 'src/validation/validators.dart' show IntegrityValidators;

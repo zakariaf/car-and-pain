@@ -79,32 +79,39 @@ class MediaProcessor {
   final int thumbnailDimension;
 
   Future<ProcessedImage> processImage(Uint8List input) async {
+    // Both native handles are released on every path (finally) — otherwise each
+    // processed image leaks its full encoded source + descriptor.
     final buffer = await ui.ImmutableBuffer.fromUint8List(input);
-    final descriptor = await ui.ImageDescriptor.encoded(buffer);
-    final srcW = descriptor.width;
-    final srcH = descriptor.height;
+    ui.ImageDescriptor? descriptor;
+    try {
+      descriptor = await ui.ImageDescriptor.encoded(buffer);
+      final srcW = descriptor.width;
+      final srcH = descriptor.height;
 
-    final full = ImageResizePlan.forSource(
-      width: srcW,
-      height: srcH,
-      maxDimension: maxDimension,
-    );
-    final thumb = ImageResizePlan.forSource(
-      width: srcW,
-      height: srcH,
-      maxDimension: thumbnailDimension,
-    );
+      final full = ImageResizePlan.forSource(
+        width: srcW,
+        height: srcH,
+        maxDimension: maxDimension,
+      );
+      final thumb = ImageResizePlan.forSource(
+        width: srcW,
+        height: srcH,
+        maxDimension: thumbnailDimension,
+      );
 
-    final fullBytes = await _decodeToPng(descriptor, full);
-    final thumbBytes = await _decodeToPng(descriptor, thumb);
-    descriptor.dispose();
+      final fullBytes = await _decodeToPng(descriptor, full);
+      final thumbBytes = await _decodeToPng(descriptor, thumb);
 
-    return ProcessedImage(
-      bytes: fullBytes,
-      thumbnail: thumbBytes,
-      width: full.targetWidth,
-      height: full.targetHeight,
-    );
+      return ProcessedImage(
+        bytes: fullBytes,
+        thumbnail: thumbBytes,
+        width: full.targetWidth,
+        height: full.targetHeight,
+      );
+    } finally {
+      descriptor?.dispose();
+      buffer.dispose();
+    }
   }
 
   Future<Uint8List> _decodeToPng(

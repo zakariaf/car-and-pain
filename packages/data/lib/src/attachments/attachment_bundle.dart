@@ -11,6 +11,7 @@ class AttachmentManifestEntry {
     required this.id,
     required this.relativePath,
     required this.sha256,
+    required this.storedSha256,
     required this.sizeBytes,
     required this.mimeType,
     required this.linkedEntityType,
@@ -23,6 +24,9 @@ class AttachmentManifestEntry {
         id: j['id'] as String,
         relativePath: j['relativePath'] as String,
         sha256: j['sha256'] as String,
+        // Back-compat: an older manifest without the on-disk digest falls back
+        // to the plaintext sha (correct for the un-encrypted case).
+        storedSha256: (j['storedSha256'] ?? j['sha256']) as String,
         sizeBytes: j['sizeBytes'] as int,
         mimeType: j['mimeType'] as String,
         linkedEntityType: j['linkedEntityType'] as String,
@@ -32,7 +36,16 @@ class AttachmentManifestEntry {
 
   final String id;
   final String relativePath;
+
+  /// The PLAINTEXT content hash — the content-address (drives the storage path)
+  /// and the re-link/de-dup key. NOT what the on-disk bytes hash to when sealed.
   final String sha256;
+
+  /// The hash of the EXACT bytes stored on disk (ciphertext when sealed) — the
+  /// byte-level integrity check restore verifies against, so an encrypted blob
+  /// verifies without needing the master key.
+  final String storedSha256;
+
   final int sizeBytes;
   final String mimeType;
   final String linkedEntityType;
@@ -43,6 +56,7 @@ class AttachmentManifestEntry {
         'id': id,
         'relativePath': relativePath,
         'sha256': sha256,
+        'storedSha256': storedSha256,
         'sizeBytes': sizeBytes,
         'mimeType': mimeType,
         'linkedEntityType': linkedEntityType,
@@ -84,7 +98,11 @@ class AttachmentBundler {
     final entries = <AttachmentManifestEntry>[];
     final blobs = <String, Uint8List>{};
     for (final r in rows) {
-      blobs[r.relativePath] = await store.read(r.relativePath);
+      // A row whose blob file is missing is already broken/orphaned — skip it
+      // rather than aborting the whole backup (GC reaps the dangling row).
+      if (!await store.exists(r.relativePath)) continue;
+      final raw = await store.read(r.relativePath);
+      blobs[r.relativePath] = raw;
       final thumb = r.thumbnailRelativePath;
       if (thumb != null && await store.exists(thumb)) {
         blobs[thumb] = await store.read(thumb);
@@ -94,6 +112,7 @@ class AttachmentBundler {
           id: r.id,
           relativePath: r.relativePath,
           sha256: r.sha256,
+          storedSha256: contentSha256(raw),
           sizeBytes: r.sizeBytes,
           mimeType: r.mimeType,
           linkedEntityType: r.linkedEntityType,
@@ -112,14 +131,16 @@ class AttachmentBundler {
   /// nothing — then write all blobs + rewrite each row's `relativePath` (re-link
   /// by the stable owner UUID, which never changed). Returns the count restored.
   Future<Result<int, ImportFailure>> restore(AttachmentBundle bundle) async {
-    // Phase 1 — verify. No side effects until every checksum passes.
+    // Phase 1 — verify against the ON-DISK byte digest (not the plaintext sha),
+    // so a sealed blob verifies without the master key. No side effects until
+    // every checksum passes.
     for (final e in bundle.entries) {
       final bytes = bundle.blobs[e.relativePath];
       final found = bytes == null ? '' : contentSha256(bytes);
-      if (found != e.sha256) {
+      if (found != e.storedSha256) {
         return Err(AttachmentChecksumMismatch(
           attachmentId: e.id,
-          expected: e.sha256,
+          expected: e.storedSha256,
           found: found,
         ));
       }

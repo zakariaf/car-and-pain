@@ -19,6 +19,10 @@ abstract interface class AttachmentBlobStore {
     String extension = '',
   });
 
+  /// Overwrite the bytes at an EXISTING relative path (same content address) —
+  /// used to re-seal/unseal a blob in place during the encryption migration.
+  Future<void> writeAt(String relativePath, List<int> bytes);
+
   Future<Uint8List> read(String relativePath);
   Future<bool> exists(String relativePath);
   Future<int> size(String relativePath);
@@ -62,10 +66,15 @@ class DirectoryAttachmentBlobStore implements AttachmentBlobStore {
     String extension = '',
   }) async {
     final rel = blobRelativePath(sha256, suffix: suffix, extension: extension);
-    final file = _file(rel);
+    await writeAt(rel, bytes);
+    return rel;
+  }
+
+  @override
+  Future<void> writeAt(String relativePath, List<int> bytes) async {
+    final file = _file(relativePath);
     await file.parent.create(recursive: true);
     await file.writeAsBytes(bytes, flush: true);
-    return rel;
   }
 
   @override
@@ -117,6 +126,10 @@ class InMemoryAttachmentBlobStore implements AttachmentBlobStore {
     _blobs[rel] = Uint8List.fromList(bytes);
     return rel;
   }
+
+  @override
+  Future<void> writeAt(String relativePath, List<int> bytes) async =>
+      _blobs[relativePath] = Uint8List.fromList(bytes);
 
   @override
   Future<Uint8List> read(String relativePath) {

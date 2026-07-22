@@ -161,6 +161,50 @@ void main() {
     expect(reloaded.refCount, 2);
   });
 
+  test('bulk re-encrypt does NOT double-seal a de-duped shared blob', () async {
+    // Regression: two rows share one physical blob (content de-dup). A per-row
+    // re-encrypt would seal the file twice and destroy the media.
+    final svc = service();
+    final pdf = _pdf();
+    final a = ok(await svc.attach(
+      ownerType: AttachmentOwner.expense,
+      ownerId: 'e1',
+      bytes: pdf,
+      mimeType: 'application/pdf',
+    ));
+    final b = ok(await svc.attach(
+      ownerType: AttachmentOwner.expense,
+      ownerId: 'e2',
+      bytes: pdf,
+      mimeType: 'application/pdf',
+    ));
+    expect(a.relativePath, b.relativePath); // one physical blob, two rows
+
+    expect(
+        (await svc.reencryptLibrary(encrypt: true) as Ok<int, Failure>).value,
+        2);
+
+    // The shared blob is sealed exactly ONCE — unsealing yields the original
+    // PDF, not another SealedBlob's bytes.
+    final onDisk = await store.read(a.relativePath);
+    final unsealed =
+        await BlobSealer().unseal(SealedBlob.fromBytes(onDisk)!, key);
+    expect((unsealed as Ok<List<int>, SecurityFailure>).value, pdf);
+
+    // BOTH rows read back the original bytes.
+    for (final id in [a.id, b.id]) {
+      final row = (await repo.getById(id)).valueOrNull!;
+      expect(row.isEncrypted, isTrue);
+      expect((await svc.readBytes(row) as Ok<Uint8List, Failure>).value, pdf);
+    }
+
+    // And decrypting back restores plaintext for both.
+    expect(
+        (await svc.reencryptLibrary(encrypt: false) as Ok<int, Failure>).value,
+        2);
+    expect(await store.read(a.relativePath), pdf);
+  });
+
   test('bulk re-encrypt seals existing blobs, then decrypts back; idempotent',
       () async {
     final svc = service();

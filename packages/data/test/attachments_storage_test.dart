@@ -97,6 +97,27 @@ void main() {
       });
     });
 
+    test('total counts a de-duped shared blob once, not per row', () async {
+      // Two owners reference the SAME content (one physical blob, 1000 bytes).
+      final bytes = _bytes(1000, 5);
+      final sha = contentSha256(bytes);
+      final path = await store.write(sha, bytes);
+      for (final owner in ['v1', 'v2']) {
+        await repo.add(
+          linkedEntityType: AttachmentOwner.vehicle,
+          linkedEntityId: owner,
+          sha256: sha,
+          relativePath: path,
+          mimeType: 'application/pdf',
+          sizeBytes: 1000,
+        );
+      }
+      // Headline total reconciles with disk (one blob), not 2×.
+      expect(await gc.totalBytes(), 1000);
+      // Per-owner attribution stays logical (per row).
+      expect(await gc.bytesByOwner(AttachmentOwner.vehicle, 'v1'), 1000);
+    });
+
     test('orphan blobs (no row) are found and swept; totals reconcile',
         () async {
       final live = await _seed(repo, store, owner: 'v1', bytes: _bytes(200, 5));
@@ -217,6 +238,38 @@ void main() {
       // Re-running GC on the restored store finds no orphans.
       final gc = AttachmentGc(db: db, store: target);
       expect((await gc.sweep()).isEmpty, isTrue);
+    });
+
+    test('an ENCRYPTED blob round-trips (verified by on-disk digest)',
+        () async {
+      // Simulate a sealed attachment: on-disk bytes (ciphertext) differ from the
+      // plaintext, and the row is content-addressed by the PLAINTEXT sha.
+      final source = InMemoryAttachmentBlobStore();
+      final plaintext = _bytes(2000, 4);
+      final ciphertext = _bytes(2040, 9); // stands in for SealedBlob.toBytes()
+      final sha = contentSha256(plaintext);
+      final path = await source.write(sha, ciphertext);
+      final att = (await repo.add(
+        linkedEntityType: AttachmentOwner.document,
+        linkedEntityId: 'd1',
+        sha256: sha,
+        relativePath: path,
+        mimeType: 'application/pdf',
+        sizeBytes: plaintext.length,
+        isEncrypted: true,
+      ) as Ok<Attachment, DbFailure>)
+          .value;
+
+      final bundle = await AttachmentBundler(db: db, store: source).collect();
+      final target = InMemoryAttachmentBlobStore();
+      final result =
+          await AttachmentBundler(db: db, store: target).restore(bundle);
+      expect((result as Ok<int, ImportFailure>).value, 1);
+
+      // The sealed bytes survive byte-identically and the row re-links.
+      final row = (await repo.getById(att.id)).valueOrNull!;
+      expect(await target.read(row.relativePath), ciphertext);
+      expect(row.isEncrypted, isTrue);
     });
 
     test('a checksum mismatch is refused and writes nothing', () async {

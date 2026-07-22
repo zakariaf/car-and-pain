@@ -138,41 +138,78 @@ class AttachmentService {
   }
 
   /// Bulk (de)encrypt the whole library to match the target setting (F8-T4).
-  /// Idempotent — rows already in the target state are skipped — and reports
-  /// progress via [onProgress]. Each blob is transformed then flagged; because
-  /// a `SealedBlob` is self-describing, a crash mid-migration is recoverable by
-  /// a reconciliation pass (on-device QA). Returns the number of rows changed.
+  /// Each **physical** blob is transformed at most once per pass — content
+  /// de-dup means many rows share one file, so this dedups the work by path
+  /// (a naive per-row loop would double-seal a shared blob and corrupt it).
+  /// The current state is read from the BYTES (a valid, key-matching SealedBlob
+  /// ⇒ already sealed), not a possibly-stale row flag, so the pass is idempotent
+  /// and self-heals a half-done (crashed) migration. Returns rows re-flagged.
   Future<Result<int, Failure>> reencryptLibrary({
     required bool encrypt,
     void Function(int done, int total)? onProgress,
   }) async {
     final all = await repo.listAllLive();
     if (all case Err(:final failure)) return Err(failure);
-    final rows = (all as Ok<List<Attachment>, DbFailure>)
-        .value
-        .where((a) => a.isEncrypted != encrypt)
-        .toList();
+    final rows = (all as Ok<List<Attachment>, DbFailure>).value;
 
     final key = await keyProvider();
-    var done = 0;
+    final processed = <String>{};
+    var changed = 0;
     for (final att in rows) {
-      final plain = await readBytes(att);
-      if (plain case Err(:final failure)) return Err(failure);
-      final bytes = (plain as Ok<Uint8List, Failure>).value;
-
-      await _rewriteBlob(att.sha256, bytes, att.relativePath, encrypt, key);
-      final thumbPath = att.thumbnailRelativePath;
-      if (thumbPath != null) {
-        final t = await _readPath(thumbPath, att.isEncrypted);
-        if (t case Ok(:final value)) {
-          await _rewriteBlob(att.sha256, value, thumbPath, encrypt, key);
-        }
+      final r1 = await _retarget(att.relativePath,
+          encrypt: encrypt, key: key, done: processed);
+      if (r1 case Err(:final failure)) return Err(failure);
+      final thumb = att.thumbnailRelativePath;
+      if (thumb != null) {
+        final r2 =
+            await _retarget(thumb, encrypt: encrypt, key: key, done: processed);
+        if (r2 case Err(:final failure)) return Err(failure);
       }
-      final marked = await repo.markEncrypted(att.id, encrypted: encrypt);
-      if (marked case Err(:final failure)) return Err(failure);
-      onProgress?.call(++done, rows.length);
+      if (att.isEncrypted != encrypt) {
+        final marked = await repo.markEncrypted(att.id, encrypted: encrypt);
+        if (marked case Err(:final failure)) return Err(failure);
+        changed++;
+      }
+      onProgress?.call(changed, rows.length);
     }
-    return Ok(rows.length);
+    return Ok(changed);
+  }
+
+  /// Bring ONE physical blob to the target sealed/plaintext state, exactly once
+  /// per pass. The on-disk bytes decide the current state — a real sealed blob
+  /// is one that both parses AND unseals under the key — so a shared blob is
+  /// never double-transformed and a re-run after a crash converges.
+  Future<Result<void, Failure>> _retarget(
+    String path, {
+    required bool encrypt,
+    required List<int> key,
+    required Set<String> done,
+  }) async {
+    if (!done.add(path)) return const Ok(null); // shared blob already handled
+
+    final Uint8List raw;
+    try {
+      raw = await store.read(path);
+    } on Object {
+      return const Err(BlobNotFound());
+    }
+
+    final parsed = SealedBlob.fromBytes(raw);
+    List<int>? plaintext;
+    if (parsed != null) {
+      final unsealed = await sealer.unseal(parsed, key);
+      if (unsealed case Ok(:final value)) plaintext = value;
+    }
+    final isSealed = plaintext != null;
+
+    if (encrypt) {
+      if (isSealed) return const Ok(null); // already sealed
+      await store.writeAt(path, (await sealer.seal(raw, key)).toBytes());
+    } else {
+      if (!isSealed) return const Ok(null); // already plaintext
+      await store.writeAt(path, plaintext);
+    }
+    return const Ok(null);
   }
 
   Future<String> _writeBlob(
@@ -184,19 +221,5 @@ class AttachmentService {
     final toStore =
         key == null ? bytes : (await sealer.seal(bytes, key)).toBytes();
     return store.write(sha, toStore, suffix: suffix);
-  }
-
-  Future<void> _rewriteBlob(
-    String sha,
-    Uint8List plaintext,
-    String path,
-    bool encrypt,
-    List<int> key,
-  ) async {
-    final bytes =
-        encrypt ? (await sealer.seal(plaintext, key)).toBytes() : plaintext;
-    // Content-addressed → same path; overwrite in place.
-    await store.write(sha, bytes,
-        suffix: path.endsWith('.thumb') ? '.thumb' : '');
   }
 }

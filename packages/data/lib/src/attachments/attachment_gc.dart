@@ -51,10 +51,13 @@ class AttachmentGc {
   int _now() => _clock.nowUtc().millisecondsSinceEpoch;
 
   // ── Size roll-up ──────────────────────────────────────────────────────────
-  /// Total bytes of all live attachments.
+  /// Total bytes on disk — each unique content-addressed blob counted ONCE, so
+  /// the headline total reconciles with actual disk usage even when several
+  /// rows share a de-duped blob.
   Future<int> totalBytes() => _sum(
-        'SELECT COALESCE(SUM(size_bytes), 0) AS s '
-        'FROM attachments WHERE is_deleted = 0',
+        'SELECT COALESCE(SUM(size_bytes), 0) AS s FROM '
+        '(SELECT size_bytes FROM attachments WHERE is_deleted = 0 '
+        'GROUP BY sha256)',
       );
 
   /// Bytes of live attachments owned by one record.

@@ -115,20 +115,37 @@ class _CloseButton extends StatelessWidget {
   }
 }
 
-class _Page extends ConsumerWidget {
+class _Page extends ConsumerStatefulWidget {
   const _Page({required this.attachment, required this.transform});
 
   final Attachment attachment;
   final TransformationController transform;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_Page> createState() => _PageState();
+}
+
+class _PageState extends ConsumerState<_Page> {
+  Future<Result<Uint8List, Failure>>? _bytes;
+
+  @override
+  void initState() {
+    super.initState();
+    // Read ONCE — not per build — so a zoom/rebuild doesn't re-read + re-decrypt
+    // the full-res image (which would flash a spinner and tear down the gesture).
+    if (widget.attachment.kind == AttachmentKind.image) {
+      _bytes = ref.read(attachmentServiceProvider).readBytes(widget.attachment);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final attachment = widget.attachment;
     if (attachment.kind != AttachmentKind.image) {
       return _Fallback(attachment: attachment);
     }
-    final future = ref.read(attachmentServiceProvider).readBytes(attachment);
     return FutureBuilder<Result<Uint8List, Failure>>(
-      future: future,
+      future: _bytes,
       builder: (context, snap) {
         if (!snap.hasData) {
           return const Center(
@@ -138,7 +155,7 @@ class _Page extends ConsumerWidget {
         final result = snap.data!;
         return switch (result) {
           Ok(:final value) => InteractiveViewer(
-              transformationController: transform,
+              transformationController: widget.transform,
               minScale: 1,
               maxScale: 5,
               child: Center(

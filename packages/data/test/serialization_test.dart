@@ -40,6 +40,35 @@ void main() {
         hasLength(1));
   });
 
+  test('M2 vehicle child tables round-trip through the backup (T8)', () async {
+    final db = AppDatabase.memory();
+    addTearDown(db.close);
+    final vehicles = VehiclesRepository(db);
+    final v = (await vehicles.add(nickname: 'EV')).valueOrNull!;
+    await vehicles.update(
+      v.id,
+      const VehicleEdit(energyType: 'electric', licensePlate: 'EV-1'),
+    );
+    await vehicles.addPlateHistory(v.id, plate: 'OLD-9', country: 'DE');
+    await vehicles.addValuation(v.id,
+        valuedAt: 1000, amountMinor: 2500000, currencyCode: 'EUR');
+    await vehicles.addStateOfHealth(v.id, recordedAt: 2000, sohPermille: 934);
+
+    final doc = await CanonicalCodec(db).export();
+    final db2 = AppDatabase.memory();
+    addTearDown(db2.close);
+    expect((await CanonicalCodec(db2).import(doc)).isOk, isTrue);
+
+    // Re-export is byte-identical (child tables included) and children survived.
+    final doc2 = await CanonicalCodec(db2).export();
+    expect(jsonEncode(doc2['entities']), jsonEncode(doc['entities']));
+    final v2 = VehiclesRepository(db2);
+    expect((await v2.watchPlateHistory(v.id).first).single.plate, 'OLD-9');
+    expect((await v2.watchValuations(v.id).first).single.amountMinor, 2500000);
+    expect((await v2.watchStateOfHealth(v.id).first).single.sohPermille, 934);
+    expect((await v2.getById(v.id)).valueOrNull!.energyType, 'electric');
+  });
+
   test('a newer archive is refused with a typed failure', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);

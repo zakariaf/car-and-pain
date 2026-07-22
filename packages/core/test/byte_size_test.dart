@@ -58,4 +58,15 @@ void main() {
       ..sort();
     expect(list.first, const ByteSize(10));
   });
+
+  test('value semantics: hashCode keys a map; toString is descriptive', () {
+    // Equal sizes collapse to one key (exercises hashCode + ==).
+    final counts = <ByteSize, int>{};
+    for (final b in const [ByteSize(42), ByteSize(42), ByteSize(7)]) {
+      counts[b] = (counts[b] ?? 0) + 1;
+    }
+    expect(counts.length, 2);
+    expect(counts[const ByteSize(42)], 2);
+    expect(const ByteSize(2048).toString(), contains('2048'));
+  });
 }

@@ -129,7 +129,40 @@ class Reminders extends Table with AuditColumns {
   TextColumn get triggerType => text()();
   IntColumn get dueDate => integer().nullable()();
   IntColumn get dueOdometerMetres => integer().nullable()();
+  // F5-T2: engine-hour threshold (whole minutes) + completion anchor.
+  IntColumn get dueEngineMinutes => integer().nullable()();
+  IntColumn get completedAt => integer().nullable()();
+  // Recurrence: `every` + unit (days|weeks|months|years); null = one-off.
+  IntColumn get recurrenceEvery => integer().nullable()();
+  TextColumn get recurrenceUnit => text().nullable()();
+  // Lead-times (fire early): whole minutes + distance-expressed metres.
+  IntColumn get leadMinutes => integer().withDefault(const Constant(0))();
+  IntColumn get leadDistanceMetres => integer().nullable()();
+  // Severity → channel: overdue | dueSoon | documents | info.
+  TextColumn get severity => text().withDefault(const Constant('info'))();
+  // Quiet-hours (local minutes from midnight) + preferred delivery minute.
+  IntColumn get quietStartMinute => integer().nullable()();
+  IntColumn get quietEndMinute => integer().nullable()();
+  IntColumn get quietDeliverMinute => integer().nullable()();
   TextColumn get status => text().withDefault(const Constant('active'))();
+}
+
+/// The derived OS-notification projection (F5-T2): one row per concrete pending
+/// entry with its deterministic id, computed fire instant, localized copy CODES
+/// (never user strings), and digest group key. Rebuildable from [Reminders] +
+/// the ledger; a pure projection, so it carries no audit/tombstone columns.
+@DataClassName('ScheduledNotificationRow')
+class ScheduledNotifications extends Table {
+  IntColumn get notifId => integer()();
+  TextColumn get reminderId =>
+      text().references(Reminders, #id, onDelete: KeyAction.cascade)();
+  IntColumn get fireAt => integer()();
+  TextColumn get titleCode => text()();
+  TextColumn get bodyCode => text()();
+  TextColumn get groupKey => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {notifId};
 }
 
 /// The shared custom taxonomy: service types, expense categories, trip

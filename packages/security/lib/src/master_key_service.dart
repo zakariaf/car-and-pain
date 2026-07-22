@@ -74,7 +74,8 @@ final class MasterKeyService {
       _unlock(await _vault.loadEnvelope(), passphrase);
 
   /// Unlock with the one-time recovery code → the raw master key. Input is
-  /// re-canonicalised, so lost dashes or lowercase still verify.
+  /// re-canonicalised, so lost dashes or lowercase still verify. Does NOT
+  /// consume the code — see [redeemRecovery] for single-use redemption.
   Future<Result<List<int>, SecurityFailure>> unlockWithRecovery(
     String code,
   ) async =>
@@ -82,6 +83,19 @@ final class MasterKeyService {
         await _vault.loadRecovery(),
         KeyManager.formatRecoveryInput(code),
       );
+
+  /// Single-use recovery redemption (F6-T7): unlock with the code, then CONSUME
+  /// it so a second redemption of the same code fails. The recovered key is
+  /// returned; the caller restores access and re-issues a fresh code
+  /// ([regenerateRecovery]). A wrong code fails closed before anything is
+  /// consumed.
+  Future<Result<List<int>, SecurityFailure>> redeemRecovery(String code) async {
+    final master = await unlockWithRecovery(code);
+    if (master case Err()) return master; // wrong/absent → nothing consumed
+    final removed = await _vault.deleteRecovery();
+    if (removed case Err(:final failure)) return Err(failure);
+    return master;
+  }
 
   /// Re-wrap the master key under [newPassphrase] (requires the old one). The
   /// recovery envelope is untouched — it still wraps the same master key.

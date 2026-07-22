@@ -51,6 +51,7 @@ export 'src/result/failures.dart'
         UnlockThrottled,
         UnsupportedMediaType,
         ValidationFailure,
+        WrongBackupPassphrase,
         WrongSecret;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
 export 'src/result/validation.dart' show FieldError, Validation;

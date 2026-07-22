@@ -17,6 +17,16 @@ export 'src/attachments/blob_store.dart'
         InMemoryAttachmentBlobStore,
         blobRelativePath,
         contentSha256;
+export 'src/backup/archive_cipher.dart' show ArchiveCipher;
+export 'src/backup/backup_engine.dart' show BackupContents, BackupEngine;
+export 'src/backup/backup_format.dart'
+    show
+        ArchiveHeader,
+        ArchiveKdf,
+        ArchiveSummary,
+        archiveSha256,
+        assembleArchive,
+        parseArchive;
 export 'src/db/app_database.dart' show AppDatabase;
 export 'src/db/database_factory.dart' show openAppDatabase;
 export 'src/db/migrations/snapshot_guard.dart' show SnapshotGuard;

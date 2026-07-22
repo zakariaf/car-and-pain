@@ -146,6 +146,22 @@ final class CorruptArchive extends ImportFailure {
   int get hashCode => code.hashCode;
 }
 
+/// The passphrase (or recovery code) can't unseal the backup — wrong secret, or
+/// a tampered payload whose GCM tag no longer verifies (F6). Distinct from a
+/// malformed/truncated archive ([CorruptArchive]).
+final class WrongBackupPassphrase extends ImportFailure {
+  const WrongBackupPassphrase();
+
+  @override
+  String get code => 'import.wrong_passphrase';
+
+  @override
+  bool operator ==(Object other) => other is WrongBackupPassphrase;
+
+  @override
+  int get hashCode => code.hashCode;
+}
+
 /// The archive's schema version does not match what this build can restore.
 final class SchemaVersionMismatch extends ImportFailure {
   const SchemaVersionMismatch({required this.expected, required this.found});

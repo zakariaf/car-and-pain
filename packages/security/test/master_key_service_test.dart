@@ -114,6 +114,33 @@ void main() {
         isA<EnvelopeCorrupt>());
   });
 
+  test('redeemRecovery is single-use: the second attempt fails closed',
+      () async {
+    final svc = _service();
+    final s = (await svc.setup(passphrase: 'pw', params: _fast)
+            as Ok<MasterKeySetup, SecurityFailure>)
+        .value;
+
+    // First redemption returns the master key.
+    expect(_ok(await svc.redeemRecovery(s.recoveryCode)), s.masterKey);
+    // The code is consumed — a second redemption no longer works.
+    expect((await svc.redeemRecovery(s.recoveryCode) as Err).failure,
+        isA<SecurityFailure>());
+    // Passphrase unlock still works (only the recovery escrow was consumed).
+    expect(_ok(await svc.unlockWithPassphrase('pw')), s.masterKey);
+  });
+
+  test('redeemRecovery with a wrong code consumes nothing', () async {
+    final svc = _service();
+    final s = (await svc.setup(passphrase: 'pw', params: _fast)
+            as Ok<MasterKeySetup, SecurityFailure>)
+        .value;
+    expect((await svc.redeemRecovery('WRONG-CODE-XXXX') as Err).failure,
+        isA<WrongSecret>());
+    // The real code still redeems (nothing was consumed by the wrong attempt).
+    expect(_ok(await svc.redeemRecovery(s.recoveryCode)), s.masterKey);
+  });
+
   test('protectExistingKey wraps an already-open key without changing it',
       () async {
     final svc = _service();

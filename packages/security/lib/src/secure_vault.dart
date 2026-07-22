@@ -49,6 +49,16 @@ final class SecureVault {
   Future<Result<KeyEnvelope?, SecurityFailure>> loadRecovery() =>
       _loadEnvelope(_kRecovery);
 
+  /// Erase the recovery envelope — consumes a one-time code (single-use).
+  Future<Result<void, SecurityFailure>> deleteRecovery() async {
+    try {
+      await _store.delete(_kRecovery);
+      return const Ok(null);
+    } on Object {
+      return const Err(SecureStorageFailed());
+    }
+  }
+
   Future<Result<void, SecurityFailure>> saveThrottle(ThrottleState s) =>
       _writeJson(_kThrottle, s.toJson());
 

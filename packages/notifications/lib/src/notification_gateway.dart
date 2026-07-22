@@ -43,27 +43,31 @@ abstract interface class NotificationGateway {
 }
 
 /// A recording fake for unit tests (fake over mock). Deterministic, no plugins.
+/// [scheduled] / [cancelled] record the full call history for assertions, while
+/// [_live] models the OS's actual pending set — so a cancel-then-reschedule of
+/// the same id (as reconcile does on a time change) leaves the entry live, just
+/// like real `flutter_local_notifications`.
 final class FakeNotificationGateway implements NotificationGateway {
   final List<ScheduledNotification> scheduled = [];
   final List<int> cancelled = [];
+  final Map<int, ScheduledNotification> _live = {};
 
   @override
   Future<Result<void, NotificationFailure>> schedule(
     ScheduledNotification notification,
   ) async {
     scheduled.add(notification);
+    _live[notification.id] = notification;
     return const Ok(null);
   }
 
   @override
   Future<Result<void, NotificationFailure>> cancel(int id) async {
     cancelled.add(id);
+    _live.remove(id);
     return const Ok(null);
   }
 
   @override
-  Future<List<int>> pendingIds() async => scheduled
-      .map((n) => n.id)
-      .where((id) => !cancelled.contains(id))
-      .toList();
+  Future<List<int>> pendingIds() async => _live.keys.toList();
 }

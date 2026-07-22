@@ -8,3 +8,5 @@ library;
 
 export 'src/notification_gateway.dart'
     show FakeNotificationGateway, NotificationGateway, ScheduledNotification;
+export 'src/reconciler.dart'
+    show ReconcileResult, Reconciler, stableNotificationId;

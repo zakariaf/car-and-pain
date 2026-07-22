@@ -190,6 +190,36 @@ class AttachmentsRepository extends BaseRepository {
     }
   }
 
+  /// Flip the at-rest encryption flag after a blob was (un)sealed in place —
+  /// used by the bulk encrypt/decrypt migration (F8-T4).
+  Future<Result<void, DbFailure>> markEncrypted(
+    String id, {
+    required bool encrypted,
+  }) async {
+    try {
+      final n = await (db.update(db.attachments)..where((t) => t.id.equals(id)))
+          .write(AttachmentsCompanion(
+        isEncrypted: Value(encrypted),
+        updatedAt: Value(nowMillis()),
+      ));
+      return n == 0 ? const Err(NotFound('attachment')) : const Ok(null);
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'attachments'));
+    }
+  }
+
+  /// Every live attachment across all owners — for bulk maintenance passes.
+  Future<Result<List<Attachment>, DbFailure>> listAllLive() async {
+    try {
+      final rows = await (db.select(db.attachments)
+            ..where((t) => t.isDeleted.equals(false)))
+          .get();
+      return Ok(rows.map(_toDomain).toList());
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'attachments'));
+    }
+  }
+
   /// Permanently remove the row (post trash-retention). Blob file cleanup is the
   /// GC's job; this only reconciles the metadata + refcount.
   Future<Result<void, DbFailure>> hardDelete(String id) async {

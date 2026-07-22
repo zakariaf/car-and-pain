@@ -60,6 +60,14 @@ dependencies:
   # there is deliberately no import; its value is the faster native KDF at unlock.
   cryptography_flutter: ^2.3.0
 
+  # ── Attachment intake (F8): the sanctioned "small file/share access" set per
+  # the dependency ADR. NOT telemetry; no INTERNET — nothing leaves the device.
+  # Image compression is done zero-dep via dart:ui in an isolate (also strips
+  # EXIF); PDF in-app render and video transcode are deferred (no ffmpeg).
+  file_picker: ^8.1.0 # arbitrary file + PDF pick (manual fallback)
+  image_picker: ^1.1.0 # camera capture + gallery pick (first-party, flutter.dev)
+  share_plus: ^10.1.0 # OS share sheet (share-OUT, open-externally). TODO(F8): device QA
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -78,6 +78,7 @@ export 'src/providers.dart'
         notificationScheduleRepositoryProvider,
         secureKeyStoreProvider,
         settingsRepositoryProvider,
+        stationsRepositoryProvider,
         taxonomyRepositoryProvider,
         trashRepositoryProvider,
         vehiclesRepositoryProvider;
@@ -87,6 +88,7 @@ export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
+export 'src/repositories/stations_repository.dart' show StationsRepository;
 export 'src/repositories/vehicles_repository.dart'
     show VehicleEdit, VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;

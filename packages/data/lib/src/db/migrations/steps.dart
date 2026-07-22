@@ -101,6 +101,8 @@ Future<void> runForwardMigrations(
         ]) {
           await m.addColumn(fe, col);
         }
+      case 6: // 6 → 7: M3-T9 saved-stations library.
+        await m.createTable(db.savedStations);
       // Future versions append their `case N` block here.
     }
   }

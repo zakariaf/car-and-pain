@@ -351,3 +351,15 @@ class Settings extends Table {
   @override
   Set<Column> get primaryKey => {key};
 }
+
+/// A user-saved fuel/charge station (M3-T9): the fully-offline substitute for a
+/// live station directory. Name + optional brand and raw GPS (micro-degrees,
+/// lat/lng × 1e6) pinned on the bundled offline map — no online geocoding. Rides
+/// backup/export like every other entity.
+@DataClassName('SavedStationRow')
+class SavedStations extends Table with AuditColumns {
+  TextColumn get name => text()();
+  TextColumn get brand => text().nullable()();
+  IntColumn get latMicro => integer().nullable()();
+  IntColumn get lngMicro => integer().nullable()();
+}

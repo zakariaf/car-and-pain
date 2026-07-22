@@ -159,6 +159,15 @@ class CanonicalCodec {
           .into(db.settings)
           .insert(SettingRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // The saved-stations library (M3-T9) — FK-free, rides backup/export.
+    _Entity(
+      'saved_stations',
+      () async => (await db.select(db.savedStations).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.savedStations).insert(SavedStationRow.fromJson(j),
+          mode: InsertMode.insertOrReplace),
+    ),
   ];
 
   /// Export the whole DB to a canonical, versioned document (JSON-encodable).

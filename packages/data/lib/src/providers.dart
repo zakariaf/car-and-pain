@@ -9,6 +9,7 @@ import 'ledger/ledger_repository.dart';
 import 'notifications/notification_schedule_repository.dart';
 import 'repositories/attachments_repository.dart';
 import 'repositories/fuel_repository.dart';
+import 'repositories/stations_repository.dart';
 import 'repositories/vehicles_repository.dart';
 import 'settings/settings_repository.dart';
 import 'taxonomy/taxonomy.dart';
@@ -75,6 +76,10 @@ final taxonomyRepositoryProvider = Provider<TaxonomyRepository>(
 
 final settingsRepositoryProvider = Provider<SettingsRepository>(
   (ref) => SettingsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final stationsRepositoryProvider = Provider<StationsRepository>(
+  (ref) => StationsRepository(ref.watch(appDatabaseProvider)),
 );
 
 final notificationScheduleRepositoryProvider =

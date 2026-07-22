@@ -92,10 +92,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 6 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 7 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 6);
+    expect(db.schemaVersion, 7);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -120,6 +120,7 @@ void main() {
         'attachments',
         'settings',
         'scheduled_notifications',
+        'saved_stations',
       ]),
     );
 
@@ -142,7 +143,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v6 forward migration adds all later schema, keeps data', () async {
+  test('v1 → v7 forward migration adds all later schema, keeps data', () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
@@ -159,6 +160,7 @@ void main() {
     await setup.customStatement('DROP TABLE plate_history');
     await setup.customStatement('DROP TABLE valuation_history');
     await setup.customStatement('DROP TABLE state_of_health_log');
+    await setup.customStatement('DROP TABLE saved_stations');
     const f5Columns = [
       'due_engine_minutes',
       'completed_at',
@@ -258,6 +260,7 @@ void main() {
     await setup.customStatement('DROP TABLE plate_history');
     await setup.customStatement('DROP TABLE valuation_history');
     await setup.customStatement('DROP TABLE state_of_health_log');
+    await setup.customStatement('DROP TABLE saved_stations');
     for (final c in _m2VehicleColumns) {
       await setup.customStatement('ALTER TABLE vehicles DROP COLUMN $c');
     }

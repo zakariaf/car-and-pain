@@ -36,8 +36,26 @@ final class MasterKeyService {
   Future<Result<MasterKeySetup, SecurityFailure>> setup({
     required String passphrase,
     Argon2idParams params = Argon2idParams.floor,
-  }) async {
-    final master = _km.generateMasterKey();
+  }) =>
+      _protect(_km.generateMasterKey(), passphrase, params);
+
+  /// Make an **already-generated** key recoverable: wrap the existing DB key
+  /// (e.g. the F2 keystore key) under [passphrase] + a one-time recovery code
+  /// and persist both envelopes — the key is unchanged, so the open DB keeps
+  /// working while gaining a recovery path. This is how "recoverable by default"
+  /// is switched on without re-encrypting the database.
+  Future<Result<MasterKeySetup, SecurityFailure>> protectExistingKey({
+    required List<int> masterKey,
+    required String passphrase,
+    Argon2idParams params = Argon2idParams.floor,
+  }) =>
+      _protect(masterKey, passphrase, params);
+
+  Future<Result<MasterKeySetup, SecurityFailure>> _protect(
+    List<int> master,
+    String passphrase,
+    Argon2idParams params,
+  ) async {
     final envelope = await _km.wrap(master, passphrase, params: params);
     final recovery = await _km.createRecovery(master, params: params);
 

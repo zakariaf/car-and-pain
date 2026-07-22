@@ -25,6 +25,7 @@ final class SecureVault {
   static const _kRecovery = 'sec.recovery';
   static const _kThrottle = 'sec.throttle';
   static const _kPin = 'sec.pin_verifier';
+  static const _kLockPrefs = 'sec.lock_prefs';
 
   /// Whether the master key has been set up (an envelope exists).
   Future<Result<bool, SecurityFailure>> isConfigured() async {
@@ -84,6 +85,24 @@ final class SecureVault {
     } on Object {
       return const Err(EnvelopeCorrupt());
     }
+  }
+
+  /// Whether an app-lock PIN has been set.
+  Future<Result<bool, SecurityFailure>> hasPin() async {
+    final r = await _readJson(_kPin);
+    if (r case Err(:final failure)) return Err(failure);
+    return Ok((r as Ok<Map<String, dynamic>?, SecurityFailure>).value != null);
+  }
+
+  Future<Result<void, SecurityFailure>> saveLockPrefs(LockPrefs prefs) =>
+      _writeJson(_kLockPrefs, prefs.toJson());
+
+  /// The persisted app-lock prefs, or [LockPrefs.disabled] when unset.
+  Future<Result<LockPrefs, SecurityFailure>> loadLockPrefs() async {
+    final r = await _readJson(_kLockPrefs);
+    if (r case Err(:final failure)) return Err(failure);
+    final json = (r as Ok<Map<String, dynamic>?, SecurityFailure>).value;
+    return Ok(json == null ? LockPrefs.disabled : LockPrefs.fromJson(json));
   }
 
   /// Wipe every security item (factory reset) — data becomes unrecoverable.

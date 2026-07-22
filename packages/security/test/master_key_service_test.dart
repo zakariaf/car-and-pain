@@ -113,4 +113,24 @@ void main() {
     expect((await svc.unlockWithPassphrase('pw') as Err).failure,
         isA<EnvelopeCorrupt>());
   });
+
+  test('protectExistingKey wraps an already-open key without changing it',
+      () async {
+    final svc = _service();
+    // A pre-existing DB key (e.g. from the F2 keystore), not minted by setup.
+    final existing = List<int>.generate(32, (i) => (i * 7 + 1) % 256);
+
+    final r = await svc.protectExistingKey(
+      masterKey: existing,
+      passphrase: 'pw',
+      params: _fast,
+    );
+    final s = (r as Ok<MasterKeySetup, SecurityFailure>).value;
+    // The key handed back is byte-identical — the DB stays openable.
+    expect(s.masterKey, existing);
+
+    // And it is now recoverable by passphrase and by the recovery code.
+    expect(_ok(await svc.unlockWithPassphrase('pw')), existing);
+    expect(_ok(await svc.unlockWithRecovery(s.recoveryCode)), existing);
+  });
 }

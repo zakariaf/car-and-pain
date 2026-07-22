@@ -91,6 +91,20 @@ void main() {
     expect((await vault.verifyPin('4291') as Ok).value, isFalse);
   });
 
+  test('hasPin reflects whether a PIN verifier exists', () async {
+    expect((await vault.hasPin() as Ok).value, isFalse);
+    await vault.savePin('4291');
+    expect((await vault.hasPin() as Ok).value, isTrue);
+  });
+
+  test('lock prefs persist and default to disabled', () async {
+    expect((await vault.loadLockPrefs() as Ok).value, LockPrefs.disabled);
+    const prefs =
+        LockPrefs(enabled: true, biometricEnabled: false, timeoutMinutes: 5);
+    await vault.saveLockPrefs(prefs);
+    expect((await vault.loadLockPrefs() as Ok).value, prefs);
+  });
+
   test('reset wipes every security item (factory reset)', () async {
     await vault.saveEnvelope(await _envelope());
     await vault.savePin('4291');

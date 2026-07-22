@@ -14,4 +14,5 @@ export 'src/master_key_service.dart' show MasterKeyService, MasterKeySetup;
 export 'src/redaction.dart' show RedactionSpec, redactExport;
 export 'src/secure_store.dart' show InMemorySecureStore, SecureStore;
 export 'src/secure_vault.dart' show SecureVault;
-export 'src/unlock_policy.dart' show LockPolicy, PinThrottle, ThrottleState;
+export 'src/unlock_policy.dart'
+    show LockPolicy, LockPrefs, PinThrottle, ThrottleState;

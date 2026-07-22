@@ -953,5 +953,73 @@
   "garageEmpty": "Your garage is empty",
   "@garageEmpty": {
     "description": "Garage empty state"
+  },
+  "ledgerTitle": "Odometer log",
+  "@ledgerTitle": {
+    "description": "Odometer ledger title"
+  },
+  "ledgerAddReading": "Add reading",
+  "@ledgerAddReading": {
+    "description": "Add-reading action"
+  },
+  "ledgerReadingValue": "Reading",
+  "@ledgerReadingValue": {
+    "description": "Reading value field"
+  },
+  "ledgerEmpty": "No readings yet",
+  "@ledgerEmpty": {
+    "description": "No readings yet"
+  },
+  "ledgerAnomalyTitle": "Check this reading",
+  "@ledgerAnomalyTitle": {
+    "description": "Anomaly confirm title"
+  },
+  "ledgerAnomalyRegression": "This reading is lower than the previous one.",
+  "@ledgerAnomalyRegression": {
+    "description": "Regression warning"
+  },
+  "ledgerAnomalyRollover": "This looks like a cluster swap or rollover.",
+  "@ledgerAnomalyRollover": {
+    "description": "Rollover warning"
+  },
+  "ledgerAnomalyDuplicate": "A very similar reading already exists.",
+  "@ledgerAnomalyDuplicate": {
+    "description": "Duplicate warning"
+  },
+  "ledgerOverride": "Save anyway",
+  "@ledgerOverride": {
+    "description": "Save-anyway action"
+  },
+  "ledgerCancel": "Cancel",
+  "@ledgerCancel": {
+    "description": "Cancel action"
+  },
+  "ledgerSourceManual": "Manual",
+  "@ledgerSourceManual": {
+    "description": "Ledger source: manual"
+  },
+  "ledgerSourceFuel": "Fuel",
+  "@ledgerSourceFuel": {
+    "description": "Ledger source: fuel"
+  },
+  "ledgerSourceService": "Service",
+  "@ledgerSourceService": {
+    "description": "Ledger source: service"
+  },
+  "ledgerSourceExpense": "Expense",
+  "@ledgerSourceExpense": {
+    "description": "Ledger source: expense"
+  },
+  "ledgerSourceTrip": "Trip",
+  "@ledgerSourceTrip": {
+    "description": "Ledger source: trip"
+  },
+  "ledgerSourceTire": "Tire",
+  "@ledgerSourceTire": {
+    "description": "Ledger source: tire"
+  },
+  "ledgerSourceImport": "Import",
+  "@ledgerSourceImport": {
+    "description": "Ledger source: import"
   }
 }

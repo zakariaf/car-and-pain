@@ -40,6 +40,29 @@ class LedgerRepository extends BaseRepository {
     return rows.map<LedgerReading>(_toReading).toList();
   }
 
+  /// Check a prospective manual reading WITHOUT writing (M2-T4): returns the
+  /// anomaly warnings (regression / implausible jump / rollback) so the UI can
+  /// require an explicit override before it persists. Pure read + engine.
+  Future<Result<List<FieldError>, DbFailure>> previewManual({
+    required String vehicleId,
+    required int value,
+    required Instant takenAt,
+    int cumulativeOffset = 0,
+  }) async {
+    try {
+      final history = await _historyFor(vehicleId);
+      final candidate = LedgerReading(
+        value: value,
+        takenAt: takenAt,
+        source: LedgerSource.manual,
+        cumulativeOffset: cumulativeOffset,
+      );
+      return Ok(_engine.check(history, candidate));
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'odometer_readings'));
+    }
+  }
+
   /// Append a manual reading. Returns the non-blocking validation warnings
   /// (warn-with-override) — the row still persists.
   Future<Result<List<FieldError>, DbFailure>> appendManual({

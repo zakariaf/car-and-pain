@@ -26,6 +26,9 @@ abstract final class AppLocations {
   /// The edit-vehicle form for [vehicleId] (full-screen flow above the shell).
   static String editVehicle(String vehicleId) => '/vehicle/$vehicleId/edit';
 
+  /// The odometer ledger for [vehicleId] (full-screen flow above the shell).
+  static String vehicleLedger(String vehicleId) => '/vehicle/$vehicleId/ledger';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

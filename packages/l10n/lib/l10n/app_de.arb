@@ -216,5 +216,22 @@
   "vehicleArchive": "Archivieren",
   "vehicleMarkSold": "Als verkauft markieren",
   "vehicleRestoreActive": "Aktiv setzen",
-  "garageEmpty": "Deine Garage ist leer"
+  "garageEmpty": "Deine Garage ist leer",
+  "ledgerTitle": "Kilometerprotokoll",
+  "ledgerAddReading": "Wert hinzufügen",
+  "ledgerReadingValue": "Wert",
+  "ledgerEmpty": "Noch keine Werte",
+  "ledgerAnomalyTitle": "Wert prüfen",
+  "ledgerAnomalyRegression": "Dieser Wert ist niedriger als der vorherige.",
+  "ledgerAnomalyRollover": "Das sieht nach Tauschzähler oder Überlauf aus.",
+  "ledgerAnomalyDuplicate": "Ein sehr ähnlicher Wert existiert bereits.",
+  "ledgerOverride": "Trotzdem speichern",
+  "ledgerCancel": "Abbrechen",
+  "ledgerSourceManual": "Manuell",
+  "ledgerSourceFuel": "Tanken",
+  "ledgerSourceService": "Wartung",
+  "ledgerSourceExpense": "Ausgabe",
+  "ledgerSourceTrip": "Fahrt",
+  "ledgerSourceTire": "Reifen",
+  "ledgerSourceImport": "Import"
 }

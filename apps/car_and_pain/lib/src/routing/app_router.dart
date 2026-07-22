@@ -7,6 +7,7 @@ import '../attachments/storage_settings_screen.dart';
 import '../backup/backup_recovery_screen.dart';
 import '../backup/recovery_redeem_screen.dart';
 import '../features/01-vehicles-garage/presentation/vehicle_form_screen.dart';
+import '../features/01-vehicles-garage/presentation/vehicle_ledger_screen.dart';
 import '../features/01-vehicles-garage/presentation/vehicle_profile_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
@@ -136,6 +137,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         builder: (context, state) =>
             VehicleFormScreen(vehicleId: state.pathParameters['vehicleId']),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/ledger',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            VehicleLedgerScreen(vehicleId: state.pathParameters['vehicleId']!),
       ),
       GoRoute(
         path: '/trash',

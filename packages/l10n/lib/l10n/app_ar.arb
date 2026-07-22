@@ -216,5 +216,22 @@
   "vehicleArchive": "أرشفة",
   "vehicleMarkSold": "وضع علامة كمباع",
   "vehicleRestoreActive": "جعله نشطًا",
-  "garageEmpty": "مرآبك فارغ"
+  "garageEmpty": "مرآبك فارغ",
+  "ledgerTitle": "سجل العداد",
+  "ledgerAddReading": "إضافة قراءة",
+  "ledgerReadingValue": "القراءة",
+  "ledgerEmpty": "لا قراءات بعد",
+  "ledgerAnomalyTitle": "تحقق من هذه القراءة",
+  "ledgerAnomalyRegression": "هذه القراءة أقل من السابقة.",
+  "ledgerAnomalyRollover": "يبدو أن هذا تبديل عداد أو تجاوز.",
+  "ledgerAnomalyDuplicate": "توجد قراءة مشابهة جدًا بالفعل.",
+  "ledgerOverride": "احفظ على أي حال",
+  "ledgerCancel": "إلغاء",
+  "ledgerSourceManual": "يدوي",
+  "ledgerSourceFuel": "وقود",
+  "ledgerSourceService": "صيانة",
+  "ledgerSourceExpense": "مصروف",
+  "ledgerSourceTrip": "رحلة",
+  "ledgerSourceTire": "إطار",
+  "ledgerSourceImport": "استيراد"
 }

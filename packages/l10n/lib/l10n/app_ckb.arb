@@ -216,5 +216,22 @@
   "vehicleArchive": "ئەرشیف",
   "vehicleMarkSold": "وەک فرۆشراو نیشانەکردن",
   "vehicleRestoreActive": "چالاککردن",
-  "garageEmpty": "گەراجەکەت بەتاڵە"
+  "garageEmpty": "گەراجەکەت بەتاڵە",
+  "ledgerTitle": "تۆماری کیلۆمەتر",
+  "ledgerAddReading": "زیادکردنی خوێندنەوە",
+  "ledgerReadingValue": "خوێندنەوە",
+  "ledgerEmpty": "هێشتا هیچ خوێندنەوەیەک نییە",
+  "ledgerAnomalyTitle": "ئەم خوێندنەوەیە بپشکنە",
+  "ledgerAnomalyRegression": "ئەم خوێندنەوەیە لە پێشووتر کەمترە.",
+  "ledgerAnomalyRollover": "وا دیارە گۆڕینی پیوەر یان سەرڕێژە.",
+  "ledgerAnomalyDuplicate": "خوێندنەوەیەکی زۆر هاوشێوە پێشتر هەیە.",
+  "ledgerOverride": "بەهەرحاڵ پاشەکەوت",
+  "ledgerCancel": "هەڵوەشاندنەوە",
+  "ledgerSourceManual": "دەستی",
+  "ledgerSourceFuel": "سووتەمەنی",
+  "ledgerSourceService": "خزمەت",
+  "ledgerSourceExpense": "خەرجی",
+  "ledgerSourceTrip": "گەشت",
+  "ledgerSourceTire": "تایە",
+  "ledgerSourceImport": "هاوردن"
 }

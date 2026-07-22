@@ -216,5 +216,22 @@
   "vehicleArchive": "Archiver",
   "vehicleMarkSold": "Marquer comme vendu",
   "vehicleRestoreActive": "Rendre actif",
-  "garageEmpty": "Votre garage est vide"
+  "garageEmpty": "Votre garage est vide",
+  "ledgerTitle": "Journal odomètre",
+  "ledgerAddReading": "Ajouter un relevé",
+  "ledgerReadingValue": "Relevé",
+  "ledgerEmpty": "Aucun relevé",
+  "ledgerAnomalyTitle": "Vérifier ce relevé",
+  "ledgerAnomalyRegression": "Ce relevé est inférieur au précédent.",
+  "ledgerAnomalyRollover": "Cela ressemble à un remplacement de compteur ou un débordement.",
+  "ledgerAnomalyDuplicate": "Un relevé très similaire existe déjà.",
+  "ledgerOverride": "Enregistrer quand même",
+  "ledgerCancel": "Annuler",
+  "ledgerSourceManual": "Manuel",
+  "ledgerSourceFuel": "Carburant",
+  "ledgerSourceService": "Entretien",
+  "ledgerSourceExpense": "Dépense",
+  "ledgerSourceTrip": "Trajet",
+  "ledgerSourceTire": "Pneu",
+  "ledgerSourceImport": "Import"
 }

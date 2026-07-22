@@ -50,7 +50,11 @@ class VehicleProfileScreen extends ConsumerWidget {
         children: [
           _StatusRow(status: vehicle.status),
           const SizedBox(height: PulseTokens.s3),
-          _OdometerCard(vehicle: vehicle, readings: readings, fmt: fmt),
+          InkWell(
+            onTap: () => context.push(AppLocations.vehicleLedger(vehicleId)),
+            child:
+                _OdometerCard(vehicle: vehicle, readings: readings, fmt: fmt),
+          ),
           const SizedBox(height: PulseTokens.s3),
           SectionHeader(title: l10n.vehicleSectionIdentity),
           _IdentityCard(vehicle: vehicle, fmt: fmt, l10n: l10n),

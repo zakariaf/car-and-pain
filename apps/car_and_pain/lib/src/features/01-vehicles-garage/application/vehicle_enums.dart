@@ -36,6 +36,23 @@ String vehicleTypeLabel(AppLocalizations l10n, VehicleType type) =>
       VehicleType.other => l10n.vehicleTypeOther,
     };
 
+DistanceUnit distanceUnitFromCode(String? code) => switch (code) {
+      'mile' => DistanceUnit.mile,
+      'metre' => DistanceUnit.metre,
+      _ => DistanceUnit.kilometre,
+    };
+
+String ledgerSourceLabel(AppLocalizations l10n, LedgerSource source) =>
+    switch (source) {
+      LedgerSource.manual => l10n.ledgerSourceManual,
+      LedgerSource.fuel => l10n.ledgerSourceFuel,
+      LedgerSource.service => l10n.ledgerSourceService,
+      LedgerSource.expense => l10n.ledgerSourceExpense,
+      LedgerSource.trip => l10n.ledgerSourceTrip,
+      LedgerSource.tire => l10n.ledgerSourceTire,
+      LedgerSource.import => l10n.ledgerSourceImport,
+    };
+
 String energyTypeLabel(AppLocalizations l10n, EnergyType energy) =>
     switch (energy) {
       EnergyType.gasoline => l10n.energyGasoline,

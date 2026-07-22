@@ -216,5 +216,22 @@
   "vehicleArchive": "بایگانی",
   "vehicleMarkSold": "علامت‌گذاری فروش",
   "vehicleRestoreActive": "فعال‌سازی",
-  "garageEmpty": "گاراژ شما خالی است"
+  "garageEmpty": "گاراژ شما خالی است",
+  "ledgerTitle": "دفترچه کیلومترشمار",
+  "ledgerAddReading": "افزودن خوانش",
+  "ledgerReadingValue": "خوانش",
+  "ledgerEmpty": "هنوز خوانشی نیست",
+  "ledgerAnomalyTitle": "این خوانش را بررسی کنید",
+  "ledgerAnomalyRegression": "این خوانش کمتر از خوانش قبلی است.",
+  "ledgerAnomalyRollover": "این به‌نظر تعویض کیلومترشمار یا سرریز است.",
+  "ledgerAnomalyDuplicate": "خوانشی بسیار مشابه از قبل وجود دارد.",
+  "ledgerOverride": "به‌هرحال ذخیره",
+  "ledgerCancel": "لغو",
+  "ledgerSourceManual": "دستی",
+  "ledgerSourceFuel": "سوخت",
+  "ledgerSourceService": "سرویس",
+  "ledgerSourceExpense": "هزینه",
+  "ledgerSourceTrip": "سفر",
+  "ledgerSourceTire": "لاستیک",
+  "ledgerSourceImport": "درون‌ریزی"
 }

@@ -7,6 +7,13 @@
 /// Everything under `src/` is private by convention — import only this barrel.
 library;
 
+export 'src/dashboard/readiness.dart'
+    show
+        AcuteAche,
+        ReadinessSummary,
+        ReminderDue,
+        aggregateReadiness,
+        urgencyForDue;
 export 'src/ledger/ledger.dart' show LedgerEngine, LedgerReading, LedgerSource;
 export 'src/money/currency.dart' show Currency;
 export 'src/money/fx.dart'

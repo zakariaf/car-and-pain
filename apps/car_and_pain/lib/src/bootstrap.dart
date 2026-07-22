@@ -11,6 +11,7 @@ import 'app.dart';
 import 'flavor.dart';
 import 'logging/app_log.dart';
 import 'notifications/notification_providers.dart';
+import 'notifications/notification_reconciler.dart';
 import 'notifications/notification_service.dart';
 import 'startup/app_infra.dart';
 import 'startup/startup_controller.dart';
@@ -62,7 +63,7 @@ Future<void> bootstrap(Flavor flavor) async {
           appDirsProvider.overrideWith((ref) => _infra(ref).dirs),
           appTimeZoneProvider.overrideWith((ref) => _infra(ref).timeZone),
         ],
-        child: const CarAndPainApp(),
+        child: const NotificationReconciler(child: CarAndPainApp()),
       ),
     ),
     (error, stack) => log.error('zone', error, stack),

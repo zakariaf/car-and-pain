@@ -16,7 +16,26 @@ export 'src/dashboard/readiness.dart'
         urgencyForDue;
 export 'src/energy/economy_engine.dart'
     show ConsumptionInterval, EconomyEngine, EconomyReport, EnergyFill;
+export 'src/energy/economy_units.dart'
+    show
+        EconomyMode,
+        kmPerLitre,
+        kwhPer100km,
+        litresPer100km,
+        miPerKwh,
+        mpgUk,
+        mpgUs,
+        projectElectric,
+        projectLiquid,
+        whPerKm;
 export 'src/energy/energy_calc.dart' show FillAmounts, completeFill;
+export 'src/energy/ev_calc.dart'
+    show
+        blendedCostPerMetre,
+        breakEvenMonths,
+        chargeCostMinor,
+        energyFromSocJoules,
+        wallEnergyJoules;
 export 'src/ledger/ledger.dart' show LedgerEngine, LedgerReading, LedgerSource;
 export 'src/money/currency.dart' show Currency;
 export 'src/money/fx.dart'

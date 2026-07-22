@@ -7,6 +7,16 @@
 /// the data-integrity validators. Zero network dependencies by construction.
 library;
 
+export 'src/attachments/attachment_bundle.dart'
+    show AttachmentBundle, AttachmentBundler, AttachmentManifestEntry;
+export 'src/attachments/attachment_gc.dart' show AttachmentGc, GcReport;
+export 'src/attachments/blob_store.dart'
+    show
+        AttachmentBlobStore,
+        DirectoryAttachmentBlobStore,
+        InMemoryAttachmentBlobStore,
+        blobRelativePath,
+        contentSha256;
 export 'src/db/app_database.dart' show AppDatabase;
 export 'src/db/database_factory.dart' show openAppDatabase;
 export 'src/db/migrations/snapshot_guard.dart' show SnapshotGuard;

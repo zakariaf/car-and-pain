@@ -148,8 +148,13 @@ class CanonicalCodec {
     // Values are canonical (locale codes / enum names), never display strings.
     _Entity(
       'settings',
-      () async =>
-          (await db.select(db.settings).get()).map((r) => r.toJson()).toList(),
+      // Transient UI drafts (`draft:*`) are never exported — a backup captures
+      // saved data, not half-typed forms.
+      () async => (await (db.select(db.settings)
+                ..where((t) => t.key.like('draft:%').not()))
+              .get())
+          .map((r) => r.toJson())
+          .toList(),
       (j) => db
           .into(db.settings)
           .insert(SettingRow.fromJson(j), mode: InsertMode.insertOrReplace),

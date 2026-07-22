@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:core/core.dart';
 import 'package:data/data.dart';
 import 'package:design_system/design_system.dart';
@@ -51,11 +54,18 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
 
   bool get _isEdit => widget.vehicleId != null;
 
+  /// Only the add flow autosaves a draft — an edit already has its stored data.
+  static const _draftKey = 'draft:vehicle:new';
+
   @override
   void initState() {
     super.initState();
     _vin.addListener(_onVinChanged);
-    if (_isEdit) _load();
+    if (_isEdit) {
+      _load();
+    } else {
+      _loadDraft();
+    }
   }
 
   Future<void> _load() async {
@@ -91,7 +101,77 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
   void _onVinChanged() {
     final text = _vin.text.trim();
     setState(() => _vinResult = text.isEmpty ? null : _vinDecoder.decode(text));
+    _scheduleDraft();
   }
+
+  /// A change on any field: repaint (adaptive visibility) + autosave a draft so
+  /// back/exit or process death never loses in-progress input.
+  void _onEdited() {
+    setState(() {});
+    _scheduleDraft();
+  }
+
+  void _scheduleDraft() {
+    if (_isEdit) return;
+    unawaited(_saveDraft());
+  }
+
+  Map<String, dynamic> _snapshot() => {
+        'nickname': _nickname.text,
+        'make': _make.text,
+        'model': _model.text,
+        'trim': _trim.text,
+        'year': _year.text,
+        'plate': _plate.text,
+        'vin': _vin.text,
+        'tank': _tank.text,
+        'battery': _battery.text,
+        'usable': _usable.text,
+        'type': _type.name,
+        'energy': _energy?.name,
+        'secondary': _secondary?.name,
+        'distanceTracking': _distanceTracking,
+      };
+
+  void _restore(Map<String, dynamic> m) {
+    String s(String k) => (m[k] as String?) ?? '';
+    setState(() {
+      _nickname.text = s('nickname');
+      _make.text = s('make');
+      _model.text = s('model');
+      _trim.text = s('trim');
+      _year.text = s('year');
+      _plate.text = s('plate');
+      _vin.text = s('vin');
+      _tank.text = s('tank');
+      _battery.text = s('battery');
+      _usable.text = s('usable');
+      _type = vehicleTypeFromCode(m['type'] as String?);
+      _energy = energyTypeFromCode(m['energy'] as String?);
+      _secondary = energyTypeFromCode(m['secondary'] as String?);
+      _distanceTracking = (m['distanceTracking'] as bool?) ?? true;
+    });
+  }
+
+  Future<void> _loadDraft() async {
+    final raw = await ref.read(settingsRepositoryProvider).get(_draftKey);
+    if (raw == null || !mounted) return;
+    try {
+      _restore((jsonDecode(raw) as Map).cast<String, dynamic>());
+    } on FormatException {
+      // A corrupt draft is discarded silently — never block the form.
+    }
+  }
+
+  Future<void> _saveDraft() async {
+    if (_isEdit || !mounted) return;
+    await ref
+        .read(settingsRepositoryProvider)
+        .set(_draftKey, jsonEncode(_snapshot()));
+  }
+
+  Future<void> _clearDraft() =>
+      ref.read(settingsRepositoryProvider).set(_draftKey, null);
 
   @override
   void dispose() {
@@ -163,6 +243,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
         await vehicles.update(id, edit);
         await ref.read(shellStateControllerProvider).setActiveVehicle(id);
       }
+      await _clearDraft(); // the draft has become a real vehicle
     }
     if (mounted) context.pop();
   }
@@ -253,7 +334,7 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
         controller: controller,
         keyboardType: keyboard,
         textDirection: forceLtr ? TextDirection.ltr : null,
-        onChanged: (_) => setState(() {}),
+        onChanged: (_) => _onEdited(),
         decoration: InputDecoration(labelText: label, errorText: errorText),
       ),
     );
@@ -308,10 +389,13 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
               DropdownMenuItem(
                   value: t, child: Text(vehicleTypeLabel(l10n, t))),
           ],
-          onChanged: (t) => setState(() {
-            _type = t ?? _type;
-            _distanceTracking = _profile.distanceTrackingByDefault(_type);
-          }),
+          onChanged: (t) {
+            setState(() {
+              _type = t ?? _type;
+              _distanceTracking = _profile.distanceTrackingByDefault(_type);
+            });
+            _scheduleDraft();
+          },
         ),
       );
 
@@ -328,7 +412,10 @@ class _VehicleFormScreenState extends ConsumerState<VehicleFormScreen> {
           ],
           // Changing energy recomputes visible fields; hidden controllers keep
           // their values so switching back restores them (M2-T2 AC).
-          onChanged: (e) => setState(() => _energy = e),
+          onChanged: (e) {
+            setState(() => _energy = e);
+            _scheduleDraft();
+          },
         ),
       );
 }

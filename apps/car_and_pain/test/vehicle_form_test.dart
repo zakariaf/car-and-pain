@@ -1,4 +1,5 @@
 import 'package:car_and_pain/src/features/01-vehicles-garage/presentation/vehicle_form_screen.dart';
+import 'package:data/data.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -9,6 +10,15 @@ import 'package:l10n/l10n.dart';
 /// recomputes it reactively on an energy change, preserves hidden-field values
 /// on toggle, and decodes the VIN live.
 void main() {
+  // Stop the text-cursor blink so pumpAndSettle doesn't chase its periodic
+  // repaint forever while a field is focused.
+  setUpAll(() => EditableText.debugDeterministicCursor = true);
+  tearDownAll(() => EditableText.debugDeterministicCursor = false);
+
+  late AppDatabase db;
+  setUp(() => db = AppDatabase.memory());
+  tearDown(() => db.close());
+
   Future<void> pumpForm(WidgetTester tester) async {
     // A tall viewport so the whole (lazily-built) form is laid out at once.
     tester.view.physicalSize = const Size(1200, 3200);
@@ -17,6 +27,7 @@ void main() {
     addTearDown(tester.view.resetDevicePixelRatio);
     await tester.pumpWidget(
       ProviderScope(
+        overrides: [appDatabaseProvider.overrideWithValue(db)],
         child: MaterialApp(
           theme: pulseTheme(Brightness.light),
           locale: const Locale('en'),

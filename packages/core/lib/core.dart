@@ -42,6 +42,20 @@ export 'src/result/failures.dart'
         ValidationFailure;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
 export 'src/result/validation.dart' show FieldError, Validation;
+export 'src/scheduling/next_due_engine.dart' show NextDueEngine;
+export 'src/scheduling/schedule_rule.dart'
+    show
+        Due,
+        DueConfidence,
+        DueResult,
+        InsufficientData,
+        NextDue,
+        NoDue,
+        QuietHours,
+        Recurrence,
+        RecurrenceUnit,
+        ScheduleRule,
+        TriggerKind;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
 export 'src/units/distance.dart' show Distance, DistanceUnit;

@@ -369,168 +369,589 @@
   "@byteSize": {
     "description": "A file size with its unit; value is preformatted with the user's numerals.",
     "placeholders": {
-      "unit": { "type": "String" },
-      "value": { "type": "String" }
+      "unit": {
+        "type": "String"
+      },
+      "value": {
+        "type": "String"
+      }
     }
   },
   "attachmentCount": "{count, plural, =0{No attachments} one{{formatted} attachment} other{{formatted} attachments}}",
   "@attachmentCount": {
     "description": "Count of attachments; formatted is the count in the user's numerals.",
     "placeholders": {
-      "count": { "type": "int" },
-      "formatted": { "type": "String" }
+      "count": {
+        "type": "int"
+      },
+      "formatted": {
+        "type": "String"
+      }
     }
   },
   "attachmentsTitle": "Attachments",
-  "@attachmentsTitle": { "description": "Title of the attachment gallery." },
+  "@attachmentsTitle": {
+    "description": "Title of the attachment gallery."
+  },
   "attachmentsEmpty": "No attachments yet",
-  "@attachmentsEmpty": { "description": "Empty state for a record with no attachments." },
+  "@attachmentsEmpty": {
+    "description": "Empty state for a record with no attachments."
+  },
   "attachmentsAdd": "Add",
-  "@attachmentsAdd": { "description": "Button to add an attachment." },
+  "@attachmentsAdd": {
+    "description": "Button to add an attachment."
+  },
   "attachmentsLocked": "Attachments are locked",
-  "@attachmentsLocked": { "description": "Shown when encrypted attachments need an unlock." },
+  "@attachmentsLocked": {
+    "description": "Shown when encrypted attachments need an unlock."
+  },
   "attachmentUnlock": "Unlock",
-  "@attachmentUnlock": { "description": "Button to unlock encrypted attachments." },
+  "@attachmentUnlock": {
+    "description": "Button to unlock encrypted attachments."
+  },
   "attachmentOpenExternally": "Open externally",
-  "@attachmentOpenExternally": { "description": "Open an attachment in another app." },
+  "@attachmentOpenExternally": {
+    "description": "Open an attachment in another app."
+  },
   "attachmentUnsupported": "This file can't be previewed here",
-  "@attachmentUnsupported": { "description": "Fallback for a type with no in-app viewer." },
+  "@attachmentUnsupported": {
+    "description": "Fallback for a type with no in-app viewer."
+  },
   "attachmentLoadError": "Couldn't load this attachment",
-  "@attachmentLoadError": { "description": "Error state when a blob fails to load." },
+  "@attachmentLoadError": {
+    "description": "Error state when a blob fails to load."
+  },
   "attachmentRemove": "Remove",
-  "@attachmentRemove": { "description": "Remove an attachment from a record." },
+  "@attachmentRemove": {
+    "description": "Remove an attachment from a record."
+  },
   "attachmentKind": "{kind, select, image{Photo} pdf{PDF} video{Video} other{File}}",
   "@attachmentKind": {
     "description": "The media kind label for a redundant (non-colour) type cue.",
-    "placeholders": { "kind": { "type": "String" } }
+    "placeholders": {
+      "kind": {
+        "type": "String"
+      }
+    }
   },
   "attachmentAddTitle": "Add attachment",
-  "@attachmentAddTitle": { "description": "Title of the capture/import source sheet." },
+  "@attachmentAddTitle": {
+    "description": "Title of the capture/import source sheet."
+  },
   "attachmentSourceCamera": "Camera",
-  "@attachmentSourceCamera": { "description": "Capture a photo with the camera." },
+  "@attachmentSourceCamera": {
+    "description": "Capture a photo with the camera."
+  },
   "attachmentSourceGallery": "Photo library",
-  "@attachmentSourceGallery": { "description": "Pick from the device photo library." },
+  "@attachmentSourceGallery": {
+    "description": "Pick from the device photo library."
+  },
   "attachmentSourceFiles": "Files",
-  "@attachmentSourceFiles": { "description": "Pick an arbitrary file (PDF, etc.)." },
+  "@attachmentSourceFiles": {
+    "description": "Pick an arbitrary file (PDF, etc.)."
+  },
   "attachmentCameraRationale": "Allow camera access to photograph receipts and documents. You can always pick a file instead.",
-  "@attachmentCameraRationale": { "description": "Rationale before the camera permission prompt." },
+  "@attachmentCameraRationale": {
+    "description": "Rationale before the camera permission prompt."
+  },
   "attachmentPermissionFallback": "Camera unavailable — pick a file instead",
-  "@attachmentPermissionFallback": { "description": "Shown when camera permission is denied." },
+  "@attachmentPermissionFallback": {
+    "description": "Shown when camera permission is denied."
+  },
   "settingsStorage": "Storage",
-  "@settingsStorage": { "description": "Settings entry opening the storage surface." },
+  "@settingsStorage": {
+    "description": "Settings entry opening the storage surface."
+  },
   "storageTitle": "Storage",
-  "@storageTitle": { "description": "Title of the storage screen." },
+  "@storageTitle": {
+    "description": "Title of the storage screen."
+  },
   "storageUsage": "Usage",
-  "@storageUsage": { "description": "Section label for the size roll-up." },
+  "@storageUsage": {
+    "description": "Section label for the size roll-up."
+  },
   "storageTotal": "Total",
-  "@storageTotal": { "description": "Total attachment storage used." },
+  "@storageTotal": {
+    "description": "Total attachment storage used."
+  },
   "storageEncryption": "Encrypt attachments",
-  "@storageEncryption": { "description": "Toggle for at-rest attachment encryption." },
+  "@storageEncryption": {
+    "description": "Toggle for at-rest attachment encryption."
+  },
   "storageEncryptionDesc": "Seal attachment files on disk with your master key",
-  "@storageEncryptionDesc": { "description": "Subtitle for the encryption toggle." },
+  "@storageEncryptionDesc": {
+    "description": "Subtitle for the encryption toggle."
+  },
   "storageReclaim": "Reclaim space",
-  "@storageReclaim": { "description": "Action to run attachment garbage collection." },
+  "@storageReclaim": {
+    "description": "Action to run attachment garbage collection."
+  },
   "storageReclaimDesc": "Delete orphaned files past the trash window",
-  "@storageReclaimDesc": { "description": "Subtitle for the reclaim action." },
+  "@storageReclaimDesc": {
+    "description": "Subtitle for the reclaim action."
+  },
   "storageReclaimConfirm": "Delete orphaned files and free {size}?",
   "@storageReclaimConfirm": {
     "description": "Confirmation before a GC sweep; size is preformatted.",
-    "placeholders": { "size": { "type": "String" } }
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "storageReclaimed": "Reclaimed {size}",
   "@storageReclaimed": {
     "description": "Success message after a GC sweep.",
-    "placeholders": { "size": { "type": "String" } }
+    "placeholders": {
+      "size": {
+        "type": "String"
+      }
+    }
   },
   "storageNothingToReclaim": "Nothing to reclaim",
-  "@storageNothingToReclaim": { "description": "GC found no orphans." },
+  "@storageNothingToReclaim": {
+    "description": "GC found no orphans."
+  },
   "attachmentOwnerLabel": "{type, select, vehicle{Vehicles} fuel_entry{Fuel} service_entry{Service} expense{Expenses} document{Documents} incident{Incidents} other{Other}}",
   "@attachmentOwnerLabel": {
     "description": "Owner-type label for the storage by-type breakdown.",
-    "placeholders": { "type": { "type": "String" } }
+    "placeholders": {
+      "type": {
+        "type": "String"
+      }
+    }
   },
   "settingsBackup": "Backup & recovery",
-  "@settingsBackup": { "description": "Settings entry opening the backup surface." },
+  "@settingsBackup": {
+    "description": "Settings entry opening the backup surface."
+  },
   "backupTitle": "Backup & recovery",
-  "@backupTitle": { "description": "Title of the backup & recovery screen." },
+  "@backupTitle": {
+    "description": "Title of the backup & recovery screen."
+  },
   "backupNow": "Back up now",
-  "@backupNow": { "description": "Button to create an encrypted backup now." },
+  "@backupNow": {
+    "description": "Button to create an encrypted backup now."
+  },
   "backupNowDesc": "Create an encrypted backup on this device",
-  "@backupNowDesc": { "description": "Subtitle for the back-up-now action." },
+  "@backupNowDesc": {
+    "description": "Subtitle for the back-up-now action."
+  },
   "backupInProgress": "Backing up…",
-  "@backupInProgress": { "description": "Progress state while a backup runs." },
+  "@backupInProgress": {
+    "description": "Progress state while a backup runs."
+  },
   "backupSuccess": "Backup saved",
-  "@backupSuccess": { "description": "Success state after a backup completes." },
+  "@backupSuccess": {
+    "description": "Success state after a backup completes."
+  },
   "backupFailed": "Backup failed",
-  "@backupFailed": { "description": "Failure state when a backup fails." },
+  "@backupFailed": {
+    "description": "Failure state when a backup fails."
+  },
   "backupLastSuccess": "Last backup: {when}",
   "@backupLastSuccess": {
     "description": "Timestamp of the last successful backup.",
-    "placeholders": { "when": { "type": "String" } }
+    "placeholders": {
+      "when": {
+        "type": "String"
+      }
+    }
   },
   "backupNever": "No backups yet",
-  "@backupNever": { "description": "Shown when no backup has been made." },
+  "@backupNever": {
+    "description": "Shown when no backup has been made."
+  },
   "backupExport": "Export data",
-  "@backupExport": { "description": "Section for human-readable export." },
+  "@backupExport": {
+    "description": "Section for human-readable export."
+  },
   "backupExportJson": "Export as JSON",
-  "@backupExportJson": { "description": "Export all data as a JSON file." },
+  "@backupExportJson": {
+    "description": "Export all data as a JSON file."
+  },
   "backupExportCsv": "Export as CSV",
-  "@backupExportCsv": { "description": "Export all data as per-entity CSV." },
+  "@backupExportCsv": {
+    "description": "Export all data as per-entity CSV."
+  },
   "backupRestore": "Restore or import",
-  "@backupRestore": { "description": "Entry to the restore/import wizard." },
+  "@backupRestore": {
+    "description": "Entry to the restore/import wizard."
+  },
   "backupRestoreDesc": "Bring data in from a backup or another app",
-  "@backupRestoreDesc": { "description": "Subtitle for the restore/import entry." },
+  "@backupRestoreDesc": {
+    "description": "Subtitle for the restore/import entry."
+  },
   "backupEnterPassphrase": "Choose a passphrase to encrypt this backup",
-  "@backupEnterPassphrase": { "description": "Prompt for the backup passphrase when creating one." },
+  "@backupEnterPassphrase": {
+    "description": "Prompt for the backup passphrase when creating one."
+  },
   "backupUnlockPassphrase": "Enter the backup's passphrase",
-  "@backupUnlockPassphrase": { "description": "Prompt for the passphrase when restoring." },
+  "@backupUnlockPassphrase": {
+    "description": "Prompt for the passphrase when restoring."
+  },
   "backupRestorePreview": "{records} records, {attachments} attachments",
   "@backupRestorePreview": {
     "description": "Preview of an archive's contents before restore.",
-    "placeholders": { "records": { "type": "String" }, "attachments": { "type": "String" } }
+    "placeholders": {
+      "records": {
+        "type": "String"
+      },
+      "attachments": {
+        "type": "String"
+      }
+    }
   },
   "backupRestoreConfirm": "Restore this backup? Your current data will be replaced.",
-  "@backupRestoreConfirm": { "description": "Confirmation before a destructive restore." },
+  "@backupRestoreConfirm": {
+    "description": "Confirmation before a destructive restore."
+  },
   "backupRestoreDone": "Restore complete",
-  "@backupRestoreDone": { "description": "Success after a restore." },
+  "@backupRestoreDone": {
+    "description": "Success after a restore."
+  },
   "backupDamaged": "This backup is damaged",
-  "@backupDamaged": { "description": "Error when an archive fails its checksum." },
+  "@backupDamaged": {
+    "description": "Error when an archive fails its checksum."
+  },
   "backupWrongPassphrase": "Wrong passphrase",
-  "@backupWrongPassphrase": { "description": "Error when the backup passphrase is wrong." },
+  "@backupWrongPassphrase": {
+    "description": "Error when the backup passphrase is wrong."
+  },
   "backupNewerVersion": "This backup was made by a newer version of the app",
-  "@backupNewerVersion": { "description": "Error refusing a newer-format archive." },
+  "@backupNewerVersion": {
+    "description": "Error refusing a newer-format archive."
+  },
   "backupAuto": "Automatic backup",
-  "@backupAuto": { "description": "Toggle for scheduled auto-backup." },
+  "@backupAuto": {
+    "description": "Toggle for scheduled auto-backup."
+  },
   "backupAutoDesc": "Back up on a schedule and keep recent copies",
-  "@backupAutoDesc": { "description": "Subtitle for the auto-backup toggle." },
+  "@backupAutoDesc": {
+    "description": "Subtitle for the auto-backup toggle."
+  },
   "recoveryRedeem": "Use a recovery code",
-  "@recoveryRedeem": { "description": "Entry to redeem a recovery code." },
+  "@recoveryRedeem": {
+    "description": "Entry to redeem a recovery code."
+  },
   "recoveryRedeemDesc": "Regain access if you've forgotten your PIN",
-  "@recoveryRedeemDesc": { "description": "Subtitle for the recovery redemption entry." },
+  "@recoveryRedeemDesc": {
+    "description": "Subtitle for the recovery redemption entry."
+  },
   "recoveryRedeemDone": "Access restored",
-  "@recoveryRedeemDone": { "description": "Success after redeeming a recovery code." },
+  "@recoveryRedeemDone": {
+    "description": "Success after redeeming a recovery code."
+  },
   "recoveryRedeemInvalid": "Invalid or already-used code",
-  "@recoveryRedeemInvalid": { "description": "Error when a recovery code is wrong or already consumed." },
+  "@recoveryRedeemInvalid": {
+    "description": "Error when a recovery code is wrong or already consumed."
+  },
   "roomCockpitSub": "Now",
-  "@roomCockpitSub": { "description": "Cockpit Room sublabel." },
+  "@roomCockpitSub": {
+    "description": "Cockpit Room sublabel."
+  },
   "roomGarageSub": "Your cars",
-  "@roomGarageSub": { "description": "Garage Room sublabel." },
+  "@roomGarageSub": {
+    "description": "Garage Room sublabel."
+  },
   "roomPitlaneSub": "What's due",
-  "@roomPitlaneSub": { "description": "Pit-lane Room sublabel." },
+  "@roomPitlaneSub": {
+    "description": "Pit-lane Room sublabel."
+  },
   "readinessLabel": "Readiness",
-  "@readinessLabel": { "description": "Label for the Home readiness vital." },
+  "@readinessLabel": {
+    "description": "Label for the Home readiness vital."
+  },
   "quickAdd": "Add",
-  "@quickAdd": { "description": "The persistent quick-add action." },
+  "@quickAdd": {
+    "description": "The persistent quick-add action."
+  },
   "homeEmptyTitle": "Add your first vehicle to begin",
-  "@homeEmptyTitle": { "description": "Empty-Home sentence before the first vehicle." },
+  "@homeEmptyTitle": {
+    "description": "Empty-Home sentence before the first vehicle."
+  },
   "homeEmptyCta": "Add a vehicle",
-  "@homeEmptyCta": { "description": "Empty-Home primary CTA into onboarding." },
+  "@homeEmptyCta": {
+    "description": "Empty-Home primary CTA into onboarding."
+  },
   "onboardingTitle": "Welcome",
-  "@onboardingTitle": { "description": "Onboarding flow title." },
+  "@onboardingTitle": {
+    "description": "Onboarding flow title."
+  },
   "discardChangesTitle": "Discard changes?",
-  "@discardChangesTitle": { "description": "Confirm-discard prompt title on an unsaved form." },
+  "@discardChangesTitle": {
+    "description": "Confirm-discard prompt title on an unsaved form."
+  },
   "discardChangesBody": "Your unsaved changes will be lost.",
-  "@discardChangesBody": { "description": "Confirm-discard prompt body." },
+  "@discardChangesBody": {
+    "description": "Confirm-discard prompt body."
+  },
   "discardAction": "Discard",
-  "@discardAction": { "description": "Confirm-discard destructive action." }
+  "@discardAction": {
+    "description": "Confirm-discard destructive action."
+  },
+  "vehicleAddTitle": "Add vehicle",
+  "@vehicleAddTitle": {
+    "description": "Add-vehicle form title"
+  },
+  "vehicleEditTitle": "Edit vehicle",
+  "@vehicleEditTitle": {
+    "description": "Edit-vehicle form title"
+  },
+  "vehicleSave": "Save",
+  "@vehicleSave": {
+    "description": "Save the vehicle form"
+  },
+  "vehicleNameRequired": "A name is required",
+  "@vehicleNameRequired": {
+    "description": "Validation: nickname required"
+  },
+  "vehicleSectionIdentity": "Identity",
+  "@vehicleSectionIdentity": {
+    "description": "Form section: identity"
+  },
+  "vehicleSectionPowertrain": "Powertrain",
+  "@vehicleSectionPowertrain": {
+    "description": "Form section: powertrain"
+  },
+  "vehicleName": "Name",
+  "@vehicleName": {
+    "description": "Field: nickname"
+  },
+  "vehicleMake": "Make",
+  "@vehicleMake": {
+    "description": "Field: make"
+  },
+  "vehicleModel": "Model",
+  "@vehicleModel": {
+    "description": "Field: model"
+  },
+  "vehicleTrim": "Trim",
+  "@vehicleTrim": {
+    "description": "Field: trim"
+  },
+  "vehicleYear": "Year",
+  "@vehicleYear": {
+    "description": "Field: model year"
+  },
+  "vehicleTypeLabel": "Type",
+  "@vehicleTypeLabel": {
+    "description": "Field: vehicle type"
+  },
+  "vehicleEnergyLabel": "Energy",
+  "@vehicleEnergyLabel": {
+    "description": "Field: energy type"
+  },
+  "vehicleSecondaryEnergyLabel": "Secondary energy",
+  "@vehicleSecondaryEnergyLabel": {
+    "description": "Field: secondary energy"
+  },
+  "vehicleVin": "VIN",
+  "@vehicleVin": {
+    "description": "Field: VIN"
+  },
+  "vehiclePlate": "License plate",
+  "@vehiclePlate": {
+    "description": "Field: license plate"
+  },
+  "vehicleTankCapacity": "Tank capacity",
+  "@vehicleTankCapacity": {
+    "description": "Field: tank capacity"
+  },
+  "vehicleSecondaryTank": "Secondary tank",
+  "@vehicleSecondaryTank": {
+    "description": "Field: secondary tank"
+  },
+  "vehicleFuelGrade": "Fuel grade",
+  "@vehicleFuelGrade": {
+    "description": "Field: fuel grade"
+  },
+  "vehicleBatteryCapacity": "Battery capacity",
+  "@vehicleBatteryCapacity": {
+    "description": "Field: battery capacity"
+  },
+  "vehicleUsableCapacity": "Usable capacity",
+  "@vehicleUsableCapacity": {
+    "description": "Field: usable capacity"
+  },
+  "vehicleConnectors": "Connectors",
+  "@vehicleConnectors": {
+    "description": "Field: connectors"
+  },
+  "vehicleEngineHours": "Engine-hour meter",
+  "@vehicleEngineHours": {
+    "description": "Field: engine-hour meter"
+  },
+  "vehicleTrackDistance": "Track distance",
+  "@vehicleTrackDistance": {
+    "description": "Toggle: track distance"
+  },
+  "vinChecksumOk": "Checksum valid",
+  "@vinChecksumOk": {
+    "description": "VIN checksum valid"
+  },
+  "vinChecksumBad": "Checksum invalid",
+  "@vinChecksumBad": {
+    "description": "VIN checksum invalid"
+  },
+  "vehicleTypeCar": "Car",
+  "@vehicleTypeCar": {
+    "description": "Vehicle type: car"
+  },
+  "vehicleTypeMotorcycle": "Motorcycle",
+  "@vehicleTypeMotorcycle": {
+    "description": "Vehicle type: motorcycle"
+  },
+  "vehicleTypeScooter": "Scooter",
+  "@vehicleTypeScooter": {
+    "description": "Vehicle type: scooter"
+  },
+  "vehicleTypeTruck": "Truck",
+  "@vehicleTypeTruck": {
+    "description": "Vehicle type: truck"
+  },
+  "vehicleTypeVan": "Van",
+  "@vehicleTypeVan": {
+    "description": "Vehicle type: van"
+  },
+  "vehicleTypeSuv": "SUV",
+  "@vehicleTypeSuv": {
+    "description": "Vehicle type: SUV"
+  },
+  "vehicleTypeBus": "Bus",
+  "@vehicleTypeBus": {
+    "description": "Vehicle type: bus"
+  },
+  "vehicleTypeBoat": "Boat",
+  "@vehicleTypeBoat": {
+    "description": "Vehicle type: boat"
+  },
+  "vehicleTypeRv": "RV",
+  "@vehicleTypeRv": {
+    "description": "Vehicle type: RV"
+  },
+  "vehicleTypeAtv": "ATV",
+  "@vehicleTypeAtv": {
+    "description": "Vehicle type: ATV"
+  },
+  "vehicleTypeEquipment": "Equipment",
+  "@vehicleTypeEquipment": {
+    "description": "Vehicle type: equipment"
+  },
+  "vehicleTypeGenerator": "Generator",
+  "@vehicleTypeGenerator": {
+    "description": "Vehicle type: generator"
+  },
+  "vehicleTypeBicycle": "Bicycle",
+  "@vehicleTypeBicycle": {
+    "description": "Vehicle type: bicycle"
+  },
+  "vehicleTypeOther": "Other",
+  "@vehicleTypeOther": {
+    "description": "Vehicle type: other"
+  },
+  "energyGasoline": "Gasoline",
+  "@energyGasoline": {
+    "description": "Energy: gasoline"
+  },
+  "energyDiesel": "Diesel",
+  "@energyDiesel": {
+    "description": "Energy: diesel"
+  },
+  "energyLpg": "LPG",
+  "@energyLpg": {
+    "description": "Energy: LPG"
+  },
+  "energyCng": "CNG",
+  "@energyCng": {
+    "description": "Energy: CNG"
+  },
+  "energyEthanol": "Ethanol",
+  "@energyEthanol": {
+    "description": "Energy: ethanol"
+  },
+  "energyHydrogen": "Hydrogen",
+  "@energyHydrogen": {
+    "description": "Energy: hydrogen"
+  },
+  "energyElectric": "Electric",
+  "@energyElectric": {
+    "description": "Energy: electric"
+  },
+  "energyHybrid": "Hybrid",
+  "@energyHybrid": {
+    "description": "Energy: hybrid"
+  },
+  "energyPlugInHybrid": "Plug-in hybrid",
+  "@energyPlugInHybrid": {
+    "description": "Energy: plug-in hybrid"
+  },
+  "energyNone": "None",
+  "@energyNone": {
+    "description": "Energy: none/unset"
+  },
+  "vehicleEdit": "Edit",
+  "@vehicleEdit": {
+    "description": "Edit action"
+  },
+  "vehicleDelete": "Delete",
+  "@vehicleDelete": {
+    "description": "Delete action"
+  },
+  "vehicleOdometer": "Odometer",
+  "@vehicleOdometer": {
+    "description": "Odometer label"
+  },
+  "vehicleEstimated": "Estimated",
+  "@vehicleEstimated": {
+    "description": "Estimated-value marker"
+  },
+  "vehicleNoReadings": "No readings yet",
+  "@vehicleNoReadings": {
+    "description": "No ledger readings yet"
+  },
+  "vehicleSpecsSection": "Specifications",
+  "@vehicleSpecsSection": {
+    "description": "Specs section header"
+  },
+  "vehicleStatusActive": "Active",
+  "@vehicleStatusActive": {
+    "description": "Lifecycle: active"
+  },
+  "vehicleStatusArchived": "Archived",
+  "@vehicleStatusArchived": {
+    "description": "Lifecycle: archived"
+  },
+  "vehicleStatusSold": "Sold",
+  "@vehicleStatusSold": {
+    "description": "Lifecycle: sold"
+  },
+  "vehicleStatusScrapped": "Scrapped",
+  "@vehicleStatusScrapped": {
+    "description": "Lifecycle: scrapped"
+  },
+  "vehicleStatusStolen": "Stolen",
+  "@vehicleStatusStolen": {
+    "description": "Lifecycle: stolen"
+  },
+  "vehicleStatusWrittenOff": "Written off",
+  "@vehicleStatusWrittenOff": {
+    "description": "Lifecycle: written off"
+  },
+  "vehicleArchive": "Archive",
+  "@vehicleArchive": {
+    "description": "Archive action"
+  },
+  "vehicleMarkSold": "Mark as sold",
+  "@vehicleMarkSold": {
+    "description": "Mark-as-sold action"
+  },
+  "vehicleRestoreActive": "Make active",
+  "@vehicleRestoreActive": {
+    "description": "Restore to active"
+  },
+  "garageEmpty": "Your garage is empty",
+  "@garageEmpty": {
+    "description": "Garage empty state"
+  }
 }

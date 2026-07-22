@@ -116,6 +116,14 @@ final activeNumeralFormatProvider = Provider<NumeralFormat>((ref) {
   return resolveNumeralFormat(prefs.languageCode, system: prefs.numeralSystem);
 });
 
+/// A parser for numeric input in the effective locale — folds every digit set
+/// to ASCII and accepts the locale's decimal/grouping separators (F4-T4). Used
+/// by forms so users can type Persian/Eastern-Arabic numerals.
+final activeNumeralParserProvider = Provider<NumeralParser>((ref) {
+  final prefs = ref.watch(localizationPrefsProvider);
+  return resolveNumeralParser(prefs.languageCode);
+});
+
 /// Writes localization preferences to the encrypted DB; the reactive
 /// [settingsMapProvider] applies them live, with no restart.
 class LocalizationController {

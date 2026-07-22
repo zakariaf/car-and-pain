@@ -71,27 +71,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
-/// A vehicle detail placeholder (M2 fills it) reconstructed from the URL path
-/// param — proves master-detail routes are URL-addressable.
-class VehicleDetailScreen extends ConsumerWidget {
-  const VehicleDetailScreen({required this.vehicleId, super.key});
-
-  final String vehicleId;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final vehicle = ref
-        .watch(activeVehiclesProvider)
-        .where((v) => v.id == vehicleId)
-        .firstOrNull;
-    return PulseScaffold(
-      title: vehicle?.nickname ?? pulseLabel(l10n, 'room.garage'),
-      body: Center(child: Text(vehicle?.nickname ?? vehicleId)),
-    );
-  }
-}
-
 /// A reminder detail placeholder (M5 fills it) — the notification deep-link
 /// target, rebuilt entirely from path params (extra is null after reboot).
 class ReminderDetailScreen extends StatelessWidget {

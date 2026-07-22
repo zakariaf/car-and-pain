@@ -18,6 +18,12 @@ class Vehicle {
     this.vinChecksumValid,
     this.licensePlate,
     this.plateCountry,
+    this.tankCapacityMl,
+    this.secondaryTankMl,
+    this.fuelGrade,
+    this.batteryCapacityJoules,
+    this.usableCapacityJoules,
+    this.connectorTypes,
     this.distanceUnit,
     this.volumeUnit,
     this.consumptionUnit,
@@ -44,6 +50,12 @@ class Vehicle {
   final bool? vinChecksumValid;
   final String? licensePlate;
   final String? plateCountry;
+  final int? tankCapacityMl;
+  final int? secondaryTankMl;
+  final String? fuelGrade;
+  final int? batteryCapacityJoules;
+  final int? usableCapacityJoules;
+  final String? connectorTypes;
 
   /// Per-vehicle display overrides (null → fall back to the global default).
   final String? distanceUnit;
@@ -79,6 +91,12 @@ class Vehicle {
       other.vinChecksumValid == vinChecksumValid &&
       other.licensePlate == licensePlate &&
       other.plateCountry == plateCountry &&
+      other.tankCapacityMl == tankCapacityMl &&
+      other.secondaryTankMl == secondaryTankMl &&
+      other.fuelGrade == fuelGrade &&
+      other.batteryCapacityJoules == batteryCapacityJoules &&
+      other.usableCapacityJoules == usableCapacityJoules &&
+      other.connectorTypes == connectorTypes &&
       other.distanceUnit == distanceUnit &&
       other.volumeUnit == volumeUnit &&
       other.consumptionUnit == consumptionUnit &&
@@ -114,6 +132,12 @@ class Vehicle {
         vinChecksumValid,
         licensePlate,
         plateCountry,
+        tankCapacityMl,
+        secondaryTankMl,
+        fuelGrade,
+        batteryCapacityJoules,
+        usableCapacityJoules,
+        connectorTypes,
         distanceUnit,
         volumeUnit,
         consumptionUnit,

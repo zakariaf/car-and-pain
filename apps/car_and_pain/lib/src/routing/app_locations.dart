@@ -20,6 +20,12 @@ abstract final class AppLocations {
   static String reminderDetail(String vehicleId, String reminderId) =>
       '/garage/$vehicleId/reminders/$reminderId';
 
+  /// The add-vehicle form (full-screen flow above the shell).
+  static const newVehicle = '/vehicle/new';
+
+  /// The edit-vehicle form for [vehicleId] (full-screen flow above the shell).
+  static String editVehicle(String vehicleId) => '/vehicle/$vehicleId/edit';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

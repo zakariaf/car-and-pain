@@ -24,6 +24,12 @@ class VehicleEdit {
     this.wmiDecoded,
     this.licensePlate,
     this.plateCountry,
+    this.tankCapacityMl,
+    this.secondaryTankMl,
+    this.fuelGrade,
+    this.batteryCapacityJoules,
+    this.usableCapacityJoules,
+    this.connectorTypes,
     this.distanceUnit,
     this.volumeUnit,
     this.consumptionUnit,
@@ -49,6 +55,12 @@ class VehicleEdit {
   final String? wmiDecoded;
   final String? licensePlate;
   final String? plateCountry;
+  final int? tankCapacityMl;
+  final int? secondaryTankMl;
+  final String? fuelGrade;
+  final int? batteryCapacityJoules;
+  final int? usableCapacityJoules;
+  final String? connectorTypes;
   final String? distanceUnit;
   final String? volumeUnit;
   final String? consumptionUnit;
@@ -86,6 +98,12 @@ class VehiclesRepository extends BaseRepository {
         vinChecksumValid: r.vinChecksumValid,
         licensePlate: r.licensePlate,
         plateCountry: r.plateCountry,
+        tankCapacityMl: r.tankCapacityMl,
+        secondaryTankMl: r.secondaryTankMl,
+        fuelGrade: r.fuelGrade,
+        batteryCapacityJoules: r.batteryCapacityJoules,
+        usableCapacityJoules: r.usableCapacityJoules,
+        connectorTypes: r.connectorTypes,
         distanceUnit: r.distanceUnit,
         volumeUnit: r.volumeUnit,
         consumptionUnit: r.consumptionUnit,
@@ -262,6 +280,23 @@ class VehiclesRepository extends BaseRepository {
         plateCountry: e.plateCountry == null
             ? const Value.absent()
             : Value(e.plateCountry),
+        tankCapacityMl: e.tankCapacityMl == null
+            ? const Value.absent()
+            : Value(e.tankCapacityMl),
+        secondaryTankMl: e.secondaryTankMl == null
+            ? const Value.absent()
+            : Value(e.secondaryTankMl),
+        fuelGrade:
+            e.fuelGrade == null ? const Value.absent() : Value(e.fuelGrade),
+        batteryCapacityJoules: e.batteryCapacityJoules == null
+            ? const Value.absent()
+            : Value(e.batteryCapacityJoules),
+        usableCapacityJoules: e.usableCapacityJoules == null
+            ? const Value.absent()
+            : Value(e.usableCapacityJoules),
+        connectorTypes: e.connectorTypes == null
+            ? const Value.absent()
+            : Value(e.connectorTypes),
         distanceUnit: e.distanceUnit == null
             ? const Value.absent()
             : Value(e.distanceUnit),

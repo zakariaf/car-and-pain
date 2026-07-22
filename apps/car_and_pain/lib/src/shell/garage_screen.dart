@@ -84,43 +84,60 @@ class _VehicleRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final isActiveStatus = vehicle.status == 'active';
-    return ListTile(
-      leading: Icon(
-        active
-            ? Icons.check_circle
-            : (isActiveStatus
-                ? Icons.directions_car_outlined
-                : Icons.inventory_2_outlined),
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(
+        horizontal: PulseTokens.s2,
+        vertical: PulseTokens.sHalf,
       ),
-      title: Row(
-        children: [
-          Flexible(child: Text(vehicle.nickname)),
-          if (vehicle.isDefault) ...[
-            const SizedBox(width: PulseTokens.s1),
-            StatusBadge(
-                status: PulseStatus.healthy, label: l10n.garageDefaultBadge),
-          ],
-        ],
+      child: PulseCard(
+        // A transparent Material so the ListTile's ink paints on its own layer,
+        // not the card's DecoratedBox.
+        child: Material(
+          type: MaterialType.transparency,
+          child: ListTile(
+            leading: Icon(
+              active
+                  ? Icons.check_circle
+                  : (isActiveStatus
+                      ? Icons.directions_car_outlined
+                      : Icons.inventory_2_outlined),
+            ),
+            title: Row(
+              children: [
+                Flexible(child: Text(vehicle.nickname)),
+                if (vehicle.isDefault) ...[
+                  const SizedBox(width: PulseTokens.s1),
+                  StatusBadge(
+                      status: PulseStatus.healthy,
+                      label: l10n.garageDefaultBadge),
+                ],
+              ],
+            ),
+            // Redundant status: non-active vehicles carry the lifecycle word here.
+            subtitle: Text(
+              isActiveStatus
+                  ? vehicle.displayModel
+                  : vehicleStatusLabel(l10n, vehicle.status),
+            ),
+            trailing: PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert),
+              onSelected: (action) => _onAction(context, ref, action),
+              itemBuilder: (context) => [
+                PopupMenuItem(
+                    value: 'default', child: Text(l10n.garageSetDefault)),
+                PopupMenuItem(value: 'edit', child: Text(l10n.vehicleEdit)),
+                PopupMenuItem(value: 'delete', child: Text(l10n.vehicleDelete)),
+              ],
+            ),
+            onTap: () {
+              ref
+                  .read(shellStateControllerProvider)
+                  .setActiveVehicle(vehicle.id);
+              context.go(AppLocations.garageVehicle(vehicle.id));
+            },
+          ),
+        ),
       ),
-      // Redundant status: non-active vehicles carry the lifecycle word here.
-      subtitle: Text(
-        isActiveStatus
-            ? vehicle.displayModel
-            : vehicleStatusLabel(l10n, vehicle.status),
-      ),
-      trailing: PopupMenuButton<String>(
-        icon: const Icon(Icons.more_vert),
-        onSelected: (action) => _onAction(context, ref, action),
-        itemBuilder: (context) => [
-          PopupMenuItem(value: 'default', child: Text(l10n.garageSetDefault)),
-          PopupMenuItem(value: 'edit', child: Text(l10n.vehicleEdit)),
-          PopupMenuItem(value: 'delete', child: Text(l10n.vehicleDelete)),
-        ],
-      ),
-      onTap: () {
-        ref.read(shellStateControllerProvider).setActiveVehicle(vehicle.id);
-        context.go(AppLocations.garageVehicle(vehicle.id));
-      },
     );
   }
 

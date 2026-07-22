@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:drift/drift.dart';
 
 import '../db/app_database.dart';
+import '../merge/lww_merge_engine.dart';
 
 typedef _JsonRow = Map<String, dynamic>;
 
@@ -167,6 +168,78 @@ class CanonicalCodec {
         }
       });
       return const Ok(null);
+    } on Object {
+      return const Err(CorruptArchive());
+    }
+  }
+
+  /// Compute the merge reconciliation WITHOUT writing (F6-T5 dry-run). Identical
+  /// inputs give an identical report to [merge].
+  Future<Result<MergeReport, ImportFailure>> mergePreview(
+    Map<String, dynamic> doc,
+  ) =>
+      _merge(doc, apply: false);
+
+  /// Merge-aware import (F6-T6): additively upsert incoming rows that WIN the
+  /// deterministic LWW contest; losers are left untouched (never a wipe, unlike
+  /// [import]). Settings (no `updated_at`) are device-local and kept as-is.
+  /// Returns the same reconciliation report the dry-run produced.
+  Future<Result<MergeReport, ImportFailure>> merge(Map<String, dynamic> doc) =>
+      _merge(doc, apply: true);
+
+  Future<Result<MergeReport, ImportFailure>> _merge(
+    Map<String, dynamic> doc, {
+    required bool apply,
+  }) async {
+    final fmt = doc['formatVersion'];
+    if (fmt is! int) return const Err(CorruptArchive());
+    if (fmt != formatVersion) {
+      return Err(SchemaVersionMismatch(expected: formatVersion, found: fmt));
+    }
+    final entities = doc['entities'];
+    if (entities is! Map) return const Err(CorruptArchive());
+
+    const engine = LwwMergeEngine();
+    final byEntity = <String, EntityStat>{};
+    final conflicts = <MergeConflict>[];
+    final winnersByEntity = <_Entity, List<Map<String, Object?>>>{};
+
+    try {
+      for (final e in _entities) {
+        final incoming = [
+          for (final r in (entities[e.name] as List?) ?? const <dynamic>[])
+            (r as Map).cast<String, Object?>(),
+        ];
+        // Rows without `updatedAt` (settings) aren't LWW-mergeable — keep local.
+        if (incoming.isEmpty || !incoming.first.containsKey('updatedAt')) {
+          continue;
+        }
+        final localRows = await e.exportRows();
+        final localIndex = <String, Map<String, Object?>>{
+          for (final r in localRows)
+            r['id'] as String: r.cast<String, Object?>(),
+        };
+        final result = engine.mergeEntity(
+          entity: e.name,
+          local: localIndex,
+          incoming: incoming,
+        );
+        byEntity[e.name] = result.stat;
+        conflicts.addAll(result.conflicts);
+        winnersByEntity[e] = result.winners;
+      }
+
+      if (apply) {
+        await db.transaction(() async {
+          for (final e in _entities) {
+            for (final w
+                in winnersByEntity[e] ?? const <Map<String, Object?>>[]) {
+              await e.importRow(w.cast<String, dynamic>());
+            }
+          }
+        });
+      }
+      return Ok(MergeReport(byEntity: byEntity, conflicts: conflicts));
     } on Object {
       return const Err(CorruptArchive());
     }

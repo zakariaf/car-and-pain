@@ -27,6 +27,8 @@ export 'src/backup/backup_format.dart'
         archiveSha256,
         assembleArchive,
         parseArchive;
+export 'src/backup/csv_export.dart'
+    show csvField, exportEntitiesToCsv, rowsToCsv;
 export 'src/db/app_database.dart' show AppDatabase;
 export 'src/db/database_factory.dart' show openAppDatabase;
 export 'src/db/migrations/snapshot_guard.dart' show SnapshotGuard;
@@ -43,6 +45,13 @@ export 'src/infra/app_time_zone.dart' show AppTimeZone;
 export 'src/infra/secure_key_store.dart'
     show FakeSecureKeyStore, FlutterSecureKeyStore, SecureKeyStore;
 export 'src/ledger/ledger_repository.dart' show LedgerRepository;
+export 'src/merge/lww_merge_engine.dart'
+    show
+        EntityMergeResult,
+        EntityStat,
+        LwwMergeEngine,
+        MergeConflict,
+        MergeReport;
 export 'src/notifications/notification_schedule_repository.dart'
     show NotificationScheduleRepository;
 export 'src/providers.dart'

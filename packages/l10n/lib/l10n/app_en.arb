@@ -1093,5 +1093,33 @@
   "fuelSectionCharge": "Charge",
   "@fuelSectionCharge": {
     "description": "Charge section"
+  },
+  "fuelHistoryTitle": "Fuel & economy",
+  "@fuelHistoryTitle": {
+    "description": "Fuel history title"
+  },
+  "fuelHistoryEmpty": "No fills yet",
+  "@fuelHistoryEmpty": {
+    "description": "No fills yet"
+  },
+  "fuelEconomyPending": "Economy pending",
+  "@fuelEconomyPending": {
+    "description": "Economy pending"
+  },
+  "fuelEconomyLifetime": "Lifetime",
+  "@fuelEconomyLifetime": {
+    "description": "Lifetime economy label"
+  },
+  "economyUnitL100km": "L/100km",
+  "@economyUnitL100km": {
+    "description": "L/100km unit"
+  },
+  "economyUnitMpg": "MPG",
+  "@economyUnitMpg": {
+    "description": "MPG unit"
+  },
+  "economyUnitKwh100": "kWh/100km",
+  "@economyUnitKwh100": {
+    "description": "kWh/100km unit"
   }
 }

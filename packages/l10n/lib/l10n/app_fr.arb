@@ -251,5 +251,12 @@
   "fuelEndSoc": "Charge fin (%)",
   "fuelHomeCharge": "Recharge à domicile",
   "fuelFree": "Gratuit",
-  "fuelSectionCharge": "Recharge"
+  "fuelSectionCharge": "Recharge",
+  "fuelHistoryTitle": "Carburant & consommation",
+  "fuelHistoryEmpty": "Aucun plein",
+  "fuelEconomyPending": "Consommation en attente",
+  "fuelEconomyLifetime": "Cumulée",
+  "economyUnitL100km": "L/100km",
+  "economyUnitMpg": "MPG",
+  "economyUnitKwh100": "kWh/100km"
 }

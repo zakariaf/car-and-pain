@@ -251,5 +251,12 @@
   "fuelEndSoc": "کۆتایی بارکردن (٪)",
   "fuelHomeCharge": "بارکردنی ماڵەوە",
   "fuelFree": "بێبەرامبەر",
-  "fuelSectionCharge": "بارکردن"
+  "fuelSectionCharge": "بارکردن",
+  "fuelHistoryTitle": "سووتەمەنی و ئابووری",
+  "fuelHistoryEmpty": "هێشتا سووتەمەنی نییە",
+  "fuelEconomyPending": "ئابووری چاوەڕوانە",
+  "fuelEconomyLifetime": "هەموو تەمەن",
+  "economyUnitL100km": "ل/١٠٠کم",
+  "economyUnitMpg": "مایل/گاڵۆن",
+  "economyUnitKwh100": "کیلۆوات/١٠٠کم"
 }

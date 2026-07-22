@@ -251,5 +251,12 @@
   "fuelEndSoc": "Ladestand Ende (%)",
   "fuelHomeCharge": "Zuhause laden",
   "fuelFree": "Kostenlos",
-  "fuelSectionCharge": "Laden"
+  "fuelSectionCharge": "Laden",
+  "fuelHistoryTitle": "Kraftstoff & Verbrauch",
+  "fuelHistoryEmpty": "Noch keine Tankungen",
+  "fuelEconomyPending": "Verbrauch ausstehend",
+  "fuelEconomyLifetime": "Gesamt",
+  "economyUnitL100km": "L/100km",
+  "economyUnitMpg": "MPG",
+  "economyUnitKwh100": "kWh/100km"
 }

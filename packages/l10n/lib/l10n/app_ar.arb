@@ -251,5 +251,12 @@
   "fuelEndSoc": "نهاية الشحن (٪)",
   "fuelHomeCharge": "شحن منزلي",
   "fuelFree": "مجاني",
-  "fuelSectionCharge": "شحن"
+  "fuelSectionCharge": "شحن",
+  "fuelHistoryTitle": "الوقود والاقتصاد",
+  "fuelHistoryEmpty": "لا تعبئات بعد",
+  "fuelEconomyPending": "الاقتصاد قيد الانتظار",
+  "fuelEconomyLifetime": "الإجمالي",
+  "economyUnitL100km": "ل/١٠٠كم",
+  "economyUnitMpg": "ميل/غالون",
+  "economyUnitKwh100": "ك.و.س/١٠٠كم"
 }

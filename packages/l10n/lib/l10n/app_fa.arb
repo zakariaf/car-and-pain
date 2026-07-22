@@ -251,5 +251,12 @@
   "fuelEndSoc": "شارژ پایان (٪)",
   "fuelHomeCharge": "شارژ خانگی",
   "fuelFree": "رایگان",
-  "fuelSectionCharge": "شارژ"
+  "fuelSectionCharge": "شارژ",
+  "fuelHistoryTitle": "سوخت و مصرف",
+  "fuelHistoryEmpty": "هنوز سوخت‌گیری نیست",
+  "fuelEconomyPending": "مصرف در انتظار",
+  "fuelEconomyLifetime": "کل عمر",
+  "economyUnitL100km": "ل/۱۰۰کم",
+  "economyUnitMpg": "مایل/گالن",
+  "economyUnitKwh100": "کیلووات‌ساعت/۱۰۰کم"
 }

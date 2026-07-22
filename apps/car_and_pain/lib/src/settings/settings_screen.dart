@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:design_system/design_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:l10n/l10n.dart';
 
 import 'locale_controller.dart';
@@ -64,6 +65,34 @@ class SettingsScreen extends ConsumerWidget {
               selected: prefs.numeralSystem == n,
               onTap: () => controller.setNumeralSystem(n),
             ),
+          _SectionLabel(l10n.settingsSecurity),
+          Semantics(
+            button: true,
+            label: l10n.settingsSecurity,
+            child: InkWell(
+              onTap: () => context.push('/settings/security'),
+              borderRadius: BorderRadius.circular(PulseTokens.rCard),
+              child: Padding(
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: PulseTokens.s2,
+                  vertical: PulseTokens.s2,
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.lock_outline, size: 22),
+                    const SizedBox(width: PulseTokens.s2),
+                    Expanded(
+                      child: Text(
+                        l10n.securityAppLockDesc,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ),
+                    Icon(Icons.adaptive.arrow_forward, size: 18),
+                  ],
+                ),
+              ),
+            ),
+          ),
           _SectionLabel(l10n.settingsPreview),
           _Preview(prefs: prefs, fmt: fmt),
         ],

@@ -41,11 +41,11 @@ void main() {
     await tester.pump();
     expect(find.byType(StartupErrorScreen), findsOneWidget);
 
-    // Flip to success, then tap retry.
+    // Flip to success, then tap retry. Settle covers startup resolving AND the
+    // app-lock gate resolving its (unlocked) state on the frame after mount.
     init.result = Ok(fakeInfra());
     await tester.tap(find.text('Try again'));
-    await tester.pump();
-    await tester.pump();
+    await tester.pumpAndSettle();
 
     expect(find.byType(HomeScreen), findsOneWidget);
     expect(init.calls, greaterThanOrEqualTo(2));

@@ -50,5 +50,8 @@
   "calendarHebrew": "Hebräisch",
   "numeralWestern": "Westlich",
   "numeralEasternArabic": "Ostarabisch",
-  "numeralPersian": "Persisch"
+  "numeralPersian": "Persisch",
+  "notifDueOn": "Fällig {date}",
+  "notifDueEstimated": "Ca. {date}",
+  "notifDigest": "{count, plural, =1{1 Erinnerung fällig} other{{count} Erinnerungen fällig}}"
 }

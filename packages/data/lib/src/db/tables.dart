@@ -155,8 +155,10 @@ class Reminders extends Table with AuditColumns {
 @DataClassName('ScheduledNotificationRow')
 class ScheduledNotifications extends Table {
   IntColumn get notifId => integer()();
-  TextColumn get reminderId =>
-      text().references(Reminders, #id, onDelete: KeyAction.cascade)();
+  // Nullable, no FK: a digest entry spans several reminders, and the whole
+  // projection is wiped + rebuilt on every reconcile, so referential cleanup
+  // isn't needed.
+  TextColumn get reminderId => text().nullable()();
   IntColumn get fireAt => integer()();
   TextColumn get title => text()();
   TextColumn get body => text()();

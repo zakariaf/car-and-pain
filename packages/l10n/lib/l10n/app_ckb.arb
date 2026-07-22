@@ -50,5 +50,8 @@
   "calendarHebrew": "عیبری",
   "numeralWestern": "ڕۆژئاوایی",
   "numeralEasternArabic": "عەرەبی",
-  "numeralPersian": "فارسی"
+  "numeralPersian": "فارسی",
+  "notifDueOn": "کاتی {date}",
+  "notifDueEstimated": "نزیکەی {date}",
+  "notifDigest": "{count, plural, one{{count} بیرخەرەوەی کاتی} other{{count} بیرخەرەوەی کاتی}}"
 }

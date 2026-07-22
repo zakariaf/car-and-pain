@@ -50,5 +50,8 @@
   "calendarHebrew": "Hébreu",
   "numeralWestern": "Occidentaux",
   "numeralEasternArabic": "Arabes orientaux",
-  "numeralPersian": "Persans"
+  "numeralPersian": "Persans",
+  "notifDueOn": "Échéance {date}",
+  "notifDueEstimated": "Env. {date}",
+  "notifDigest": "{count, plural, =1{1 rappel dû} other{{count} rappels dus}}"
 }

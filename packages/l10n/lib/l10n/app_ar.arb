@@ -50,5 +50,8 @@
   "calendarHebrew": "العبري",
   "numeralWestern": "الغربية",
   "numeralEasternArabic": "العربية",
-  "numeralPersian": "الفارسية"
+  "numeralPersian": "الفارسية",
+  "notifDueOn": "يُستحق {date}",
+  "notifDueEstimated": "حوالي {date}",
+  "notifDigest": "{count, plural, zero{لا تذكيرات مستحقة} one{تذكير واحد مستحق} two{تذكيران مستحقان} few{{count} تذكيرات مستحقة} many{{count} تذكيرًا مستحقًا} other{{count} تذكير مستحق}}"
 }

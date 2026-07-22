@@ -219,5 +219,32 @@
   "numeralPersian": "Persian",
   "@numeralPersian": {
     "description": "Numeral system: Persian digits."
+  },
+  "notifDueOn": "Due {date}",
+  "@notifDueOn": {
+    "description": "Notification body: a reminder due on an exact date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "notifDueEstimated": "Est. {date}",
+  "@notifDueEstimated": {
+    "description": "Notification body: a reminder due on a projected date.",
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "notifDigest": "{count, plural, =1{1 reminder due} other{{count} reminders due}}",
+  "@notifDigest": {
+    "description": "Grouped-digest title: how many reminders are due.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   }
 }

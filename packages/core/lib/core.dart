@@ -57,6 +57,8 @@ export 'src/scheduling/schedule_rule.dart'
         RecurrenceUnit,
         ScheduleRule,
         TriggerKind;
+export 'src/scheduling/scheduled_notification.dart'
+    show ReminderScheduleDef, ScheduledNotification;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
 export 'src/units/distance.dart' show Distance, DistanceUnit;

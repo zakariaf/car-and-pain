@@ -50,5 +50,8 @@
   "calendarHebrew": "عبری",
   "numeralWestern": "غربی",
   "numeralEasternArabic": "عربی",
-  "numeralPersian": "فارسی"
+  "numeralPersian": "فارسی",
+  "notifDueOn": "سررسید {date}",
+  "notifDueEstimated": "حدود {date}",
+  "notifDigest": "{count, plural, one{{count} یادآور سررسید شده} other{{count} یادآور سررسید شده}}"
 }

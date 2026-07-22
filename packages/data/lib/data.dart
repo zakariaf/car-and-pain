@@ -20,6 +20,8 @@ export 'src/infra/app_time_zone.dart' show AppTimeZone;
 export 'src/infra/secure_key_store.dart'
     show FakeSecureKeyStore, FlutterSecureKeyStore, SecureKeyStore;
 export 'src/ledger/ledger_repository.dart' show LedgerRepository;
+export 'src/notifications/notification_schedule_repository.dart'
+    show NotificationScheduleRepository;
 export 'src/providers.dart'
     show
         appDatabaseProvider,
@@ -28,6 +30,7 @@ export 'src/providers.dart'
         diagnosticsRepositoryProvider,
         fuelRepositoryProvider,
         ledgerRepositoryProvider,
+        notificationScheduleRepositoryProvider,
         secureKeyStoreProvider,
         settingsRepositoryProvider,
         taxonomyRepositoryProvider,

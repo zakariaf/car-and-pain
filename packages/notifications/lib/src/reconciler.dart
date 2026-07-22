@@ -1,3 +1,5 @@
+import 'package:core/core.dart';
+
 import 'notification_gateway.dart';
 
 /// A deterministic 32-bit-safe notification id from a stable [key] such as

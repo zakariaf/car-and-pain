@@ -11,13 +11,7 @@ class ImageResizePlan {
     required this.resized,
   });
 
-  final int targetWidth;
-  final int targetHeight;
-
-  /// Whether any downscale was applied (false when already within bounds).
-  final bool resized;
-
-  static ImageResizePlan forSource({
+  factory ImageResizePlan.forSource({
     required int width,
     required int height,
     required int maxDimension,
@@ -37,6 +31,12 @@ class ImageResizePlan {
       resized: true,
     );
   }
+
+  final int targetWidth;
+  final int targetHeight;
+
+  /// Whether any downscale was applied (false when already within bounds).
+  final bool resized;
 }
 
 /// The processed image: a re-encoded, down-scaled, **EXIF-stripped** blob plus a

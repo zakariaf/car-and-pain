@@ -31,6 +31,11 @@ Future<void> runForwardMigrations(
         await m.addColumn(r, r.quietEndMinute);
         await m.addColumn(r, r.quietDeliverMinute);
         await m.createTable(db.scheduledNotifications);
+      case 3: // 3 → 4: attachment size accounting, thumbnail + at-rest seal (F8).
+        final a = db.attachments;
+        await m.addColumn(a, a.sizeBytes);
+        await m.addColumn(a, a.thumbnailRelativePath);
+        await m.addColumn(a, a.isEncrypted);
       // Future versions append their `case N` block here.
     }
   }

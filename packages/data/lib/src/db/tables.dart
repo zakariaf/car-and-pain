@@ -200,9 +200,12 @@ class Rollups extends Table with AuditColumns {
   IntColumn get revision => integer().withDefault(const Constant(0))();
 }
 
-/// Polymorphic attachment metadata. Bytes never live in SQLite — the file is
-/// content-addressed by PLAINTEXT sha256 and stored as ciphertext on disk;
-/// refcounted for shared-blob GC.
+/// Polymorphic attachment metadata (F8-T1). Bytes never live in SQLite — the
+/// file is content-addressed by PLAINTEXT sha256 and stored (optionally sealed)
+/// on disk; refcounted for shared-blob GC. `sizeBytes`/`thumbnailRelativePath`/
+/// `isEncrypted` were added at schema v4 for size accounting, gallery rendering,
+/// and per-blob at-rest sealing (F8-T3/T4/T5).
+@DataClassName('AttachmentRow')
 class Attachments extends Table with AuditColumns {
   TextColumn get sha256 => text()();
   TextColumn get relativePath => text()();
@@ -211,6 +214,15 @@ class Attachments extends Table with AuditColumns {
   TextColumn get linkedEntityType => text()();
   TextColumn get linkedEntityId => text()();
   IntColumn get refCount => integer().withDefault(const Constant(1))();
+
+  /// Canonical byte size of the stored (plaintext) content — for size accounting.
+  IntColumn get sizeBytes => integer().withDefault(const Constant(0))();
+
+  /// App-private path to the derived thumbnail, if one was generated.
+  TextColumn get thumbnailRelativePath => text().nullable()();
+
+  /// Whether the on-disk blob (+ thumbnail) is AES-GCM sealed with the master key.
+  BoolColumn get isEncrypted => boolean().withDefault(const Constant(false))();
 }
 
 /// App-global key/value settings (F4-T2): the app-controlled locale, calendar

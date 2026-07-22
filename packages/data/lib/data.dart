@@ -15,6 +15,8 @@ export 'src/db/open_connection.dart'
 export 'src/db/rekey.dart' show rekeyDatabaseFile;
 export 'src/diagnostics/diagnostics_repository.dart'
     show AppDiagnosticsRepository, DiagnosticsRepository;
+export 'src/domain/attachment.dart'
+    show Attachment, AttachmentKind, AttachmentOwner;
 export 'src/domain/vehicle.dart' show Vehicle;
 export 'src/infra/app_dirs.dart' show AppDirs;
 export 'src/infra/app_time_zone.dart' show AppTimeZone;
@@ -28,6 +30,7 @@ export 'src/providers.dart'
         appDatabaseProvider,
         appDirsProvider,
         appTimeZoneProvider,
+        attachmentsRepositoryProvider,
         diagnosticsRepositoryProvider,
         fuelRepositoryProvider,
         ledgerRepositoryProvider,
@@ -37,6 +40,8 @@ export 'src/providers.dart'
         taxonomyRepositoryProvider,
         trashRepositoryProvider,
         vehiclesRepositoryProvider;
+export 'src/repositories/attachments_repository.dart'
+    show AttachmentsRepository;
 export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/rollup_service.dart'

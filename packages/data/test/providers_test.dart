@@ -36,6 +36,6 @@ void main() {
     addTearDown(container.dispose);
 
     final repo = container.read(diagnosticsRepositoryProvider);
-    expect(repo.databaseLabel(), 'car-and-pain schema v3');
+    expect(repo.databaseLabel(), 'car-and-pain schema v4');
   });
 }

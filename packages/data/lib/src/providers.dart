@@ -7,6 +7,7 @@ import 'infra/app_time_zone.dart';
 import 'infra/secure_key_store.dart';
 import 'ledger/ledger_repository.dart';
 import 'notifications/notification_schedule_repository.dart';
+import 'repositories/attachments_repository.dart';
 import 'repositories/fuel_repository.dart';
 import 'repositories/vehicles_repository.dart';
 import 'settings/settings_repository.dart';
@@ -50,6 +51,10 @@ final diagnosticsRepositoryProvider = Provider<DiagnosticsRepository>(
 // ── Feature repositories (keepAlive by default via plain Provider) ──────────
 final vehiclesRepositoryProvider = Provider<VehiclesRepository>(
   (ref) => VehiclesRepository(ref.watch(appDatabaseProvider)),
+);
+
+final attachmentsRepositoryProvider = Provider<AttachmentsRepository>(
+  (ref) => AttachmentsRepository(ref.watch(appDatabaseProvider)),
 );
 
 final ledgerRepositoryProvider = Provider<LedgerRepository>(

@@ -113,7 +113,7 @@ class CanonicalCodec {
           .toList(),
       (j) => db
           .into(db.attachments)
-          .insert(Attachment.fromJson(j), mode: InsertMode.insertOrReplace),
+          .insert(AttachmentRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
     // App-global localization/display preferences (F4-T10). Additive and
     // FK-free: an older archive that predates it simply omits the key, and the

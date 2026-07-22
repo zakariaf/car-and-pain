@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:core/core.dart';
 import 'package:data/data.dart';
-import 'package:drift/drift.dart' hide isNull;
+import 'package:drift/drift.dart' hide isNotNull, isNull;
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,10 +33,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 3 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 4 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 3);
+    expect(db.schemaVersion, 4);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -80,15 +80,15 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v3 forward migration adds settings + schedule schema, keeps data',
-      () async {
+  test('v1 → v4 forward migration adds all later schema, keeps data', () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
 
-    // Build a fresh (v3) DB, seed a vehicle, then rewind the on-disk schema to
-    // v1 — drop the v2/v3 additions (settings, scheduled_notifications, and the
-    // F5 reminder columns) and set user_version = 1 — to simulate an old install.
+    // Build a fresh (v4) DB, seed a vehicle, then rewind the on-disk schema to
+    // v1 — drop the v2/v3/v4 additions (settings, scheduled_notifications, the
+    // F5 reminder columns, and the F8 attachment columns) and set
+    // user_version = 1 — to simulate an old install.
     final setup = AppDatabase(NativeDatabase(File(path)));
     final v =
         (await VehiclesRepository(setup).add(nickname: 'Keeper')).valueOrNull!;
@@ -109,10 +109,13 @@ void main() {
     for (final c in f5Columns) {
       await setup.customStatement('ALTER TABLE reminders DROP COLUMN $c');
     }
+    for (final c in ['size_bytes', 'thumbnail_relative_path', 'is_encrypted']) {
+      await setup.customStatement('ALTER TABLE attachments DROP COLUMN $c');
+    }
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
 
-    // Reopen: drift sees v1 < v3 and runs both guarded forward steps.
+    // Reopen: drift sees v1 < v4 and runs all guarded forward steps.
     final upgraded = AppDatabase(NativeDatabase(File(path)));
     addTearDown(upgraded.close);
 
@@ -146,5 +149,52 @@ void main() {
     // …and the new settings table is immediately usable.
     expect(
         (await SettingsRepository(upgraded).set('locale', 'fa')).isOk, isTrue);
+  });
+
+  test('v3 → v4 adds attachment size/thumbnail/encryption columns, keeps rows',
+      () async {
+    final dir = Directory.systemTemp.createTempSync('cap_mig3');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final path = '${dir.path}/app.sqlite';
+
+    // Fresh (v4) DB, seed an attachment row, then rewind to v3 by dropping the
+    // F8 columns and setting user_version = 3 to simulate a pre-F8 install.
+    final setup = AppDatabase(NativeDatabase(File(path)));
+    await setup.customStatement(
+      'INSERT INTO attachments (id, created_at, updated_at, sha256, '
+      'relative_path, mime_type, linked_entity_type, linked_entity_id) '
+      "VALUES ('att1', 0, 0, 'abc', 'a/b.jpg', 'image/jpeg', 'vehicle', 'v1')",
+    );
+    for (final c in ['size_bytes', 'thumbnail_relative_path', 'is_encrypted']) {
+      await setup.customStatement('ALTER TABLE attachments DROP COLUMN $c');
+    }
+    await setup.customStatement('PRAGMA user_version = 3');
+    await setup.close();
+
+    // Reopen: drift sees v3 < v4 and runs the guarded forward step.
+    final upgraded = AppDatabase(NativeDatabase(File(path)));
+    addTearDown(upgraded.close);
+
+    // The pre-existing attachment row survived, and the new columns exist with
+    // their defaults (size 0, thumbnail null, not encrypted).
+    final repo = AttachmentsRepository(upgraded);
+    final row = (await repo.getById('att1')).valueOrNull;
+    expect(row, isNotNull);
+    expect(row!.size, const ByteSize(0));
+    expect(row.thumbnailRelativePath, isNull);
+    expect(row.isEncrypted, isFalse);
+
+    // …and a new attachment can be written using the F8 columns.
+    final added = await repo.add(
+      linkedEntityType: AttachmentOwner.vehicle,
+      linkedEntityId: 'v1',
+      sha256: 'def',
+      relativePath: 'c/d.png',
+      mimeType: 'image/png',
+      sizeBytes: 2048,
+      isEncrypted: true,
+    );
+    expect(added.valueOrNull?.size, const ByteSize(2048));
+    expect(added.valueOrNull?.isEncrypted, isTrue);
   });
 }

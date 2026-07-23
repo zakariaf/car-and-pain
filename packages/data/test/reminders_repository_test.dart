@@ -200,6 +200,70 @@ void main() {
     expect(s.next!.dueAt.epochMillis, greaterThan(t0.millisecondsSinceEpoch));
   });
 
+  test('classifyReminderState covers every branch (M5-T7, pure)', () {
+    const base = Reminder(
+      id: 'r',
+      vehicleId: 'v',
+      title: 'X',
+      triggerType: 'date',
+    );
+    final now = Instant.fromDateTime(t0);
+    NextDue due(DateTime dueAt, {DateTime? fireAt}) => NextDue(
+          dueAt: Instant.fromDateTime(dueAt),
+          fireAt: Instant.fromDateTime(fireAt ?? dueAt),
+          confidence: DueConfidence.exact,
+        );
+
+    // done via status; snoozed via snoozeUntil in the future.
+    expect(
+      classifyReminderState(
+          const Reminder(
+              id: 'r',
+              vehicleId: 'v',
+              title: 'X',
+              triggerType: 'date',
+              status: 'done'),
+          const NoDue(),
+          now: now),
+      ReminderLiveState.done,
+    );
+    expect(
+      classifyReminderState(
+          Reminder(
+              id: 'r',
+              vehicleId: 'v',
+              title: 'X',
+              triggerType: 'date',
+              snoozeUntil:
+                  Instant.fromDateTime(t0.add(const Duration(days: 1)))),
+          const NoDue(),
+          now: now),
+      ReminderLiveState.snoozed,
+    );
+    // Due: overdue / due-soon / upcoming.
+    expect(
+      classifyReminderState(
+          base, Due(due(t0.subtract(const Duration(days: 1)))),
+          now: now),
+      ReminderLiveState.overdue,
+    );
+    expect(
+      classifyReminderState(base, Due(due(t0.add(const Duration(days: 1)))),
+          now: now),
+      ReminderLiveState.dueSoon,
+    );
+    expect(
+      classifyReminderState(base, Due(due(t0.add(const Duration(days: 60)))),
+          now: now),
+      ReminderLiveState.upcoming,
+    );
+    // A distance estimate pending → upcoming; nothing scheduled → done.
+    expect(classifyReminderState(base, const InsufficientData(), now: now),
+        ReminderLiveState.upcoming);
+    expect(classifyReminderState(base, const NoDue(), now: now),
+        ReminderLiveState.done);
+  });
+
   test('watchReadingCount emits the live reading count on each write (M5-T2)',
       () async {
     final (db, _, vehicleId) = await fresh();

@@ -1,4 +1,5 @@
 import 'package:car_and_pain/src/app.dart';
+import 'package:car_and_pain/src/features/01-vehicles-garage/application/vehicle_profile_providers.dart';
 import 'package:car_and_pain/src/flavor.dart';
 import 'package:car_and_pain/src/notifications/notification_providers.dart';
 import 'package:car_and_pain/src/routing/deep_link_listener.dart';
@@ -87,6 +88,17 @@ Widget testApp(
       // `settings` drives locale/scope/onboarding-complete deterministically.
       settingsMapProvider.overrideWith((ref) => Stream.value(settings)),
       vehiclesStreamProvider.overrideWith((ref) => Stream.value(vehicles)),
+      // The vehicle-profile screen's Drift-backed family streams, stubbed off
+      // fixed streams so the profile route doesn't open a .watch() (pending
+      // timer at teardown).
+      vehicleProvider.overrideWith(
+        (ref, id) => Stream.value(
+          vehicles.where((v) => v.id == id).firstOrNull,
+        ),
+      ),
+      vehicleLedgerProvider.overrideWith(
+        (ref, id) => Stream.value(const []),
+      ),
     ],
     // Force the app-level reduce-motion preference on for deterministic pumps
     // of the breathing hero (which otherwise repeats forever → pumpAndSettle

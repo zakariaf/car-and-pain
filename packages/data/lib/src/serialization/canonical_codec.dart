@@ -40,6 +40,32 @@ class CanonicalCodec {
           .into(db.vehicles)
           .insert(VehicleRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // Vehicle child tables (M2) — after vehicles (FK-safe), keyed by vehicle_id.
+    _Entity(
+      'plate_history',
+      () async => (await db.select(db.plateHistory).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.plateHistory).insert(PlateHistoryRow.fromJson(j),
+          mode: InsertMode.insertOrReplace),
+    ),
+    _Entity(
+      'valuation_history',
+      () async => (await db.select(db.valuationHistory).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db
+          .into(db.valuationHistory)
+          .insert(ValuationRow.fromJson(j), mode: InsertMode.insertOrReplace),
+    ),
+    _Entity(
+      'state_of_health_log',
+      () async => (await db.select(db.stateOfHealthLog).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.stateOfHealthLog).insert(StateOfHealthRow.fromJson(j),
+          mode: InsertMode.insertOrReplace),
+    ),
     _Entity(
       'categories',
       () async => (await db.select(db.categories).get())
@@ -122,8 +148,13 @@ class CanonicalCodec {
     // Values are canonical (locale codes / enum names), never display strings.
     _Entity(
       'settings',
-      () async =>
-          (await db.select(db.settings).get()).map((r) => r.toJson()).toList(),
+      // Transient UI drafts (`draft:*`) are never exported — a backup captures
+      // saved data, not half-typed forms.
+      () async => (await (db.select(db.settings)
+                ..where((t) => t.key.like('draft:%').not()))
+              .get())
+          .map((r) => r.toJson())
+          .toList(),
       (j) => db
           .into(db.settings)
           .insert(SettingRow.fromJson(j), mode: InsertMode.insertOrReplace),

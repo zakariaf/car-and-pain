@@ -36,6 +36,46 @@ Future<void> runForwardMigrations(
         await m.addColumn(a, a.sizeBytes);
         await m.addColumn(a, a.thumbnailRelativePath);
         await m.addColumn(a, a.isEncrypted);
+      case 4: // 4 → 5: full M2 vehicle profile + plate/valuation/SoH child tables.
+        final v = db.vehicles;
+        for (final col in [
+          v.trim,
+          v.wheelCount,
+          v.axleConfig,
+          v.licensePlate,
+          v.plateCountry,
+          v.vin,
+          v.vinScanned,
+          v.vinChecksumValid,
+          v.wmiDecoded,
+          v.paintColor,
+          v.paintCode,
+          v.secondaryEnergyType,
+          v.secondaryTankMl,
+          v.fuelGrade,
+          v.usableCapacityJoules,
+          v.connectorTypes,
+          v.distanceTrackingEnabled,
+          v.statusChangedAt,
+          v.soldDate,
+          v.soldPriceMinor,
+          v.finalOdometerMetres,
+          v.purchaseDate,
+          v.purchasePriceMinor,
+          v.purchaseCurrency,
+          v.currentValueMinor,
+          v.groupId,
+          v.tags,
+          v.sortOrder,
+          v.coverPhotoRef,
+          v.factorySpecs,
+          v.consumptionUnit,
+        ]) {
+          await m.addColumn(v, col);
+        }
+        await m.createTable(db.plateHistory);
+        await m.createTable(db.valuationHistory);
+        await m.createTable(db.stateOfHealthLog);
       // Future versions append their `case N` block here.
     }
   }

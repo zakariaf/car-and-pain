@@ -1,3 +1,4 @@
+import 'package:car_and_pain/src/features/01-vehicles-garage/presentation/vehicle_profile_screen.dart';
 import 'package:car_and_pain/src/routing/app_locations.dart';
 import 'package:car_and_pain/src/shell/garage_screen.dart';
 import 'package:car_and_pain/src/shell/home_vitals_screen.dart';
@@ -117,7 +118,7 @@ void main() {
       final ctx = tester.element(find.byType(RoomsNav));
       GoRouter.of(ctx).go(AppLocations.garageVehicle('v1'));
       await tester.pumpAndSettle();
-      expect(find.byType(VehicleDetailScreen), findsOneWidget);
+      expect(find.byType(VehicleProfileScreen), findsOneWidget);
 
       // Switch to Pit-lane, then back to Garage: its stack must be preserved.
       await tester.tap(navTab('Pit-lane'));
@@ -126,13 +127,13 @@ void main() {
 
       await tester.tap(navTab('Garage'));
       await tester.pumpAndSettle();
-      expect(find.byType(VehicleDetailScreen), findsOneWidget); // preserved
+      expect(find.byType(VehicleProfileScreen), findsOneWidget); // preserved
 
       // Re-tapping the active Room pops it to its root.
       await tester.tap(navTab('Garage'));
       await tester.pumpAndSettle();
       expect(find.byType(GarageScreen), findsOneWidget);
-      expect(find.byType(VehicleDetailScreen), findsNothing);
+      expect(find.byType(VehicleProfileScreen), findsNothing);
     });
 
     testWidgets('quick-add and Room tabs meet the minimum touch target',

@@ -35,9 +35,9 @@ class RoomsShell extends ConsumerWidget {
         },
       ),
       floatingActionButton: QuickAddPill(
-        // Room-aware quick-add lands on the feature flows (M2+); the shell just
-        // owns the persistent, thumb-reachable entry point.
-        onTap: () => context.push(AppLocations.garage),
+        // The persistent, thumb-reachable entry point → add a vehicle (M2). Later
+        // Rooms make this context-aware (log fuel, add expense, …).
+        onTap: () => context.push(AppLocations.newVehicle),
       ),
     );
   }

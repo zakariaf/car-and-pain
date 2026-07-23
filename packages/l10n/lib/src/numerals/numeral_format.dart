@@ -23,6 +23,10 @@ class NumeralFormat {
   String formatInt(int value) =>
       _assemble(value.isNegative, value.abs().toString(), '');
 
+  /// Shape the digits WITHOUT grouping — for identifier-like numbers such as a
+  /// model year, where a thousands separator would be wrong (2020, not 2,020).
+  String formatUngrouped(int value) => system.shape(value.toString());
+
   /// Format a value stored as [scaled] with [fractionDigits] implied decimals —
   /// e.g. ISO-4217 minor units (`fractionDigits == currency exponent`) or a
   /// fixed-point measure. The exact value is rendered; no rounding.

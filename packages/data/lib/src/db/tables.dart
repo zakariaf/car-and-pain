@@ -30,21 +30,106 @@ class Vehicles extends Table with AuditColumns {
   TextColumn get nickname => text()();
   TextColumn get make => text().nullable()();
   TextColumn get model => text().nullable()();
+  TextColumn get trim => text().nullable()();
   IntColumn get modelYear => integer().nullable()();
   TextColumn get vehicleType => text().withDefault(const Constant('car'))();
+  IntColumn get wheelCount => integer().nullable()();
+  TextColumn get axleConfig => text().nullable()();
+
+  // ── Identity ────────────────────────────────────────────────────────────
+  TextColumn get licensePlate => text().nullable()();
+  TextColumn get plateCountry => text().nullable()();
+  TextColumn get vin => text().nullable()();
+  BoolColumn get vinScanned => boolean().withDefault(const Constant(false))();
+  BoolColumn get vinChecksumValid => boolean().nullable()();
+  // Decoded WMI summary ("manufacturer · region · year") for quick reference.
+  TextColumn get wmiDecoded => text().nullable()();
+  TextColumn get paintColor => text().nullable()();
+  TextColumn get paintCode => text().nullable()();
+
+  // ── Powertrain (adaptive; see core PowertrainProfile) ─────────────────────
   TextColumn get energyType => text().nullable()();
+  TextColumn get secondaryEnergyType => text().nullable()();
   IntColumn get tankCapacityMl => integer().nullable()();
+  IntColumn get secondaryTankMl => integer().nullable()();
+  TextColumn get fuelGrade => text().nullable()();
   IntColumn get batteryCapacityJoules => integer().nullable()();
+  IntColumn get usableCapacityJoules => integer().nullable()();
+  // Charge connectors as a comma-joined code list (small fixed enum, not a log).
+  TextColumn get connectorTypes => text().nullable()();
+  BoolColumn get distanceTrackingEnabled =>
+      boolean().withDefault(const Constant(true))();
+
+  // ── Odometer / engine-hour ledger cache ───────────────────────────────────
   IntColumn get currentOdometerMetres => integer().nullable()();
   IntColumn get currentOdometerAt => integer().nullable()();
   IntColumn get clusterOffsetMetres =>
       integer().withDefault(const Constant(0))();
+
+  // ── Lifecycle ─────────────────────────────────────────────────────────────
   TextColumn get status => text().withDefault(const Constant('active'))();
-  // Per-vehicle display overrides (null → fall back to the global default).
+  IntColumn get statusChangedAt => integer().nullable()();
+  IntColumn get soldDate => integer().nullable()();
+  IntColumn get soldPriceMinor => integer().nullable()();
+  IntColumn get finalOdometerMetres => integer().nullable()();
+
+  // ── Ownership / valuation ─────────────────────────────────────────────────
+  IntColumn get purchaseDate => integer().nullable()();
+  IntColumn get purchasePriceMinor => integer().nullable()();
+  TextColumn get purchaseCurrency => text().nullable()();
+  IntColumn get currentValueMinor => integer().nullable()();
+
+  // ── Grouping / organization ───────────────────────────────────────────────
+  TextColumn get groupId => text().nullable()();
+  // Free custom tags as a comma-joined list.
+  TextColumn get tags => text().nullable()();
+  IntColumn get sortOrder => integer().nullable()();
+  TextColumn get coverPhotoRef => text().nullable()();
+
+  // ── Reference ─────────────────────────────────────────────────────────────
+  // factory_reference_specs as a JSON object (a bag of OEM specs, not a log).
+  TextColumn get factorySpecs => text().nullable()();
+
+  // ── Per-vehicle display overrides (null → fall back to the global default) ─
   TextColumn get distanceUnit => text().nullable()();
   TextColumn get volumeUnit => text().nullable()();
+  TextColumn get consumptionUnit => text().nullable()();
   TextColumn get currencyCode => text().nullable()();
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+}
+
+/// Prior-plate history — a normalized child table (never a JSON blob) so it
+/// exports as a linked child CSV keyed by `vehicle_id` (M2-T1).
+@DataClassName('PlateHistoryRow')
+class PlateHistory extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  TextColumn get plate => text()();
+  TextColumn get country => text().nullable()();
+  IntColumn get fromDate => integer().nullable()();
+  IntColumn get toDate => integer().nullable()();
+}
+
+/// Dated valuations for equity / depreciation — a normalized child table.
+@DataClassName('ValuationRow')
+class ValuationHistory extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  IntColumn get valuedAt => integer()();
+  IntColumn get amountMinor => integer()();
+  TextColumn get currencyCode => text()();
+  TextColumn get source => text().nullable()();
+}
+
+/// Dated EV battery State-of-Health entries — a normalized child table. `soh`
+/// is stored in per-mille (0–1000) so 87.5 % round-trips losslessly.
+@DataClassName('StateOfHealthRow')
+class StateOfHealthLog extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  IntColumn get recordedAt => integer()();
+  IntColumn get sohPermille => integer()();
+  TextColumn get note => text().nullable()();
 }
 
 /// The single shared per-vehicle odometer / engine-hour ledger — the app's spine.

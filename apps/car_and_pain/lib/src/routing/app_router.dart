@@ -6,6 +6,9 @@ import 'package:go_router/go_router.dart';
 import '../attachments/storage_settings_screen.dart';
 import '../backup/backup_recovery_screen.dart';
 import '../backup/recovery_redeem_screen.dart';
+import '../features/01-vehicles-garage/presentation/vehicle_form_screen.dart';
+import '../features/01-vehicles-garage/presentation/vehicle_ledger_screen.dart';
+import '../features/01-vehicles-garage/presentation/vehicle_profile_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/app_lock_controller.dart';
@@ -72,7 +75,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
                 routes: [
                   GoRoute(
                     path: ':vehicleId',
-                    builder: (context, state) => VehicleDetailScreen(
+                    builder: (context, state) => VehicleProfileScreen(
                       vehicleId: state.pathParameters['vehicleId']!,
                     ),
                     routes: [
@@ -124,6 +127,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
 
       // ── Full-screen feature flows (above the shell) ────────────────────────
+      GoRoute(
+        path: AppLocations.newVehicle,
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const VehicleFormScreen(),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/edit',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            VehicleFormScreen(vehicleId: state.pathParameters['vehicleId']),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/ledger',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            VehicleLedgerScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
       GoRoute(
         path: '/trash',
         parentNavigatorKey: _rootKey,

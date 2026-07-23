@@ -38,3 +38,4 @@ export 'src/numerals/numeral_presets.dart'
 export 'src/numerals/numeral_system.dart'
     show GroupingStyle, NumeralSystem, foldDigitsToAscii, groupInteger;
 export 'src/pulse_labels.dart' show pulseLabel;
+export 'src/search_normalize.dart' show normalizeForSearch;

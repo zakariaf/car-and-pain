@@ -147,6 +147,24 @@ Future<void> runForwardMigrations(
         final rem = db.reminders;
         await m.addColumn(rem, rem.notes);
         await m.addColumn(rem, rem.snoozeUntil);
+      case 11: // 11 → 12: M6-T1 expense dated-FX, source/attachment links, tags.
+        final e = db.expenses;
+        for (final col in [
+          e.driverId,
+          e.fxRateThousandths,
+          e.fxAsOf,
+          e.baseAmountMinor,
+          e.sourceEntityType,
+          e.sourceEntityId,
+          e.receiptAttachmentId,
+          e.tags,
+          e.entryCalendar,
+        ]) {
+          await m.addColumn(e, col);
+        }
+      case 12: // 12 → 13: M6-T4/T3 financing (loan/lease) + budgets.
+        await m.createTable(db.financings);
+        await m.createTable(db.budgets);
       // Future versions append their `case N` block here.
     }
   }

@@ -94,11 +94,16 @@ class RollupService {
             ))
           .get();
       for (final e in expenses) {
+        // Mirror the incremental path (ExpensesRepository.add): a projected
+        // cross-module row was already counted by its own module — skip it here
+        // — and count the base-currency amount, not the raw (possibly foreign)
+        // one, so a rebuild reproduces the incremental value exactly.
+        if (e.sourceEntityType != null) continue;
         await bump(
             vehicleId: vehicleId,
             period: monthPeriodKey(e.spentAt),
             metric: 'costMinor',
-            delta: e.amountMinor,
+            delta: e.baseAmountMinor ?? e.amountMinor,
             now: now);
       }
 

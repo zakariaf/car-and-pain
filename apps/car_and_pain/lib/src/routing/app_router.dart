@@ -16,6 +16,11 @@ import '../features/03-service-maintenance/presentation/service_history_screen.d
 import '../features/04-reminders-notifications/presentation/reminder_detail_screen.dart';
 import '../features/04-reminders-notifications/presentation/reminder_form_screen.dart';
 import '../features/04-reminders-notifications/presentation/reminders_screen.dart';
+import '../features/05-expenses-cost-ownership/presentation/budget_meters_screen.dart';
+import '../features/05-expenses-cost-ownership/presentation/expense_quick_add_screen.dart';
+import '../features/05-expenses-cost-ownership/presentation/expenses_screen.dart';
+import '../features/05-expenses-cost-ownership/presentation/financing_detail_screen.dart';
+import '../features/05-expenses-cost-ownership/presentation/tco_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/app_lock_controller.dart';
@@ -197,6 +202,39 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => ReminderFormScreen(
           vehicleId: state.pathParameters['vehicleId']!,
           reminderId: state.pathParameters['reminderId'],
+        ),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/expenses/new',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => ExpenseQuickAddScreen(
+          vehicleId: state.pathParameters['vehicleId']!,
+        ),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/expenses',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            ExpensesScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/budgets',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            BudgetMetersScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/tco',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            TcoScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/financing/:financingId',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => FinancingDetailScreen(
+          vehicleId: state.pathParameters['vehicleId']!,
+          financingId: state.pathParameters['financingId']!,
         ),
       ),
       GoRoute(

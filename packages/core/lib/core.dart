@@ -39,6 +39,20 @@ export 'src/energy/ev_calc.dart'
 export 'src/energy/fuel_projection.dart'
     show fuelRangeMetres, nextFillOdometreMetres, risingConsumptionAnomaly;
 export 'src/energy/price_memory.dart' show PriceMemory, PriceObservation;
+export 'src/finance/amortization.dart'
+    show
+        AmortizationEngine,
+        AmortizationRow,
+        AmortizationSchedule,
+        FinancingKind,
+        LoanTerms,
+        PayoffQuote;
+export 'src/finance/budget.dart' show BudgetEngine, BudgetPeriod, BudgetStatus;
+export 'src/finance/cost_validation.dart' show CostValidators, ExpenseKey;
+export 'src/finance/depreciation.dart'
+    show DepreciationCurve, DepreciationMethod, EquityPosition;
+export 'src/finance/recurring_bill.dart' show LumpAmortizer, RecurringBill;
+export 'src/finance/tco.dart' show TcoCostItem, TcoEngine, TcoReport;
 export 'src/ledger/ledger.dart' show LedgerEngine, LedgerReading, LedgerSource;
 export 'src/money/currency.dart' show Currency;
 export 'src/money/fx.dart'

@@ -131,8 +131,12 @@ class ReminderWithState {
   /// The projected/absolute due instant, or null when nothing is scheduled.
   Instant? get dueAt => next?.dueAt;
 
-  /// True when the projection is a soft estimate (stale data / low confidence).
-  bool get isUncertain => next?.confidence == DueConfidence.uncertain;
+  /// True when the projection is a soft estimate — either not enough ledger data
+  /// to project a date yet ([InsufficientData] → "estimate pending"), or a stale
+  /// projection ([DueConfidence.uncertain]). The UI surfaces this honestly rather
+  /// than showing a confident date.
+  bool get isUncertain =>
+      due is InsufficientData || next?.confidence == DueConfidence.uncertain;
 }
 
 /// Classify a reminder's live state (M5-T1) from the pure next-due [due] result

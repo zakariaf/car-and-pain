@@ -200,6 +200,22 @@ void main() {
     expect(s.next!.dueAt.epochMillis, greaterThan(t0.millisecondsSinceEpoch));
   });
 
+  test('a distance rule with no ledger reads as an uncertain estimate (M5)',
+      () async {
+    final (db, repo, vehicleId) = await fresh();
+    addTearDown(db.close);
+    await repo.add(
+      vehicleId: vehicleId,
+      title: 'Oil',
+      kind: TriggerKind.distance,
+      dueOdometerMetres: 105000000,
+    );
+    final s = (await repo.liveStatesFor(vehicleId)).single;
+    expect(s.due, isA<InsufficientData>());
+    expect(s.state, ReminderLiveState.upcoming);
+    expect(s.isUncertain, isTrue); // "estimate pending", surfaced honestly
+  });
+
   test('classifyReminderState covers every branch (M5-T7, pure)', () {
     const base = Reminder(
       id: 'r',

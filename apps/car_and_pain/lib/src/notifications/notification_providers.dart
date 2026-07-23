@@ -36,6 +36,14 @@ final notificationGatewayProvider = Provider<NotificationGateway>(
   (ref) => ref.watch(notificationServiceProvider).gateway,
 );
 
+/// A change signal that re-emits on every new odometer reading (M5-T2), so both
+/// the OS reconcile (NotificationReconciler) AND the in-app reminder live-state
+/// view (reminderLiveStatesProvider) re-project distance/engine-hour rules — a
+/// phone can't watch the odometer roll, so the engine re-projects on each reading.
+final ledgerRevisionProvider = StreamProvider<int>(
+  (ref) => ref.watch(ledgerRepositoryProvider).watchReadingCount(),
+);
+
 /// The assembled [ReminderScheduler] for the active locale/prefs (F5-T5).
 /// Rebuilds when the localization preferences change, so the next reconcile
 /// re-arms with fresh strings, calendar and numerals.

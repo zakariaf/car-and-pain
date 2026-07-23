@@ -1,17 +1,9 @@
 import 'dart:async';
 
-import 'package:data/data.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'notification_providers.dart';
-
-/// A change signal that re-emits on every new odometer reading (M5-T2), so the
-/// reconciler can re-project distance/engine-hour reminders reactively — a phone
-/// can't watch the odometer roll, so the engine re-projects on each new reading.
-final ledgerRevisionProvider = StreamProvider<int>(
-  (ref) => ref.watch(ledgerRepositoryProvider).watchReadingCount(),
-);
 
 /// Keeps the OS notification queue reconciled with the DB (F5-T4). Runs a full
 /// `ReminderScheduler.reconcileAll` on first mount, on every foreground resume,

@@ -28,7 +28,10 @@ class RemindersRepository extends BaseRepository {
 
   /// A vehicle's reminders with their derived live state — a live stream that
   /// re-emits on any reminder change and reads the current ledger for projection.
-  /// (M5-T2 layers ledger-change reactivity on top via the app scheduler.)
+  /// It does NOT itself re-emit on a ledger-only change; the app's
+  /// `reminderLiveStatesProvider` composes this with the ledger change-signal
+  /// ([LedgerRepository.watchReadingCount]) so the screen re-projects on a new
+  /// reading too. (The OS queue is re-armed separately by the F5 reconcile.)
   Stream<List<ReminderWithState>> watchLiveStates(
     String vehicleId, {
     int utcOffsetMinutes = 0,

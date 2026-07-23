@@ -28,7 +28,11 @@ class LedgerRepository extends BaseRepository {
   /// engine re-projects on each new reading instead.
   Stream<int> watchReadingCount() {
     final count = db.odometerReadings.id.count();
-    final query = db.selectOnly(db.odometerReadings)..addColumns([count]);
+    final query = db.selectOnly(db.odometerReadings)
+      ..addColumns([count])
+      // Exclude tombstones so a soft-deleted reading (a correction) also
+      // changes the count and triggers a re-projection.
+      ..where(db.odometerReadings.isDeleted.equals(false));
     return query.watchSingle().map((row) => row.read(count) ?? 0);
   }
 

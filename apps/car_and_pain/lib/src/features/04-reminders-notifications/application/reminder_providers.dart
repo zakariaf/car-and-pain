@@ -4,12 +4,19 @@ import 'package:design_system/design_system.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:l10n/l10n.dart';
 
-/// A vehicle's reminders with their live state (M5-T3) — reactive over the
-/// reminders table (the F5 next-due engine + ledger derive the state).
+import '../../../notifications/notification_providers.dart';
+
+/// A vehicle's reminders with their live state (M5-T3) — reactive over BOTH the
+/// reminders table and the shared ledger: watching [ledgerRevisionProvider]
+/// rebuilds the stream on every new odometer reading, so a distance/engine-hour
+/// rule's projected date + due-soon/overdue state self-correct as the vehicle is
+/// driven (not just when a reminder row is edited).
 final reminderLiveStatesProvider =
     StreamProvider.family<List<ReminderWithState>, String>(
-  (ref, vehicleId) =>
-      ref.watch(remindersRepositoryProvider).watchLiveStates(vehicleId),
+  (ref, vehicleId) {
+    ref.watch(ledgerRevisionProvider); // re-project on a new reading
+    return ref.watch(remindersRepositoryProvider).watchLiveStates(vehicleId);
+  },
 );
 
 /// One reminder by id (for the deep-link detail / edit), reactive over changes.

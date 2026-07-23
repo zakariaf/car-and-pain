@@ -18,6 +18,8 @@ part 'app_database.g.dart';
     OdometerReadings,
     FuelEntries,
     ServiceEntries,
+    ServiceProviders,
+    ServiceLineItems,
     Expenses,
     Trips,
     Reminders,
@@ -40,7 +42,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -78,6 +80,7 @@ class AppDatabase extends _$AppDatabase {
       'CREATE INDEX IF NOT EXISTS idx_odo_vehicle_time ON odometer_readings (vehicle_id, taken_at);',
       'CREATE INDEX IF NOT EXISTS idx_fuel_vehicle_time ON fuel_entries (vehicle_id, filled_at);',
       'CREATE INDEX IF NOT EXISTS idx_service_vehicle_time ON service_entries (vehicle_id, serviced_at);',
+      'CREATE INDEX IF NOT EXISTS idx_service_line_item_visit ON service_line_items (visit_id, sort_order);',
       'CREATE INDEX IF NOT EXISTS idx_expense_vehicle_time ON expenses (vehicle_id, spent_at);',
       'CREATE INDEX IF NOT EXISTS idx_trip_vehicle_time ON trips (vehicle_id, trip_at);',
       // UNIQUE: exactly one rollup per (vehicle, period, metric). Enforces the

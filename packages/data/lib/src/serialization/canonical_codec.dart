@@ -92,6 +92,18 @@ class CanonicalCodec {
           .into(db.fuelEntries)
           .insert(FuelEntryRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // Service provider directory (M4-T1) — global, FK-free; before service
+    // visits, which reference it via provider_id.
+    _Entity(
+      'service_providers',
+      () async => (await db.select(db.serviceProviders).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceProviders).insert(
+            ServiceProviderRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
     _Entity(
       'service_entries',
       () async => (await db.select(db.serviceEntries).get())
@@ -100,6 +112,18 @@ class CanonicalCodec {
       (j) => db
           .into(db.serviceEntries)
           .insert(ServiceEntry.fromJson(j), mode: InsertMode.insertOrReplace),
+    ),
+    // Service line items (M4-T1) — after service visits (FK visit_id) and
+    // categories (FK service_type_id), both registered above.
+    _Entity(
+      'service_line_items',
+      () async => (await db.select(db.serviceLineItems).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceLineItems).insert(
+            ServiceLineItemRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
     ),
     _Entity(
       'expenses',

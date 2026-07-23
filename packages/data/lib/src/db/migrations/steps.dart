@@ -103,6 +103,27 @@ Future<void> runForwardMigrations(
         }
       case 6: // 6 → 7: M3-T9 saved-stations library.
         await m.createTable(db.savedStations);
+      case 7: // 7 → 8: M4-T1 service line items, provider directory, taxonomy
+        // interval defaults, and the visit header cost breakdown.
+        await m.createTable(db.serviceProviders);
+        await m.createTable(db.serviceLineItems);
+        final c = db.categories;
+        await m.addColumn(c, c.defaultIntervalMonths);
+        await m.addColumn(c, c.defaultIntervalLogic);
+        final s = db.serviceEntries;
+        for (final col in [
+          s.providerId,
+          s.taxMinor,
+          s.discountMinor,
+          s.feesMinor,
+          s.labourMinutes,
+          s.labourRateMinor,
+          s.tags,
+          s.source,
+          s.scheduleProfile,
+        ]) {
+          await m.addColumn(s, col);
+        }
       // Future versions append their `case N` block here.
     }
   }

@@ -9,6 +9,7 @@ import 'ledger/ledger_repository.dart';
 import 'notifications/notification_schedule_repository.dart';
 import 'repositories/attachments_repository.dart';
 import 'repositories/fuel_repository.dart';
+import 'repositories/service_repository.dart';
 import 'repositories/stations_repository.dart';
 import 'repositories/vehicles_repository.dart';
 import 'settings/settings_repository.dart';
@@ -64,6 +65,10 @@ final ledgerRepositoryProvider = Provider<LedgerRepository>(
 
 final fuelRepositoryProvider = Provider<FuelRepository>(
   (ref) => FuelRepository(ref.watch(appDatabaseProvider)),
+);
+
+final serviceRepositoryProvider = Provider<ServiceRepository>(
+  (ref) => ServiceRepository(ref.watch(appDatabaseProvider)),
 );
 
 final trashRepositoryProvider = Provider<TrashRepository>(

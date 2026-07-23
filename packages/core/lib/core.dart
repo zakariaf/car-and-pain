@@ -145,6 +145,8 @@ export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
 export 'src/trips/gap_reconciliation.dart' show GapKind, GapReconciler, TripGap;
 export 'src/trips/gps_track.dart' show GpsFix, GpsTrackReducer;
+export 'src/trips/mileage_report.dart'
+    show MileageReport, ReportLine, ReportTrip, buildMileageReport;
 export 'src/trips/rate_engine.dart'
     show
         MileagePricing,

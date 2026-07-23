@@ -188,7 +188,7 @@ class CanonicalCodec {
           (await db.select(db.reminders).get()).map((r) => r.toJson()).toList(),
       (j) => db
           .into(db.reminders)
-          .insert(Reminder.fromJson(j), mode: InsertMode.insertOrReplace),
+          .insert(ReminderRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
     _Entity(
       'rollups',

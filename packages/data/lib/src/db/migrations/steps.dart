@@ -143,6 +143,10 @@ Future<void> runForwardMigrations(
         await m.createTable(db.serviceProcedureSteps);
       case 9: // 9 → 10: M4-T5 service appointments (separate from reminders).
         await m.createTable(db.serviceAppointments);
+      case 10: // 10 → 11: M5-T1 reminder notes + snooze state.
+        final rem = db.reminders;
+        await m.addColumn(rem, rem.notes);
+        await m.addColumn(rem, rem.snoozeUntil);
       // Future versions append their `case N` block here.
     }
   }

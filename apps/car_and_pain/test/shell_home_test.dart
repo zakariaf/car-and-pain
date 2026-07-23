@@ -1,10 +1,10 @@
 import 'package:car_and_pain/src/features/01-vehicles-garage/presentation/vehicle_profile_screen.dart';
+import 'package:car_and_pain/src/features/04-reminders-notifications/presentation/reminder_detail_screen.dart';
 import 'package:car_and_pain/src/routing/app_locations.dart';
 import 'package:car_and_pain/src/shell/garage_screen.dart';
 import 'package:car_and_pain/src/shell/home_vitals_screen.dart';
 import 'package:car_and_pain/src/shell/pitlane_screen.dart';
 import 'package:car_and_pain/src/shell/rooms_shell.dart';
-import 'package:car_and_pain/src/shell/shell_placeholders.dart';
 import 'package:core/core.dart';
 import 'package:data/data.dart';
 import 'package:design_system/design_system.dart';
@@ -157,7 +157,7 @@ void main() {
 
       // The target is reconstructed from path params alone (extra == null).
       expect(find.byType(ReminderDetailScreen), findsOneWidget);
-      expect(find.text('v1 · r7'), findsOneWidget);
+      expect(find.text('Reminder not found'), findsOneWidget);
     });
   });
 

@@ -359,7 +359,9 @@ class Trips extends Table with AuditColumns {
   BoolColumn get isBusiness => boolean().withDefault(const Constant(false))();
 }
 
-/// A reminder record. F5/M5 add the projection + scheduling state.
+/// A reminder record. F5 owns the scheduling primitives; M5 adds the user-facing
+/// layer (notes, snooze state) + the CRUD repository and live-state stream.
+@DataClassName('ReminderRow')
 class Reminders extends Table with AuditColumns {
   TextColumn get vehicleId =>
       text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
@@ -384,6 +386,10 @@ class Reminders extends Table with AuditColumns {
   IntColumn get quietEndMinute => integer().nullable()();
   IntColumn get quietDeliverMinute => integer().nullable()();
   TextColumn get status => text().withDefault(const Constant('active'))();
+  // ── M5-T1: user-facing layer ──────────────────────────────────────────────
+  TextColumn get notes => text().nullable()();
+  // Snoozed until this instant (UTC epoch millis); null = not snoozed.
+  IntColumn get snoozeUntil => integer().nullable()();
 }
 
 /// The derived OS-notification projection (F5-T2): one row per concrete pending

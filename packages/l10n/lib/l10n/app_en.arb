@@ -1213,5 +1213,189 @@
   "serviceTypeBrakes": "Brakes",
   "@serviceTypeBrakes": {
     "description": "Built-in service type: brakes"
+  },
+  "reminderListTitle": "Reminders",
+  "@reminderListTitle": {
+    "description": "Reminders UI (M5): reminderListTitle"
+  },
+  "reminderAddTitle": "New reminder",
+  "@reminderAddTitle": {
+    "description": "Reminders UI (M5): reminderAddTitle"
+  },
+  "reminderEditTitle": "Edit reminder",
+  "@reminderEditTitle": {
+    "description": "Title of the reminder screen when editing an existing reminder."
+  },
+  "reminderListEmpty": "No reminders yet",
+  "@reminderListEmpty": {
+    "description": "Reminders UI (M5): reminderListEmpty"
+  },
+  "reminderStatusUpcoming": "Upcoming",
+  "@reminderStatusUpcoming": {
+    "description": "Reminders UI (M5): reminderStatusUpcoming"
+  },
+  "reminderStatusDueSoon": "Due soon",
+  "@reminderStatusDueSoon": {
+    "description": "Reminders UI (M5): reminderStatusDueSoon"
+  },
+  "reminderStatusOverdue": "Overdue",
+  "@reminderStatusOverdue": {
+    "description": "Reminders UI (M5): reminderStatusOverdue"
+  },
+  "reminderStatusSnoozed": "Snoozed",
+  "@reminderStatusSnoozed": {
+    "description": "Reminders UI (M5): reminderStatusSnoozed"
+  },
+  "reminderStatusDone": "Done",
+  "@reminderStatusDone": {
+    "description": "Reminders UI (M5): reminderStatusDone"
+  },
+  "reminderKindDate": "Date",
+  "@reminderKindDate": {
+    "description": "Reminders UI (M5): reminderKindDate"
+  },
+  "reminderKindDistance": "Distance",
+  "@reminderKindDistance": {
+    "description": "Reminders UI (M5): reminderKindDistance"
+  },
+  "reminderKindEngineHours": "Engine hours",
+  "@reminderKindEngineHours": {
+    "description": "Reminders UI (M5): reminderKindEngineHours"
+  },
+  "reminderKindWhicheverFirst": "Whichever first",
+  "@reminderKindWhicheverFirst": {
+    "description": "Reminders UI (M5): reminderKindWhicheverFirst"
+  },
+  "reminderNextDue": "Next due",
+  "@reminderNextDue": {
+    "description": "Reminders UI (M5): reminderNextDue"
+  },
+  "reminderEstimateUncertain": "estimate uncertain",
+  "@reminderEstimateUncertain": {
+    "description": "Reminders UI (M5): reminderEstimateUncertain"
+  },
+  "reminderComplete": "Complete",
+  "@reminderComplete": {
+    "description": "Reminders UI (M5): reminderComplete"
+  },
+  "reminderCompleted": "Reminder completed",
+  "@reminderCompleted": {
+    "description": "Reminders UI (M5): reminderCompleted"
+  },
+  "reminderSnooze": "Snooze",
+  "@reminderSnooze": {
+    "description": "Reminders UI (M5): reminderSnooze"
+  },
+  "reminderSnooze1Day": "1 day",
+  "@reminderSnooze1Day": {
+    "description": "Reminders UI (M5): reminderSnooze1Day"
+  },
+  "reminderSnooze1Week": "1 week",
+  "@reminderSnooze1Week": {
+    "description": "Reminders UI (M5): reminderSnooze1Week"
+  },
+  "reminderSnooze1Month": "1 month",
+  "@reminderSnooze1Month": {
+    "description": "Reminders UI (M5): reminderSnooze1Month"
+  },
+  "reminderSave": "Save",
+  "@reminderSave": {
+    "description": "Reminders UI (M5): reminderSave"
+  },
+  "reminderSaveFailed": "Couldn't save the reminder — your entry is kept.",
+  "@reminderSaveFailed": {
+    "description": "Reminders UI (M5): reminderSaveFailed"
+  },
+  "reminderTitle": "Title",
+  "@reminderTitle": {
+    "description": "Reminders UI (M5): reminderTitle"
+  },
+  "reminderTitleHint": "Enter a title",
+  "@reminderTitleHint": {
+    "description": "Reminders UI (M5): reminderTitleHint"
+  },
+  "reminderKind": "Rule type",
+  "@reminderKind": {
+    "description": "Reminders UI (M5): reminderKind"
+  },
+  "reminderDueDate": "Due date",
+  "@reminderDueDate": {
+    "description": "Reminders UI (M5): reminderDueDate"
+  },
+  "reminderDistanceThreshold": "Distance (km)",
+  "@reminderDistanceThreshold": {
+    "description": "Reminders UI (M5): reminderDistanceThreshold"
+  },
+  "reminderEngineHourThreshold": "Engine hours",
+  "@reminderEngineHourThreshold": {
+    "description": "Reminders UI (M5): reminderEngineHourThreshold"
+  },
+  "reminderLeadDays": "Warn days before",
+  "@reminderLeadDays": {
+    "description": "Reminders UI (M5): reminderLeadDays"
+  },
+  "reminderSeverity": "Severity",
+  "@reminderSeverity": {
+    "description": "Reminders UI (M5): reminderSeverity"
+  },
+  "reminderSevOverdue": "Overdue",
+  "@reminderSevOverdue": {
+    "description": "Reminders UI (M5): reminderSevOverdue"
+  },
+  "reminderSevDueSoon": "Due soon",
+  "@reminderSevDueSoon": {
+    "description": "Reminders UI (M5): reminderSevDueSoon"
+  },
+  "reminderSevDocuments": "Documents",
+  "@reminderSevDocuments": {
+    "description": "Reminders UI (M5): reminderSevDocuments"
+  },
+  "reminderSevInfo": "Info",
+  "@reminderSevInfo": {
+    "description": "Reminders UI (M5): reminderSevInfo"
+  },
+  "reminderRecurrence": "Recurrence",
+  "@reminderRecurrence": {
+    "description": "Reminders UI (M5): reminderRecurrence"
+  },
+  "reminderEvery": "Every",
+  "@reminderEvery": {
+    "description": "Reminders UI (M5): reminderEvery"
+  },
+  "reminderUnit": "Unit",
+  "@reminderUnit": {
+    "description": "Reminders UI (M5): reminderUnit"
+  },
+  "reminderOnce": "Once",
+  "@reminderOnce": {
+    "description": "Reminders UI (M5): reminderOnce"
+  },
+  "reminderUnitDays": "Days",
+  "@reminderUnitDays": {
+    "description": "Reminders UI (M5): reminderUnitDays"
+  },
+  "reminderUnitWeeks": "Weeks",
+  "@reminderUnitWeeks": {
+    "description": "Reminders UI (M5): reminderUnitWeeks"
+  },
+  "reminderUnitMonths": "Months",
+  "@reminderUnitMonths": {
+    "description": "Reminders UI (M5): reminderUnitMonths"
+  },
+  "reminderUnitYears": "Years",
+  "@reminderUnitYears": {
+    "description": "Reminders UI (M5): reminderUnitYears"
+  },
+  "reminderDetailTitle": "Reminder",
+  "@reminderDetailTitle": {
+    "description": "Reminders UI (M5): reminderDetailTitle"
+  },
+  "reminderNotFound": "Reminder not found",
+  "@reminderNotFound": {
+    "description": "Reminders UI (M5): reminderNotFound"
+  },
+  "reminderDelete": "Delete",
+  "@reminderDelete": {
+    "description": "Reminders UI (M5): reminderDelete"
   }
 }

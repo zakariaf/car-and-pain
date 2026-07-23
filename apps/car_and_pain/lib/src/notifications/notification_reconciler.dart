@@ -6,11 +6,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'notification_providers.dart';
 
 /// Keeps the OS notification queue reconciled with the DB (F5-T4). Runs a full
-/// `ReminderScheduler.reconcileAll` on first mount and on every foreground
-/// resume — covering DB edits, time/timezone changes, restore-from-backup, and
-/// the iOS soonest-window refresh. Android reboots are additionally re-armed by
-/// the plugin's boot receiver (see AndroidManifest). Mounted in bootstrap only,
-/// so widget tests (which use the fake gateway) aren't driven by it.
+/// `ReminderScheduler.reconcileAll` on first mount, on every foreground resume,
+/// and — reactively (M5-T2) — whenever a new ledger reading lands (debounced), so
+/// a distance/engine-hour rule's projected date self-corrects as the vehicle is
+/// used. Covers DB edits, time/timezone changes, restore-from-backup, and the iOS
+/// soonest-window refresh. Android reboots are additionally re-armed by the
+/// plugin's boot receiver (see AndroidManifest). Mounted in bootstrap only, so
+/// widget tests (which use the fake gateway) aren't driven by it.
 class NotificationReconciler extends ConsumerStatefulWidget {
   const NotificationReconciler({required this.child, super.key});
 
@@ -22,6 +24,8 @@ class NotificationReconciler extends ConsumerStatefulWidget {
 
 class _State extends ConsumerState<NotificationReconciler>
     with WidgetsBindingObserver {
+  Timer? _debounce;
+
   @override
   void initState() {
     super.initState();
@@ -31,6 +35,7 @@ class _State extends ConsumerState<NotificationReconciler>
 
   @override
   void dispose() {
+    _debounce?.cancel();
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
   }
@@ -50,5 +55,19 @@ class _State extends ConsumerState<NotificationReconciler>
   }
 
   @override
-  Widget build(BuildContext context) => widget.child;
+  Widget build(BuildContext context) {
+    // Re-project reactively when a new reading lands, debounced so a bulk import
+    // doesn't storm the OS. Skip the initial load (initState already reconciles).
+    ref.listen<AsyncValue<int>>(ledgerRevisionProvider, (prev, next) {
+      final before = prev?.asData?.value;
+      final after = next.asData?.value;
+      if (before == null || after == null || before == after) return;
+      _debounce?.cancel();
+      _debounce = Timer(
+        const Duration(milliseconds: 400),
+        () => unawaited(_reconcile()),
+      );
+    });
+    return widget.child;
+  }
 }

@@ -64,10 +64,15 @@ final class FlnNotificationGateway implements NotificationGateway {
         channel.name,
         channelDescription: channel.description,
         importance: channel.importance,
-        priority: Priority.high,
+        // Per-severity priority (M5-T4) so heads-up matches the channel.
+        priority: androidPriorityFor(n.channelId),
         groupKey: n.groupKey,
       ),
-      iOS: DarwinNotificationDetails(threadIdentifier: n.groupKey),
+      // Per-severity iOS interruption level (M5-T4): overdue breaks through Focus.
+      iOS: DarwinNotificationDetails(
+        threadIdentifier: n.groupKey,
+        interruptionLevel: iosInterruptionFor(n.channelId),
+      ),
     );
   }
 }

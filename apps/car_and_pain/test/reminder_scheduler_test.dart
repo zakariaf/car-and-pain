@@ -92,4 +92,66 @@ void main() {
     expect(result.armed, 0);
     expect(await gateway.pendingIds(), isEmpty);
   });
+
+  test('a raised digest threshold keeps same-day items as singles (M5-T4)',
+      () async {
+    final s = ReminderScheduler(
+      schedules: NotificationScheduleRepository(db),
+      ledger: LedgerRepository(db),
+      vehicles: VehiclesRepository(db),
+      gateway: gateway,
+      copy: _FakeCopy(),
+      groupThreshold: 3, // only digest at 3+ items/day
+    );
+    final result = await s.reconcileAll();
+    // The Jun-1 pair no longer collapses → 2 singles + the lone Jul-1 single.
+    expect(result.armed, 3);
+    expect(gateway.scheduled.where((n) => n.groupKey != null), isEmpty);
+  });
+
+  test('a new ledger reading re-projects a distance rule sooner (M5-T2)',
+      () async {
+    final fc = FixedClock(DateTime.utc(2026, 7));
+    final s = ReminderScheduler(
+      schedules: NotificationScheduleRepository(db),
+      ledger: LedgerRepository(db),
+      vehicles: VehiclesRepository(db),
+      gateway: gateway,
+      copy: _FakeCopy(),
+      // Fully deterministic projection: fix both the engine and ledger clocks.
+      engine: NextDueEngine(clock: fc, ledger: LedgerEngine(clock: fc)),
+    );
+    final v = (await VehiclesRepository(db).watchAll().first).single;
+    // Only a distance rule (drop the seeded date reminders for isolation).
+    await db.customStatement('DELETE FROM reminders');
+    await db.customStatement(
+      'INSERT INTO reminders (id, created_at, updated_at, vehicle_id, title, '
+      "trigger_type, due_odometer_metres, severity) VALUES ('d1', 0, 0, ?, "
+      "'Oil', 'distance', 105000000, 'info')",
+      [v.id],
+    );
+
+    final ledger = LedgerRepository(db);
+    Instant when(int y, int mo, int d) =>
+        Instant.fromDateTime(DateTime.utc(y, mo, d));
+    // Slow baseline usage (~6.6 km/day) → a far projection.
+    await ledger.appendManual(
+        vehicleId: v.id, value: 100000000, takenAt: when(2026, 1, 1));
+    await ledger.appendManual(
+        vehicleId: v.id, value: 101000000, takenAt: when(2026, 6, 1));
+    await s.reconcileAll();
+    final firstWhen =
+        gateway.scheduled.lastWhere((n) => n.groupKey == null).when;
+
+    // A fast recent reading (~22 km/day over the window) → sooner projection.
+    await ledger.appendManual(
+        vehicleId: v.id, value: 104000000, takenAt: when(2026, 7, 1));
+    final r2 = await s.reconcileAll();
+    final secondWhen =
+        gateway.scheduled.lastWhere((n) => n.groupKey == null).when;
+
+    // The due date self-corrected earlier, and the reconcile acted on it.
+    expect(secondWhen.epochMillis, lessThan(firstWhen.epochMillis));
+    expect(r2.mutations, greaterThanOrEqualTo(1));
+  });
 }

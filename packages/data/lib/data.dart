@@ -31,11 +31,15 @@ export 'src/backup/competitor_presets.dart'
     show
         CompetitorPreset,
         CsvFieldMap,
+        aCarServicePreset,
         competitorPresets,
         dollarsToMinorUnits,
+        drivvoServicePreset,
+        fuelioServicePreset,
         fuellyFuelPreset,
         gallonsToMillilitres,
         isoDateToEpochMillis,
+        kmToMetres,
         milesToMetres;
 export 'src/backup/csv_export.dart'
     show csvField, exportEntitiesToCsv, rowsToCsv;
@@ -51,6 +55,19 @@ export 'src/diagnostics/diagnostics_repository.dart'
 export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
 export 'src/domain/fuel_entry.dart' show FuelEntry;
+export 'src/domain/service_appointment.dart'
+    show ServiceAppointment, WarrantyExpiry;
+export 'src/domain/service_visit.dart'
+    show
+        FluidDraft,
+        FluidUsed,
+        PartDraft,
+        PartUsed,
+        ProcedureStep,
+        ProcedureStepDraft,
+        ServiceLineItem,
+        ServiceLineItemDraft,
+        ServiceVisit;
 export 'src/domain/vehicle.dart' show Vehicle;
 export 'src/infra/app_dirs.dart' show AppDirs;
 export 'src/infra/app_time_zone.dart' show AppTimeZone;
@@ -77,6 +94,7 @@ export 'src/providers.dart'
         ledgerRepositoryProvider,
         notificationScheduleRepositoryProvider,
         secureKeyStoreProvider,
+        serviceRepositoryProvider,
         settingsRepositoryProvider,
         stationsRepositoryProvider,
         taxonomyRepositoryProvider,
@@ -88,10 +106,13 @@ export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
+export 'src/repositories/service_repository.dart' show ServiceRepository;
 export 'src/repositories/stations_repository.dart' show StationsRepository;
 export 'src/repositories/vehicles_repository.dart'
     show VehicleEdit, VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;
+export 'src/service/schedule_template_library.dart'
+    show ScheduleTemplateLibrary;
 export 'src/settings/settings_repository.dart' show SettingsRepository;
 export 'src/taxonomy/taxonomy.dart' show Category, TaxonomyRepository;
 export 'src/trash/trash_repository.dart' show TrashItem, TrashRepository;

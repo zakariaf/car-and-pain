@@ -87,7 +87,8 @@ export 'src/result/failures.dart'
         WrongSecret;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
 export 'src/result/validation.dart' show FieldError, Validation;
-export 'src/scheduling/ics_export.dart' show IcsEvent, buildIcsCalendar;
+export 'src/scheduling/ics_export.dart'
+    show IcsAppointment, IcsEvent, buildAppointmentIcs, buildIcsCalendar;
 export 'src/scheduling/next_due_engine.dart' show NextDueEngine;
 export 'src/scheduling/schedule_rule.dart'
     show
@@ -104,6 +105,28 @@ export 'src/scheduling/schedule_rule.dart'
         TriggerKind;
 export 'src/scheduling/scheduled_notification.dart'
     show ReminderScheduleDef, ScheduledNotification;
+export 'src/service/schedule_template.dart'
+    show
+        AppliedScheduleItem,
+        ScheduleProfile,
+        ScheduleTemplate,
+        ScheduleTemplateEntry,
+        applyScheduleTemplate;
+export 'src/service/service_cost.dart'
+    show
+        RunningCost,
+        ServiceCostEngine,
+        ServiceCostPoint,
+        ServiceLineItemCost,
+        VisitCost;
+export 'src/service/service_schedule.dart'
+    show
+        ServiceDueLevel,
+        ServiceDueStatus,
+        ServiceEvent,
+        ServiceInterval,
+        ServiceIntervalLogic,
+        ServiceScheduleEngine;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
 export 'src/units/byte_size.dart' show ByteSize, ByteSizeUnit;

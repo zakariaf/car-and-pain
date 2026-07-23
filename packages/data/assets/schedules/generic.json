@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "id": "generic",
+  "name": "schedule.generic",
+  "_note": "Generic on-device maintenance schedule — optimistic to source, honestly labelled 'generic'. Every interval is editable and overridable per vehicle. Distances are whole kilometres; severe-duty fields layer shortened overrides on top of the generic values.",
+  "entries": [
+    { "serviceType": "oil_change", "logic": "whicheverFirst", "distanceKm": 15000, "months": 12, "severeDistanceKm": 7500, "severeMonths": 6 },
+    { "serviceType": "oil_filter", "logic": "whicheverFirst", "distanceKm": 15000, "months": 12, "severeDistanceKm": 7500, "severeMonths": 6 },
+    { "serviceType": "air_filter", "logic": "whicheverFirst", "distanceKm": 30000, "months": 24, "severeDistanceKm": 15000, "severeMonths": 12 },
+    { "serviceType": "cabin_filter", "logic": "whicheverFirst", "distanceKm": 30000, "months": 24, "severeDistanceKm": 15000, "severeMonths": 12 },
+    { "serviceType": "tire_rotation", "logic": "distance", "distanceKm": 10000, "severeDistanceKm": 8000 },
+    { "serviceType": "brake_fluid", "logic": "time", "months": 24, "severeMonths": 12 },
+    { "serviceType": "coolant", "logic": "whicheverFirst", "distanceKm": 100000, "months": 60 },
+    { "serviceType": "transmission_fluid", "logic": "whicheverFirst", "distanceKm": 60000, "months": 48, "severeDistanceKm": 40000 },
+    { "serviceType": "spark_plugs", "logic": "distance", "distanceKm": 60000 },
+    { "serviceType": "brake_inspection", "logic": "whicheverFirst", "distanceKm": 20000, "months": 12 },
+    { "serviceType": "timing_belt", "logic": "whicheverFirst", "distanceKm": 120000, "months": 96 }
+  ]
+}

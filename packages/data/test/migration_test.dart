@@ -65,6 +65,50 @@ const _m3FuelColumns = [
   'receipt_attachment_id',
 ];
 
+// The M4 (v8) header columns added to service_entries.
+const _m4ServiceColumns = [
+  'provider_id',
+  'tax_minor',
+  'discount_minor',
+  'fees_minor',
+  'labour_minutes',
+  'labour_rate_minor',
+  'tags',
+  'source',
+  'schedule_profile',
+];
+
+// The M4 (v8) interval-default columns added to categories.
+const _m4CategoryColumns = [
+  'default_interval_months',
+  'default_interval_logic'
+];
+
+/// Rewind the M4 (v8 + v9) additions on a freshly-built DB so a forward migration
+/// can re-apply them. Drops leaf detail tables first, then line items and their
+/// FK-bearing columns, then the parent table, then the taxonomy columns.
+Future<void> _dropM4(AppDatabase db) async {
+  // v10 (M4-T5) appointments.
+  await db.customStatement('DROP TABLE service_appointments');
+  // v9 (M4-T2) detail tables + workmanship-warranty columns.
+  await db.customStatement('DROP TABLE parts_used');
+  await db.customStatement('DROP TABLE fluids_used');
+  await db.customStatement('DROP TABLE service_procedure_steps');
+  await db.customStatement('ALTER TABLE service_line_items DROP COLUMN '
+      'warranty_until_date');
+  await db.customStatement('ALTER TABLE service_line_items DROP COLUMN '
+      'warranty_until_mileage_metres');
+  // v8 (M4-T1) line items, provider directory, header + taxonomy columns.
+  await db.customStatement('DROP TABLE service_line_items');
+  for (final c in _m4ServiceColumns) {
+    await db.customStatement('ALTER TABLE service_entries DROP COLUMN $c');
+  }
+  await db.customStatement('DROP TABLE service_providers');
+  for (final c in _m4CategoryColumns) {
+    await db.customStatement('ALTER TABLE categories DROP COLUMN $c');
+  }
+}
+
 void main() {
   test('SnapshotGuard takes a pre-migration snapshot and restores on failure',
       () async {
@@ -92,10 +136,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 7 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 10 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 7);
+    expect(db.schemaVersion, 10);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -112,6 +156,12 @@ void main() {
         'odometer_readings',
         'fuel_entries',
         'service_entries',
+        'service_providers',
+        'service_line_items',
+        'parts_used',
+        'fluids_used',
+        'service_procedure_steps',
+        'service_appointments',
         'expenses',
         'trips',
         'reminders',
@@ -143,7 +193,8 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v7 forward migration adds all later schema, keeps data', () async {
+  test('v1 → v10 forward migration adds all later schema, keeps data',
+      () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
@@ -187,6 +238,9 @@ void main() {
     for (final c in _m3FuelColumns) {
       await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
+    // The M4 (v8) service line items, provider directory, and header/taxonomy
+    // columns.
+    await _dropM4(setup);
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
 
@@ -267,6 +321,7 @@ void main() {
     for (final c in _m3FuelColumns) {
       await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
+    await _dropM4(setup);
     await setup.customStatement('PRAGMA user_version = 3');
     await setup.close();
 

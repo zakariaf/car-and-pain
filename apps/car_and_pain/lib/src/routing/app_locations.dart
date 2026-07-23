@@ -35,6 +35,14 @@ abstract final class AppLocations {
   /// The Fuel & Economy history for [vehicleId] (full-screen flow).
   static String fuelHistory(String vehicleId) => '/vehicle/$vehicleId/fuel';
 
+  /// The service-visit editor for [vehicleId] (full-screen flow).
+  static String logService(String vehicleId) =>
+      '/vehicle/$vehicleId/service/new';
+
+  /// The Service & Maintenance history for [vehicleId] (full-screen flow).
+  static String serviceHistory(String vehicleId) =>
+      '/vehicle/$vehicleId/service';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

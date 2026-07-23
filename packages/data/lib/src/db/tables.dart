@@ -197,7 +197,10 @@ class FuelEntries extends Table with AuditColumns {
   TextColumn get receiptAttachmentId => text().nullable()();
 }
 
-/// A service visit mapped to one receipt. M4 adds line items/parts/warranties.
+/// A multi-line-item service visit mapped to one receipt (M4-T1). The header
+/// carries the visit-level cost breakdown; the jobs live in [ServiceLineItems].
+/// `totalCostMinor` is the cached authoritative visit total
+/// (Σ line items + tax − discount + fees), computed by the pure cost engine.
 class ServiceEntries extends Table with AuditColumns {
   TextColumn get vehicleId =>
       text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
@@ -206,6 +209,128 @@ class ServiceEntries extends Table with AuditColumns {
   IntColumn get totalCostMinor => integer()();
   TextColumn get currencyCode => text()();
   BoolColumn get isDiy => boolean().withDefault(const Constant(false))();
+  TextColumn get notes => text().nullable()();
+  // ── M4-T1: header cost breakdown, provider, tags, source ──────────────────
+  // Workshop from the offline directory (nullable, non-cascading).
+  TextColumn get providerId =>
+      text().nullable().references(ServiceProviders, #id)();
+  IntColumn get taxMinor => integer().withDefault(const Constant(0))();
+  IntColumn get discountMinor => integer().withDefault(const Constant(0))();
+  IntColumn get feesMinor => integer().withDefault(const Constant(0))();
+  // Visit-level labour: canonical whole minutes + per-hour rate (minor units).
+  IntColumn get labourMinutes => integer().nullable()();
+  IntColumn get labourRateMinor => integer().nullable()();
+  // JSON array of user tags (comma-safe, unlike a delimited string).
+  TextColumn get tags => text().nullable()();
+  // manual | import | template.
+  TextColumn get source => text().withDefault(const Constant('manual'))();
+  // generic | severe | custom — the schedule profile applied (M4-T3).
+  TextColumn get scheduleProfile => text().nullable()();
+}
+
+/// The offline workshop / mechanic directory (M4-T4). Global, not vehicle-scoped:
+/// one shop is referenced by many visits across vehicles. Phone numbers are
+/// stored raw and rendered LTR-isolated (bidi) at the edge, never reordered.
+@DataClassName('ServiceProviderRow')
+class ServiceProviders extends Table with AuditColumns {
+  TextColumn get name => text()();
+  // shop | mechanic | dealer | diy | other.
+  TextColumn get kind => text().nullable()();
+  TextColumn get phone => text().nullable()();
+  TextColumn get address => text().nullable()();
+  TextColumn get website => text().nullable()();
+  TextColumn get notes => text().nullable()();
+}
+
+/// One job within a visit — several map to a single receipt (M4-T1). The service
+/// type resolves through the shared taxonomy ([Categories], built-in-editable +
+/// custom), never an enum. Interval columns override the taxonomy default per
+/// vehicle; null = inherit. Cost is the labour-vs-parts split in integer minor
+/// units (no float anywhere in the money path).
+@DataClassName('ServiceLineItemRow')
+class ServiceLineItems extends Table with AuditColumns {
+  TextColumn get visitId =>
+      text().references(ServiceEntries, #id, onDelete: KeyAction.cascade)();
+  TextColumn get serviceTypeId =>
+      text().nullable().references(Categories, #id)();
+  IntColumn get labourMinor => integer().withDefault(const Constant(0))();
+  IntColumn get partsMinor => integer().withDefault(const Constant(0))();
+  // A full change resets the interval clock; a top-up must NOT (leaves it).
+  BoolColumn get resetsInterval =>
+      boolean().withDefault(const Constant(true))();
+  // Per-item DIY override; null = inherit the visit-level flag.
+  BoolColumn get isDiy => boolean().nullable()();
+  // Interval override (null = inherit the service type's taxonomy default).
+  IntColumn get intervalDistanceMetres => integer().nullable()();
+  IntColumn get intervalMonths => integer().nullable()();
+  // distance | time | whicheverFirst.
+  TextColumn get intervalLogic => text().nullable()();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  TextColumn get notes => text().nullable()();
+  // ── M4-T2: workmanship warranty (both date and mileage) ───────────────────
+  IntColumn get warrantyUntilDate => integer().nullable()();
+  IntColumn get warrantyUntilMileageMetres => integer().nullable()();
+}
+
+/// A part fitted during a line item (M4-T2). Part numbers are stored raw and
+/// rendered LTR-isolated (bidi) at the edge so they are never reordered in RTL or
+/// export. Cost is `unitCostMinor × quantity` in integer minor units. Parts carry
+/// their own warranty (date + mileage), feeding the warranty-compliance surface.
+@DataClassName('PartUsedRow')
+class PartsUsed extends Table with AuditColumns {
+  TextColumn get lineItemId =>
+      text().references(ServiceLineItems, #id, onDelete: KeyAction.cascade)();
+  TextColumn get name => text()();
+  TextColumn get brand => text().nullable()();
+  TextColumn get oemNumber => text().nullable()();
+  TextColumn get aftermarketNumber => text().nullable()();
+  IntColumn get quantity => integer().withDefault(const Constant(1))();
+  IntColumn get unitCostMinor => integer().withDefault(const Constant(0))();
+  TextColumn get supplier => text().nullable()();
+  IntColumn get warrantyUntilDate => integer().nullable()();
+  IntColumn get warrantyUntilMileageMetres => integer().nullable()();
+}
+
+/// A fluid/consumable used during a line item (M4-T2), e.g. 5W-30, DOT4, G12.
+/// Quantity is canonical millilitres; display converts (L/qt) at the edge.
+@DataClassName('FluidUsedRow')
+class FluidsUsed extends Table with AuditColumns {
+  TextColumn get lineItemId =>
+      text().references(ServiceLineItems, #id, onDelete: KeyAction.cascade)();
+  // engineOil | coolant | brakeFluid | transmission | … (free text, localized).
+  TextColumn get fluidType => text()();
+  TextColumn get spec => text().nullable()();
+  IntColumn get quantityMl => integer().nullable()();
+}
+
+/// One ordered step of a DIY procedure log (M4-T2): the instruction plus optional
+/// torque spec and notes. Reorderable via [stepOrder].
+@DataClassName('ProcedureStepRow')
+class ServiceProcedureSteps extends Table with AuditColumns {
+  TextColumn get lineItemId =>
+      text().references(ServiceLineItems, #id, onDelete: KeyAction.cascade)();
+  IntColumn get stepOrder => integer().withDefault(const Constant(0))();
+  TextColumn get instruction => text()();
+  TextColumn get torqueSpec => text().nullable()();
+  TextColumn get notes => text().nullable()();
+}
+
+/// A booked service appointment (M4-T5) — a specific date+time with a shop.
+/// Deliberately a SEPARATE class from interval reminders: cancelling an
+/// appointment never clears an interval reminder and vice-versa. Generates a
+/// local timed `.ics` for the device calendar (no server). `scheduledAt` is a
+/// true instant (UTC epoch millis); the calendar renders it in the user's locale.
+@DataClassName('AppointmentRow')
+class ServiceAppointments extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  TextColumn get providerId =>
+      text().nullable().references(ServiceProviders, #id)();
+  IntColumn get scheduledAt => integer()();
+  IntColumn get durationMinutes => integer().withDefault(const Constant(60))();
+  // scheduled | completed | cancelled | noShow.
+  TextColumn get status => text().withDefault(const Constant('scheduled'))();
+  TextColumn get title => text().nullable()();
   TextColumn get notes => text().nullable()();
 }
 
@@ -297,6 +422,10 @@ class Categories extends Table with AuditColumns {
   // Colour is paired with icon+label (never colour alone) per PULSE.
   TextColumn get colorToken => text().nullable()();
   IntColumn get defaultIntervalMetres => integer().nullable()();
+  // M4: time + logic interval defaults for service types (the distance default
+  // is `defaultIntervalMetres`). logic: distance | time | whicheverFirst.
+  IntColumn get defaultIntervalMonths => integer().nullable()();
+  TextColumn get defaultIntervalLogic => text().nullable()();
   // Fixed analytic bucket so custom naming never destabilizes reports.
   TextColumn get analyticBucket => text()();
 }

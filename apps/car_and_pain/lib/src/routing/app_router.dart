@@ -11,6 +11,8 @@ import '../features/01-vehicles-garage/presentation/vehicle_ledger_screen.dart';
 import '../features/01-vehicles-garage/presentation/vehicle_profile_screen.dart';
 import '../features/02-fuel-energy/presentation/fuel_entry_form_screen.dart';
 import '../features/02-fuel-energy/presentation/fuel_history_screen.dart';
+import '../features/03-service-maintenance/presentation/service_entry_form_screen.dart';
+import '../features/03-service-maintenance/presentation/service_history_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/app_lock_controller.dart';
@@ -157,6 +159,20 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         builder: (context, state) =>
             FuelHistoryScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/service/new',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => ServiceEntryFormScreen(
+          vehicleId: state.pathParameters['vehicleId']!,
+        ),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/service',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => ServiceHistoryScreen(
+          vehicleId: state.pathParameters['vehicleId']!,
+        ),
       ),
       GoRoute(
         path: '/trash',

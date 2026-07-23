@@ -62,6 +62,9 @@ double _decimal(String raw) =>
 /// Miles (display) → canonical whole metres.
 int milesToMetres(String raw) => (_decimal(raw) * _metresPerMile).round();
 
+/// Kilometres (display) → canonical whole metres.
+int kmToMetres(String raw) => (_decimal(raw) * 1000).round();
+
 /// US gallons (display) → canonical millilitres.
 int gallonsToMillilitres(String raw) =>
     (_decimal(raw) * _mlPerUsGallon).round();
@@ -98,5 +101,47 @@ const fuellyFuelPreset = CompetitorPreset(
   ],
 );
 
-/// The presets the import wizard offers.
-const competitorPresets = <CompetitorPreset>[fuellyFuelPreset];
+/// Drivvo service-history preset (M4-T7) — representative column mapping onto the
+/// canonical service_entries fields (exact headers verified in on-device QA).
+const drivvoServicePreset = CompetitorPreset(
+  name: 'Drivvo (service)',
+  fields: [
+    CsvFieldMap('Date', 'servicedAtUtcMillis', isoDateToEpochMillis),
+    CsvFieldMap('Odometer (km)', 'odometerMetres', kmToMetres),
+    CsvFieldMap('Total cost', 'totalCostMinorUnits', dollarsToMinorUnits),
+    CsvFieldMap('Type of service', 'serviceType'),
+    CsvFieldMap('Observation', 'note'),
+  ],
+);
+
+/// aCar service-history preset (M4-T7).
+const aCarServicePreset = CompetitorPreset(
+  name: 'aCar (service)',
+  fields: [
+    CsvFieldMap('Date', 'servicedAtUtcMillis', isoDateToEpochMillis),
+    CsvFieldMap('Odometer', 'odometerMetres', kmToMetres),
+    CsvFieldMap('Total Cost', 'totalCostMinorUnits', dollarsToMinorUnits),
+    CsvFieldMap('Services', 'serviceType'),
+    CsvFieldMap('Notes', 'note'),
+  ],
+);
+
+/// Fuelio cost/service-history preset (M4-T7).
+const fuelioServicePreset = CompetitorPreset(
+  name: 'Fuelio (costs)',
+  fields: [
+    CsvFieldMap('Date', 'servicedAtUtcMillis', isoDateToEpochMillis),
+    CsvFieldMap('Odo (km)', 'odometerMetres', kmToMetres),
+    CsvFieldMap('Cost', 'totalCostMinorUnits', dollarsToMinorUnits),
+    CsvFieldMap('CategoryName', 'serviceType'),
+    CsvFieldMap('Notes', 'note'),
+  ],
+);
+
+/// The presets the import wizard offers (fuel + service history).
+const competitorPresets = <CompetitorPreset>[
+  fuellyFuelPreset,
+  drivvoServicePreset,
+  aCarServicePreset,
+  fuelioServicePreset,
+];

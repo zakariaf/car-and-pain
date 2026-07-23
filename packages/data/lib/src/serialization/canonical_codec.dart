@@ -92,6 +92,18 @@ class CanonicalCodec {
           .into(db.fuelEntries)
           .insert(FuelEntryRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // Service provider directory (M4-T1) — global, FK-free; before service
+    // visits, which reference it via provider_id.
+    _Entity(
+      'service_providers',
+      () async => (await db.select(db.serviceProviders).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceProviders).insert(
+            ServiceProviderRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
     _Entity(
       'service_entries',
       () async => (await db.select(db.serviceEntries).get())
@@ -100,6 +112,59 @@ class CanonicalCodec {
       (j) => db
           .into(db.serviceEntries)
           .insert(ServiceEntry.fromJson(j), mode: InsertMode.insertOrReplace),
+    ),
+    // Service line items (M4-T1) — after service visits (FK visit_id) and
+    // categories (FK service_type_id), both registered above.
+    _Entity(
+      'service_line_items',
+      () async => (await db.select(db.serviceLineItems).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceLineItems).insert(
+            ServiceLineItemRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    // Line-item detail (M4-T2) — after service_line_items (FK line_item_id).
+    _Entity(
+      'parts_used',
+      () async =>
+          (await db.select(db.partsUsed).get()).map((r) => r.toJson()).toList(),
+      (j) => db.into(db.partsUsed).insert(
+            PartUsedRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'fluids_used',
+      () async => (await db.select(db.fluidsUsed).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.fluidsUsed).insert(
+            FluidUsedRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'service_procedure_steps',
+      () async => (await db.select(db.serviceProcedureSteps).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceProcedureSteps).insert(
+            ProcedureStepRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    // Service appointments (M4-T5) — after service_providers (FK provider_id).
+    _Entity(
+      'service_appointments',
+      () async => (await db.select(db.serviceAppointments).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceAppointments).insert(
+            AppointmentRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
     ),
     _Entity(
       'expenses',

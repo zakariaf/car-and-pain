@@ -48,3 +48,9 @@ dev_dependencies:
     sdk: flutter
   drift_dev: ^2.20.0
   build_runner: ^2.4.0
+
+flutter:
+  # Bundled offline maintenance-schedule templates (M4-T3). Shipped on-device,
+  # editable, and versioned; loaded via rootBundle with no network.
+  assets:
+    - assets/schedules/generic.json

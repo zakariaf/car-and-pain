@@ -1121,5 +1121,93 @@
   "economyUnitKwh100": "kWh/100km",
   "@economyUnitKwh100": {
     "description": "kWh/100km unit"
+  },
+  "serviceHistoryTitle": "Service history",
+  "@serviceHistoryTitle": {
+    "description": "Service history screen title"
+  },
+  "serviceAddTitle": "Log service",
+  "@serviceAddTitle": {
+    "description": "Service entry form title / add action"
+  },
+  "serviceHistoryEmpty": "No service records yet",
+  "@serviceHistoryEmpty": {
+    "description": "Empty state for the service history"
+  },
+  "serviceDate": "Service date",
+  "@serviceDate": {
+    "description": "Service date field label"
+  },
+  "serviceOdometer": "Odometer",
+  "@serviceOdometer": {
+    "description": "Odometer field on the service form"
+  },
+  "serviceProvider": "Workshop",
+  "@serviceProvider": {
+    "description": "Workshop / provider field label"
+  },
+  "serviceDiy": "Did it myself (DIY)",
+  "@serviceDiy": {
+    "description": "DIY toggle on the service form"
+  },
+  "serviceLineItem": "Job",
+  "@serviceLineItem": {
+    "description": "Line item / job section header"
+  },
+  "serviceAddLineItem": "Add job",
+  "@serviceAddLineItem": {
+    "description": "Add a line item to the visit"
+  },
+  "serviceRemoveLineItem": "Remove job",
+  "@serviceRemoveLineItem": {
+    "description": "Remove a line item"
+  },
+  "serviceType": "Service type",
+  "@serviceType": {
+    "description": "Service type dropdown label"
+  },
+  "serviceLabourCost": "Labour cost",
+  "@serviceLabourCost": {
+    "description": "Labour cost field"
+  },
+  "servicePartsCost": "Parts cost",
+  "@servicePartsCost": {
+    "description": "Parts cost field"
+  },
+  "serviceResetsInterval": "Resets the interval",
+  "@serviceResetsInterval": {
+    "description": "Whether the line item resets the maintenance interval"
+  },
+  "serviceSave": "Save",
+  "@serviceSave": {
+    "description": "Save the service visit"
+  },
+  "serviceLastDone": "Last done",
+  "@serviceLastDone": {
+    "description": "Last-done label on a status card"
+  },
+  "serviceNextDue": "Next due",
+  "@serviceNextDue": {
+    "description": "Next-due label on a status card"
+  },
+  "serviceStatusOk": "OK",
+  "@serviceStatusOk": {
+    "description": "Service status: OK / healthy"
+  },
+  "serviceStatusDueSoon": "Due soon",
+  "@serviceStatusDueSoon": {
+    "description": "Service status: due soon"
+  },
+  "serviceStatusOverdue": "Overdue",
+  "@serviceStatusOverdue": {
+    "description": "Service status: overdue"
+  },
+  "serviceTypeOilChange": "Oil change",
+  "@serviceTypeOilChange": {
+    "description": "Built-in service type: oil change"
+  },
+  "serviceTypeBrakes": "Brakes",
+  "@serviceTypeBrakes": {
+    "description": "Built-in service type: brakes"
   }
 }

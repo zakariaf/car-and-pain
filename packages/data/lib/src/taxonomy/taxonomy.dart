@@ -18,6 +18,8 @@ class Category {
     this.colorToken,
     this.isCustom = false,
     this.defaultIntervalMetres,
+    this.defaultIntervalMonths,
+    this.defaultIntervalLogic,
   });
 
   final String id;
@@ -28,6 +30,11 @@ class Category {
   final String? colorToken;
   final bool isCustom;
   final int? defaultIntervalMetres;
+
+  /// M4: time interval (whole months) and governing logic for service types
+  /// (distance | time | whicheverFirst). Null when the type has no default.
+  final int? defaultIntervalMonths;
+  final String? defaultIntervalLogic;
 }
 
 /// A seed definition for a default taxonomy row.
@@ -103,6 +110,8 @@ class TaxonomyRepository extends BaseRepository {
         colorToken: r.colorToken,
         isCustom: r.isCustom,
         defaultIntervalMetres: r.defaultIntervalMetres,
+        defaultIntervalMonths: r.defaultIntervalMonths,
+        defaultIntervalLogic: r.defaultIntervalLogic,
       );
 
   Stream<List<Category>> watchByKind(String kind) {

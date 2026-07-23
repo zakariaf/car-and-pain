@@ -3,6 +3,7 @@ import 'package:drift/drift.dart';
 
 import '../db/app_database.dart';
 import '../repositories/base_repository.dart';
+import '../repositories/reminders_repository.dart';
 
 /// The DB boundary for the notification engine (F5-T2): maps `reminders` rows to
 /// pure [ReminderScheduleDef]s the engine evaluates, and loads/saves the
@@ -56,47 +57,16 @@ class NotificationScheduleRepository extends BaseRepository {
     });
   }
 
-  ReminderScheduleDef _defOf(Reminder r, int offset) => ReminderScheduleDef(
-        id: r.id,
-        vehicleId: r.vehicleId,
-        title: r.title,
-        severity: r.severity,
-        rule: ScheduleRule(
-          kind: _kind(r.triggerType),
-          dueDate: _instant(r.dueDate),
-          completedAt: _instant(r.completedAt),
-          recurrence: (r.recurrenceEvery != null && r.recurrenceUnit != null)
-              ? Recurrence(r.recurrenceEvery!, _unit(r.recurrenceUnit!))
-              : null,
-          dueOdometerMetres: r.dueOdometerMetres,
-          dueEngineMinutes: r.dueEngineMinutes,
-          leadTime: Duration(minutes: r.leadMinutes),
-          leadDistanceMetres: r.leadDistanceMetres,
-          quietHours: (r.quietStartMinute != null && r.quietEndMinute != null)
-              ? QuietHours(
-                  startMinute: r.quietStartMinute!,
-                  endMinute: r.quietEndMinute!,
-                  deliverAtMinute: r.quietDeliverMinute,
-                )
-              : null,
-          utcOffsetMinutes: offset,
-        ),
-      );
-
-  static TriggerKind _kind(String t) => switch (t) {
-        'distance' => TriggerKind.distance,
-        'hours' => TriggerKind.engineHours,
-        'whicheverFirst' => TriggerKind.whicheverFirst,
-        _ => TriggerKind.date,
-      };
-
-  static RecurrenceUnit _unit(String u) => switch (u) {
-        'weeks' => RecurrenceUnit.weeks,
-        'months' => RecurrenceUnit.months,
-        'years' => RecurrenceUnit.years,
-        _ => RecurrenceUnit.days,
-      };
-
-  static Instant? _instant(int? ms) =>
-      ms == null ? null : Instant.fromEpochMillis(ms);
+  // Reuse the single-source row→domain→rule mapping (M5-T1) so the F5 scheduler
+  // and the user-facing repository can never diverge on how a rule is built.
+  ReminderScheduleDef _defOf(ReminderRow r, int offset) {
+    final rem = RemindersRepository.toDomain(r);
+    return ReminderScheduleDef(
+      id: rem.id,
+      vehicleId: rem.vehicleId,
+      title: rem.title,
+      severity: rem.severity,
+      rule: rem.toScheduleRule(utcOffsetMinutes: offset),
+    );
+  }
 }

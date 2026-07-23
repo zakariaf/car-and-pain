@@ -84,6 +84,12 @@ const _m4CategoryColumns = [
   'default_interval_logic'
 ];
 
+/// Rewind the M5 (v11) reminder columns so a forward migration re-applies them.
+Future<void> _dropM5(AppDatabase db) async {
+  await db.customStatement('ALTER TABLE reminders DROP COLUMN notes');
+  await db.customStatement('ALTER TABLE reminders DROP COLUMN snooze_until');
+}
+
 /// Rewind the M4 (v8 + v9) additions on a freshly-built DB so a forward migration
 /// can re-apply them. Drops leaf detail tables first, then line items and their
 /// FK-bearing columns, then the parent table, then the taxonomy columns.
@@ -136,10 +142,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 10 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 11 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 10);
+    expect(db.schemaVersion, 11);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -193,7 +199,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v10 forward migration adds all later schema, keeps data',
+  test('v1 → v11 forward migration adds all later schema, keeps data',
       () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
@@ -240,6 +246,7 @@ void main() {
     }
     // The M4 (v8) service line items, provider directory, and header/taxonomy
     // columns.
+    await _dropM5(setup);
     await _dropM4(setup);
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
@@ -321,6 +328,7 @@ void main() {
     for (final c in _m3FuelColumns) {
       await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
+    await _dropM5(setup);
     await _dropM4(setup);
     await setup.customStatement('PRAGMA user_version = 3');
     await setup.close();

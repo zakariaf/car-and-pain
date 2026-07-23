@@ -55,6 +55,8 @@ export 'src/diagnostics/diagnostics_repository.dart'
 export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
 export 'src/domain/fuel_entry.dart' show FuelEntry;
+export 'src/domain/reminder.dart'
+    show Reminder, ReminderLiveState, ReminderWithState, classifyReminderState;
 export 'src/domain/service_appointment.dart'
     show ServiceAppointment, WarrantyExpiry;
 export 'src/domain/service_visit.dart'
@@ -93,6 +95,7 @@ export 'src/providers.dart'
         fuelRepositoryProvider,
         ledgerRepositoryProvider,
         notificationScheduleRepositoryProvider,
+        remindersRepositoryProvider,
         secureKeyStoreProvider,
         serviceRepositoryProvider,
         settingsRepositoryProvider,
@@ -104,6 +107,7 @@ export 'src/repositories/attachments_repository.dart'
     show AttachmentsRepository;
 export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
+export 'src/repositories/reminders_repository.dart' show RemindersRepository;
 export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
 export 'src/repositories/service_repository.dart' show ServiceRepository;

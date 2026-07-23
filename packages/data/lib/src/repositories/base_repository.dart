@@ -19,6 +19,10 @@ abstract class BaseRepository {
   final AppDatabase db;
   final Clock _clock;
 
+  /// The injected clock, for subclasses that hand it to a pure engine (e.g. the
+  /// F5 [NextDueEngine]) so their derivations stay deterministic under tests.
+  Clock get clock => _clock;
+
   /// Current instant in UTC epoch millis (via the injected clock).
   int nowMillis() => _clock.nowUtc().millisecondsSinceEpoch;
 

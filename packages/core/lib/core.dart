@@ -49,6 +49,7 @@ export 'src/finance/amortization.dart'
         PayoffQuote;
 export 'src/finance/depreciation.dart'
     show DepreciationCurve, DepreciationMethod, EquityPosition;
+export 'src/finance/recurring_bill.dart' show LumpAmortizer, RecurringBill;
 export 'src/finance/tco.dart' show TcoCostItem, TcoEngine, TcoReport;
 export 'src/ledger/ledger.dart' show LedgerEngine, LedgerReading, LedgerSource;
 export 'src/money/currency.dart' show Currency;

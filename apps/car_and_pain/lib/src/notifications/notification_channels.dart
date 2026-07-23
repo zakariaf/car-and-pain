@@ -35,3 +35,22 @@ AndroidNotificationChannel channelFor(String id) {
   final all = notificationChannels();
   return all.firstWhere((c) => c.id == id, orElse: () => all.last);
 }
+
+/// The iOS interruption level for a severity id (M5-T4): an overdue item is
+/// time-sensitive (breaks through Focus), due-soon/documents are active, and
+/// info/digests stay passive (silent in the Notification Centre).
+InterruptionLevel iosInterruptionFor(String channelId) => switch (channelId) {
+      'overdue' => InterruptionLevel.timeSensitive,
+      'dueSoon' => InterruptionLevel.active,
+      'documents' => InterruptionLevel.active,
+      _ => InterruptionLevel.passive,
+    };
+
+/// The Android priority for a severity id (M5-T4), aligned with the channel
+/// importance so heads-up display matches the severity.
+Priority androidPriorityFor(String channelId) => switch (channelId) {
+      'overdue' => Priority.max,
+      'dueSoon' => Priority.high,
+      'documents' => Priority.high,
+      _ => Priority.low,
+    };

@@ -16,6 +16,10 @@ abstract final class SettingsKeys {
   static const scope = 'scope';
   static const lastRoom = 'last_room';
   static const onboardingComplete = 'onboarding_complete';
+
+  // ── Notifications (M5-T4): grouped-digest delivery config ─────────────────
+  // Collapse a delivery day into one digest once it has this many due items.
+  static const digestGroupThreshold = 'digest_group_threshold';
 }
 
 /// Reactive snapshot of the encrypted settings table — the single source that

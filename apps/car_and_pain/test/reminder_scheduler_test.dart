@@ -93,6 +93,22 @@ void main() {
     expect(await gateway.pendingIds(), isEmpty);
   });
 
+  test('a raised digest threshold keeps same-day items as singles (M5-T4)',
+      () async {
+    final s = ReminderScheduler(
+      schedules: NotificationScheduleRepository(db),
+      ledger: LedgerRepository(db),
+      vehicles: VehiclesRepository(db),
+      gateway: gateway,
+      copy: _FakeCopy(),
+      groupThreshold: 3, // only digest at 3+ items/day
+    );
+    final result = await s.reconcileAll();
+    // The Jun-1 pair no longer collapses → 2 singles + the lone Jul-1 single.
+    expect(result.armed, 3);
+    expect(gateway.scheduled.where((n) => n.groupKey != null), isEmpty);
+  });
+
   test('a new ledger reading re-projects a distance rule sooner (M5-T2)',
       () async {
     final fc = FixedClock(DateTime.utc(2026, 7));

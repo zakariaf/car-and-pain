@@ -44,6 +44,11 @@ final reminderSchedulerProvider =
   final prefs = ref.watch(localizationPrefsProvider);
   final l10n = await AppLocalizations.delegate.load(Locale(prefs.languageCode));
   final offset = DateTime.now().timeZoneOffset.inMinutes;
+  // The user-configurable grouped-digest threshold (M5-T4), clamped to a valid
+  // digest size so a bad value can never disable grouping.
+  final settings = ref.watch(settingsMapProvider).asData?.value ?? const {};
+  final rawThreshold =
+      int.tryParse(settings[SettingsKeys.digestGroupThreshold] ?? '') ?? 2;
   return ReminderScheduler(
     schedules: ref.watch(notificationScheduleRepositoryProvider),
     ledger: ref.watch(ledgerRepositoryProvider),
@@ -55,5 +60,6 @@ final reminderSchedulerProvider =
       utcOffsetMinutes: offset,
     ),
     utcOffsetMinutes: offset,
+    groupThreshold: rawThreshold < 2 ? 2 : rawThreshold,
   );
 });

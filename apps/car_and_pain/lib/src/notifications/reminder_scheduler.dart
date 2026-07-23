@@ -34,7 +34,8 @@ final class ReminderScheduler {
     this.engine = const NextDueEngine(),
     this.reconciler = const Reconciler(),
     this.utcOffsetMinutes = 0,
-  });
+    this.groupThreshold = 2,
+  }) : assert(groupThreshold >= 2, 'a digest needs at least 2 items');
 
   final NotificationScheduleRepository schedules;
   final LedgerRepository ledger;
@@ -44,6 +45,10 @@ final class ReminderScheduler {
   final NextDueEngine engine;
   final Reconciler reconciler;
   final int utcOffsetMinutes;
+
+  /// Collapse a local delivery day into one digest once it has at least this many
+  /// due items (M5-T4, user-configurable); below it, each item delivers singly.
+  final int groupThreshold;
 
   static const int _msPerDay = Duration.millisecondsPerDay;
 
@@ -91,18 +96,20 @@ final class ReminderScheduler {
 
     final out = <ScheduledNotification>[];
     byDay.forEach((day, group) {
-      if (group.length == 1) {
-        final (name, def, due) = group.first;
-        final c = copy.forReminder(name, def, due);
-        out.add(ScheduledNotification(
-          id: stableNotificationId('${def.id}#$day'),
-          when: due.fireAt,
-          title: c.title,
-          body: c.body,
-          channelId: def.severity,
-          // Tapping a single reminder deep-links to its detail (M1-T6).
-          payload: AppLocations.reminderDetail(def.vehicleId, def.id),
-        ));
+      if (group.length < groupThreshold) {
+        // Below the digest threshold → each item delivers on its own channel.
+        for (final (name, def, due) in group) {
+          final c = copy.forReminder(name, def, due);
+          out.add(ScheduledNotification(
+            id: stableNotificationId('${def.id}#$day'),
+            when: due.fireAt,
+            title: c.title,
+            body: c.body,
+            channelId: def.severity,
+            // Tapping a single reminder deep-links to its detail (M1-T6).
+            payload: AppLocations.reminderDetail(def.vehicleId, def.id),
+          ));
+        }
       } else {
         group.sort((a, b) =>
             a.$3.fireAt.epochMillis.compareTo(b.$3.fireAt.epochMillis));

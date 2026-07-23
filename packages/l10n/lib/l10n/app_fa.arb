@@ -284,6 +284,7 @@
   "serviceTypeBrakes": "ترمزها",
   "reminderListTitle": "یادآورها",
   "reminderAddTitle": "یادآور جدید",
+  "reminderEditTitle": "ویرایش یادآور",
   "reminderListEmpty": "هنوز یادآوری نیست",
   "reminderStatusUpcoming": "پیش‌رو",
   "reminderStatusDueSoon": "به‌زودی سررسید",

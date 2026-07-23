@@ -1222,6 +1222,10 @@
   "@reminderAddTitle": {
     "description": "Reminders UI (M5): reminderAddTitle"
   },
+  "reminderEditTitle": "Edit reminder",
+  "@reminderEditTitle": {
+    "description": "Title of the reminder screen when editing an existing reminder."
+  },
   "reminderListEmpty": "No reminders yet",
   "@reminderListEmpty": {
     "description": "Reminders UI (M5): reminderListEmpty"

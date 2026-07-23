@@ -284,6 +284,7 @@
   "serviceTypeBrakes": "برێکەکان",
   "reminderListTitle": "بیرخەرەوەکان",
   "reminderAddTitle": "بیرخەرەوەی نوێ",
+  "reminderEditTitle": "دەستکاریکردنی بیرخەرەوە",
   "reminderListEmpty": "هێشتا بیرخەرەوە نییە",
   "reminderStatusUpcoming": "داهاتوو",
   "reminderStatusDueSoon": "بەم زووانە",

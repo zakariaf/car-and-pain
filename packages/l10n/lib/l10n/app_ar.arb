@@ -284,6 +284,7 @@
   "serviceTypeBrakes": "الفرامل",
   "reminderListTitle": "التذكيرات",
   "reminderAddTitle": "تذكير جديد",
+  "reminderEditTitle": "تعديل التذكير",
   "reminderListEmpty": "لا تذكيرات بعد",
   "reminderStatusUpcoming": "قادم",
   "reminderStatusDueSoon": "يستحق قريبًا",

@@ -284,6 +284,7 @@
   "serviceTypeBrakes": "Bremsen",
   "reminderListTitle": "Erinnerungen",
   "reminderAddTitle": "Neue Erinnerung",
+  "reminderEditTitle": "Erinnerung bearbeiten",
   "reminderListEmpty": "Noch keine Erinnerungen",
   "reminderStatusUpcoming": "Anstehend",
   "reminderStatusDueSoon": "Bald fällig",

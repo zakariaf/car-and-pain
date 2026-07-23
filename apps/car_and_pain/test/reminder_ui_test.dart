@@ -126,4 +126,20 @@ void main() {
         locale: const Locale('fa'));
     expect(Directionality.of(t.element(find.text('روغن'))), TextDirection.rtl);
   });
+
+  testWidgets('the form prefills its fields when editing (M5-T3)', (t) async {
+    final v = (await VehiclesRepository(db).add(nickname: 'Golf')).valueOrNull!;
+    final id = (await RemindersRepository(db).add(
+      vehicleId: v.id,
+      title: 'Old title',
+      kind: TriggerKind.date,
+      dueDate: const Instant.fromEpochMillis(1000),
+    ))
+        .valueOrNull!;
+
+    await open(t, ReminderFormScreen(vehicleId: v.id, reminderId: id));
+    // The edit title, and the stored title prefilled into the field.
+    expect(find.text('Edit reminder'), findsOneWidget);
+    expect(find.text('Old title'), findsOneWidget);
+  });
 }

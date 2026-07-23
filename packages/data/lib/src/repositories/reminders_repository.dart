@@ -149,6 +149,48 @@ class RemindersRepository extends BaseRepository {
     }
   }
 
+  /// Edit an existing reminder's fields (M5-T3). The form re-submits every field,
+  /// so this is a full overwrite of the mutable columns (a null clears its
+  /// column). Distance/engine thresholds stay canonical; the caller converts at
+  /// the entry edge. Bumps the row revision so the F5 reconcile re-projects it.
+  Future<Result<void, DbFailure>> update(
+    String id, {
+    required String title,
+    required TriggerKind kind,
+    String? notes,
+    Instant? dueDate,
+    int? dueOdometerMetres,
+    int? dueEngineMinutes,
+    int? recurrenceEvery,
+    RecurrenceUnit? recurrenceUnit,
+    int leadMinutes = 0,
+    int? leadDistanceMetres,
+    String severity = 'info',
+    int? quietStartMinute,
+    int? quietEndMinute,
+    int? quietDeliverMinute,
+  }) =>
+      _mutate(
+          id,
+          (cur, now) => RemindersCompanion(
+                title: Value(title),
+                triggerType: Value(Reminder.triggerNameFromKind(kind)),
+                notes: Value(notes),
+                dueDate: Value(dueDate?.epochMillis),
+                dueOdometerMetres: Value(dueOdometerMetres),
+                dueEngineMinutes: Value(dueEngineMinutes),
+                recurrenceEvery: Value(recurrenceEvery),
+                recurrenceUnit: Value(recurrenceUnit?.name),
+                leadMinutes: Value(leadMinutes),
+                leadDistanceMetres: Value(leadDistanceMetres),
+                severity: Value(severity),
+                quietStartMinute: Value(quietStartMinute),
+                quietEndMinute: Value(quietEndMinute),
+                quietDeliverMinute: Value(quietDeliverMinute),
+                updatedAt: Value(now),
+                rowRevision: Value(cur.rowRevision + 1),
+              ));
+
   /// Snooze a reminder until [until] (a data-triggered "snooze until next drive"
   /// is modelled by the caller passing the next projected instant).
   Future<Result<void, DbFailure>> snooze(String id, Instant until) => _mutate(

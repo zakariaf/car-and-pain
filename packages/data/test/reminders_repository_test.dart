@@ -74,6 +74,46 @@ void main() {
     expect(states['Later'], ReminderLiveState.upcoming);
   });
 
+  test("update overwrites a reminder's fields (M5-T3 edit)", () async {
+    final (db, repo, vehicleId) = await fresh();
+    addTearDown(db.close);
+    final id = (await repo.add(
+      vehicleId: vehicleId,
+      title: 'Old',
+      kind: TriggerKind.date,
+      dueDate: at(t0),
+      notes: 'old note',
+    ))
+        .valueOrNull!;
+
+    expect(
+      (await repo.update(
+        id,
+        title: 'New',
+        kind: TriggerKind.distance,
+        dueOdometerMetres: 200000000,
+        severity: 'overdue',
+      ))
+          .isOk,
+      isTrue,
+    );
+
+    final r = await repo.byId(id);
+    expect(r!.title, 'New');
+    expect(r.triggerType, 'distance');
+    expect(r.dueOdometerMetres, 200000000);
+    expect(r.dueDate, isNull); // cleared by the overwrite
+    expect(r.notes, isNull);
+    expect(r.severity, 'overdue');
+
+    // Editing a missing reminder is a typed NotFound.
+    expect(
+      (await repo.update('ghost', title: 'x', kind: TriggerKind.date))
+          .failureOrNull,
+      isA<NotFound>(),
+    );
+  });
+
   test('snooze masks an overdue rule; unsnooze restores it', () async {
     final (db, repo, vehicleId) = await fresh();
     addTearDown(db.close);

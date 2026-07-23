@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:l10n/l10n.dart';
 
+import '../../../routing/app_locations.dart';
 import '../../../settings/locale_controller.dart';
 import '../application/reminder_providers.dart';
 
@@ -45,6 +46,16 @@ class _State extends ConsumerState<ReminderDetailScreen> {
 
     return PulseScaffold(
       title: l10n.reminderDetailTitle,
+      actions: [
+        if (item != null)
+          IconButton(
+            icon: const Icon(Icons.edit_outlined),
+            tooltip: l10n.reminderEditTitle,
+            onPressed: () => context.push(
+              AppLocations.editReminder(widget.vehicleId, widget.reminderId),
+            ),
+          ),
+      ],
       body: item == null
           ? Center(child: Text(l10n.reminderNotFound))
           : ExhaleSettle(

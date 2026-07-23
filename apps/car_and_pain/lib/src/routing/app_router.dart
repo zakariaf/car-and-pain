@@ -192,6 +192,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
+        path: '/vehicle/:vehicleId/reminders/:reminderId/edit',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => ReminderFormScreen(
+          vehicleId: state.pathParameters['vehicleId']!,
+          reminderId: state.pathParameters['reminderId'],
+        ),
+      ),
+      GoRoute(
         path: '/trash',
         parentNavigatorKey: _rootKey,
         builder: (context, state) => const TrashScreen(),

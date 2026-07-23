@@ -12,15 +12,18 @@ import 'package:l10n/l10n.dart';
 import '../../../settings/locale_controller.dart';
 import '../application/reminder_providers.dart';
 
-/// The reminder create flow (M5-T3): rule-kind selection (date / distance /
+/// The reminder create/edit flow (M5-T3): rule-kind selection (date / distance /
 /// engine-hour / whichever-first) with calendar- and numeral-aware inputs,
 /// lead-time, severity, and recurrence. In-progress input autosaves to a draft
 /// that survives process death; a failed save keeps the draft and surfaces the
-/// error (never loses the user's entry).
+/// error (never loses the user's entry). Pass [reminderId] to edit an existing
+/// reminder (fields prefill from it; save overwrites via `repo.update`).
 class ReminderFormScreen extends ConsumerStatefulWidget {
-  const ReminderFormScreen({required this.vehicleId, super.key});
+  const ReminderFormScreen(
+      {required this.vehicleId, this.reminderId, super.key});
 
   final String vehicleId;
+  final String? reminderId;
 
   @override
   ConsumerState<ReminderFormScreen> createState() => _ReminderFormState();
@@ -40,7 +43,13 @@ class _ReminderFormState extends ConsumerState<ReminderFormScreen> {
   RecurrenceUnit? _recurrenceUnit;
   bool _busy = false;
 
-  String get _draftKey => 'draft:reminder:${widget.vehicleId}';
+  bool get _isEdit => widget.reminderId != null;
+
+  // An edit gets its own draft key so an in-progress edit never clobbers a
+  // half-typed new reminder (and vice-versa).
+  String get _draftKey => _isEdit
+      ? 'draft:reminder:edit:${widget.reminderId}'
+      : 'draft:reminder:${widget.vehicleId}';
 
   bool get _hasDate =>
       _kind == TriggerKind.date || _kind == TriggerKind.whicheverFirst;
@@ -52,7 +61,43 @@ class _ReminderFormState extends ConsumerState<ReminderFormScreen> {
   @override
   void initState() {
     super.initState();
-    _loadDraft();
+    _init();
+  }
+
+  Future<void> _init() async {
+    // Editing prefills from the stored reminder first; any in-progress edit draft
+    // then overlays it (the user's unsaved edits win).
+    if (_isEdit) await _prefillFromReminder();
+    await _loadDraft();
+  }
+
+  Future<void> _prefillFromReminder() async {
+    final r =
+        await ref.read(remindersRepositoryProvider).byId(widget.reminderId!);
+    if (r == null || !mounted) return;
+    final fmt = ref.read(activeNumeralFormatProvider);
+    setState(() {
+      _title.text = r.title;
+      _notes.text = r.notes ?? '';
+      _kind = Reminder.triggerKindFromName(r.triggerType);
+      _severity = r.severity;
+      if (r.dueDate != null) _dueDate = r.dueDate!.utc;
+      if (r.dueOdometerMetres != null) {
+        _distanceKm.text = fmt.formatScaled(r.dueOdometerMetres!, 3);
+      }
+      if (r.dueEngineMinutes != null) {
+        _engineHours.text = fmt.formatUngrouped(r.dueEngineMinutes! ~/ 60);
+      }
+      if (r.leadMinutes > 0) {
+        _leadDays.text = fmt.formatUngrouped(r.leadMinutes ~/ 1440);
+      }
+      if (r.recurrenceEvery != null) {
+        _recurrenceEvery.text = fmt.formatUngrouped(r.recurrenceEvery!);
+      }
+      _recurrenceUnit = r.recurrenceUnit == null
+          ? null
+          : Reminder.recurrenceUnitFromName(r.recurrenceUnit!);
+    });
   }
 
   Future<void> _loadDraft() async {
@@ -140,21 +185,42 @@ class _ReminderFormState extends ConsumerState<ReminderFormScreen> {
     final leadDays = parser.parseScaled(_leadDays.text, 0) ?? 0;
     final every = parser.parseScaled(_recurrenceEvery.text, 0) ?? 0;
     final hours = _hasHours ? parser.parseScaled(_engineHours.text, 0) : null;
-    final result = await ref.read(remindersRepositoryProvider).add(
-          vehicleId: widget.vehicleId,
-          title: title,
-          kind: _kind,
-          notes: _notes.text.trim().isEmpty ? null : _notes.text.trim(),
-          dueDate: _hasDate ? Instant.fromDateTime(_dueDate) : null,
-          dueOdometerMetres:
-              _hasDistance ? parser.parseScaled(_distanceKm.text, 3) : null,
-          dueEngineMinutes: hours == null ? null : hours * 60,
-          leadMinutes: leadDays * 1440,
-          recurrenceEvery:
-              (_recurrenceUnit != null && every > 0) ? every : null,
-          recurrenceUnit: every > 0 ? _recurrenceUnit : null,
-          severity: _severity,
-        );
+    final repo = ref.read(remindersRepositoryProvider);
+    final notes = _notes.text.trim().isEmpty ? null : _notes.text.trim();
+    final dueDate = _hasDate ? Instant.fromDateTime(_dueDate) : null;
+    final dueOdo =
+        _hasDistance ? parser.parseScaled(_distanceKm.text, 3) : null;
+    final dueEngineMinutes = hours == null ? null : hours * 60;
+    final recEvery = (_recurrenceUnit != null && every > 0) ? every : null;
+    final recUnit = every > 0 ? _recurrenceUnit : null;
+
+    final result = _isEdit
+        ? await repo.update(
+            widget.reminderId!,
+            title: title,
+            kind: _kind,
+            notes: notes,
+            dueDate: dueDate,
+            dueOdometerMetres: dueOdo,
+            dueEngineMinutes: dueEngineMinutes,
+            leadMinutes: leadDays * 1440,
+            recurrenceEvery: recEvery,
+            recurrenceUnit: recUnit,
+            severity: _severity,
+          )
+        : await repo.add(
+            vehicleId: widget.vehicleId,
+            title: title,
+            kind: _kind,
+            notes: notes,
+            dueDate: dueDate,
+            dueOdometerMetres: dueOdo,
+            dueEngineMinutes: dueEngineMinutes,
+            leadMinutes: leadDays * 1440,
+            recurrenceEvery: recEvery,
+            recurrenceUnit: recUnit,
+            severity: _severity,
+          );
     if (!mounted) return;
     if (result.isErr) {
       // Never lose the user's entry: keep the draft and surface the failure.
@@ -177,7 +243,7 @@ class _ReminderFormState extends ConsumerState<ReminderFormScreen> {
     final cal = ref.watch(activeCalendarProvider);
 
     return PulseScaffold(
-      title: l10n.reminderAddTitle,
+      title: _isEdit ? l10n.reminderEditTitle : l10n.reminderAddTitle,
       actions: [
         TextButton(
           onPressed: _busy ? null : _save,

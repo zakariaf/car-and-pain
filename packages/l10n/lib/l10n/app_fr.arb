@@ -284,6 +284,7 @@
   "serviceTypeBrakes": "Freins",
   "reminderListTitle": "Rappels",
   "reminderAddTitle": "Nouveau rappel",
+  "reminderEditTitle": "Modifier le rappel",
   "reminderListEmpty": "Aucun rappel",
   "reminderStatusUpcoming": "À venir",
   "reminderStatusDueSoon": "Bientôt dû",

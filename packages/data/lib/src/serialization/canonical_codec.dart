@@ -125,6 +125,36 @@ class CanonicalCodec {
             mode: InsertMode.insertOrReplace,
           ),
     ),
+    // Line-item detail (M4-T2) — after service_line_items (FK line_item_id).
+    _Entity(
+      'parts_used',
+      () async =>
+          (await db.select(db.partsUsed).get()).map((r) => r.toJson()).toList(),
+      (j) => db.into(db.partsUsed).insert(
+            PartUsedRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'fluids_used',
+      () async => (await db.select(db.fluidsUsed).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.fluidsUsed).insert(
+            FluidUsedRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'service_procedure_steps',
+      () async => (await db.select(db.serviceProcedureSteps).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceProcedureSteps).insert(
+            ProcedureStepRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
     _Entity(
       'expenses',
       () async =>

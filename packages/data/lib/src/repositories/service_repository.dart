@@ -59,6 +59,66 @@ class ServiceRepository extends BaseRepository {
     return rows.map(_toLineItem).toList();
   }
 
+  /// The parts fitted in a line item, as entered.
+  Future<List<PartUsed>> partsFor(String lineItemId) async {
+    final rows = await (db.select(db.partsUsed)
+          ..where((t) =>
+              t.lineItemId.equals(lineItemId) & t.isDeleted.equals(false))
+          ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+        .get();
+    return rows.map(_toPart).toList();
+  }
+
+  /// The fluids used in a line item.
+  Future<List<FluidUsed>> fluidsFor(String lineItemId) async {
+    final rows = await (db.select(db.fluidsUsed)
+          ..where((t) =>
+              t.lineItemId.equals(lineItemId) & t.isDeleted.equals(false))
+          ..orderBy([(t) => OrderingTerm.asc(t.createdAt)]))
+        .get();
+    return rows.map(_toFluid).toList();
+  }
+
+  /// The DIY procedure steps for a line item, in order.
+  Future<List<ProcedureStep>> procedureStepsFor(String lineItemId) async {
+    final rows = await (db.select(db.serviceProcedureSteps)
+          ..where((t) =>
+              t.lineItemId.equals(lineItemId) & t.isDeleted.equals(false))
+          ..orderBy([(t) => OrderingTerm.asc(t.stepOrder)]))
+        .get();
+    return rows.map(_toStep).toList();
+  }
+
+  /// A reusable parts catalog for autocomplete (M4-T2): the most recent distinct
+  /// prior part per (name, OEM number), optionally filtered by a case-insensitive
+  /// [query] over name / brand / part numbers. Full orthographic search-folding is
+  /// applied at the UI edge; this layer does the dedup + a light contains filter.
+  Future<List<PartUsed>> partsCatalog({String? query, int limit = 20}) async {
+    final rows = await (db.select(db.partsUsed)
+          ..where((t) => t.isDeleted.equals(false))
+          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+        .get();
+    final needle = query?.trim().toLowerCase();
+    final seen = <String>{};
+    final out = <PartUsed>[];
+    for (final r in rows) {
+      final key = '${r.name.toLowerCase()}|${r.oemNumber ?? ''}';
+      if (!seen.add(key)) continue; // keep only the newest per identity
+      if (needle != null && needle.isNotEmpty) {
+        final hay = [
+          r.name,
+          r.brand ?? '',
+          r.oemNumber ?? '',
+          r.aftermarketNumber ?? '',
+        ].join(' ').toLowerCase();
+        if (!hay.contains(needle)) continue;
+      }
+      out.add(_toPart(r));
+      if (out.length >= limit) break;
+    }
+    return out;
+  }
+
   /// One visit with its line items, or null if missing/tombstoned.
   Future<ServiceVisit?> visit(String visitId) async {
     final row = await (db.select(db.serviceEntries)
@@ -167,9 +227,10 @@ class ServiceRepository extends BaseRepository {
             );
         var order = 0;
         for (final li in lineItems) {
+          final lineItemId = newId();
           await db.into(db.serviceLineItems).insert(
                 ServiceLineItemsCompanion.insert(
-                  id: newId(),
+                  id: lineItemId,
                   visitId: id,
                   createdAt: now,
                   updatedAt: now,
@@ -183,8 +244,60 @@ class ServiceRepository extends BaseRepository {
                   intervalLogic: Value(li.intervalLogic),
                   sortOrder: Value(order++),
                   notes: Value(li.notes),
+                  warrantyUntilDate: Value(li.warrantyUntilDate),
+                  warrantyUntilMileageMetres:
+                      Value(li.warrantyUntilMileageMetres),
                 ),
               );
+          // Parts, fluids and procedure steps — same transaction (M4-T2).
+          for (final p in li.parts) {
+            await db.into(db.partsUsed).insert(
+                  PartsUsedCompanion.insert(
+                    id: newId(),
+                    lineItemId: lineItemId,
+                    name: p.name,
+                    createdAt: now,
+                    updatedAt: now,
+                    brand: Value(p.brand),
+                    oemNumber: Value(p.oemNumber),
+                    aftermarketNumber: Value(p.aftermarketNumber),
+                    quantity: Value(p.quantity),
+                    unitCostMinor: Value(p.unitCostMinor),
+                    supplier: Value(p.supplier),
+                    warrantyUntilDate: Value(p.warrantyUntilDate),
+                    warrantyUntilMileageMetres:
+                        Value(p.warrantyUntilMileageMetres),
+                  ),
+                );
+          }
+          for (final f in li.fluids) {
+            await db.into(db.fluidsUsed).insert(
+                  FluidsUsedCompanion.insert(
+                    id: newId(),
+                    lineItemId: lineItemId,
+                    fluidType: f.fluidType,
+                    createdAt: now,
+                    updatedAt: now,
+                    spec: Value(f.spec),
+                    quantityMl: Value(f.quantityMl),
+                  ),
+                );
+          }
+          var stepOrder = 0;
+          for (final s in li.procedureSteps) {
+            await db.into(db.serviceProcedureSteps).insert(
+                  ServiceProcedureStepsCompanion.insert(
+                    id: newId(),
+                    lineItemId: lineItemId,
+                    instruction: s.instruction,
+                    createdAt: now,
+                    updatedAt: now,
+                    stepOrder: Value(stepOrder++),
+                    torqueSpec: Value(s.torqueSpec),
+                    notes: Value(s.notes),
+                  ),
+                );
+          }
         }
         // Ledger write — only when the odometer was captured at this visit.
         if (odometerMetres != null) {
@@ -334,6 +447,39 @@ class ServiceRepository extends BaseRepository {
         intervalMonths: r.intervalMonths,
         intervalLogic: r.intervalLogic,
         sortOrder: r.sortOrder,
+        notes: r.notes,
+        warrantyUntilDate: r.warrantyUntilDate,
+        warrantyUntilMileageMetres: r.warrantyUntilMileageMetres,
+      );
+
+  PartUsed _toPart(PartUsedRow r) => PartUsed(
+        id: r.id,
+        lineItemId: r.lineItemId,
+        name: r.name,
+        brand: r.brand,
+        oemNumber: r.oemNumber,
+        aftermarketNumber: r.aftermarketNumber,
+        quantity: r.quantity,
+        unitCostMinor: r.unitCostMinor,
+        supplier: r.supplier,
+        warrantyUntilDate: r.warrantyUntilDate,
+        warrantyUntilMileageMetres: r.warrantyUntilMileageMetres,
+      );
+
+  FluidUsed _toFluid(FluidUsedRow r) => FluidUsed(
+        id: r.id,
+        lineItemId: r.lineItemId,
+        fluidType: r.fluidType,
+        spec: r.spec,
+        quantityMl: r.quantityMl,
+      );
+
+  ProcedureStep _toStep(ProcedureStepRow r) => ProcedureStep(
+        id: r.id,
+        lineItemId: r.lineItemId,
+        stepOrder: r.stepOrder,
+        instruction: r.instruction,
+        torqueSpec: r.torqueSpec,
         notes: r.notes,
       );
 

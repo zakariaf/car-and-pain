@@ -124,7 +124,32 @@ Future<void> runForwardMigrations(
         ]) {
           await m.addColumn(s, col);
         }
+      case 8: // 8 → 9: M4-T2 parts/fluids/procedure logs + workmanship warranty.
+        final li = db.serviceLineItems;
+        // `createTable(serviceLineItems)` in case 7 uses the *live* (v9) schema,
+        // which already carries these columns — so a v7→v9 run creates them
+        // there and must NOT re-add them here. A genuine v8 install created the
+        // table without them and DOES need the add. Guard on the live column set.
+        if (!await _hasColumn(
+            db, 'service_line_items', 'warranty_until_date')) {
+          await m.addColumn(li, li.warrantyUntilDate);
+        }
+        if (!await _hasColumn(
+            db, 'service_line_items', 'warranty_until_mileage_metres')) {
+          await m.addColumn(li, li.warrantyUntilMileageMetres);
+        }
+        await m.createTable(db.partsUsed);
+        await m.createTable(db.fluidsUsed);
+        await m.createTable(db.serviceProcedureSteps);
       // Future versions append their `case N` block here.
     }
   }
+}
+
+/// Whether [table] currently has [column] — used to make an `addColumn` step
+/// idempotent when the same table may have been created fresh (with the live
+/// schema, which already includes the column) earlier in the same upgrade run.
+Future<bool> _hasColumn(AppDatabase db, String table, String column) async {
+  final rows = await db.customSelect('PRAGMA table_info($table)').get();
+  return rows.any((r) => r.read<String>('name') == column);
 }

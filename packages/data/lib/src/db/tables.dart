@@ -267,6 +267,52 @@ class ServiceLineItems extends Table with AuditColumns {
   TextColumn get intervalLogic => text().nullable()();
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   TextColumn get notes => text().nullable()();
+  // ── M4-T2: workmanship warranty (both date and mileage) ───────────────────
+  IntColumn get warrantyUntilDate => integer().nullable()();
+  IntColumn get warrantyUntilMileageMetres => integer().nullable()();
+}
+
+/// A part fitted during a line item (M4-T2). Part numbers are stored raw and
+/// rendered LTR-isolated (bidi) at the edge so they are never reordered in RTL or
+/// export. Cost is `unitCostMinor × quantity` in integer minor units. Parts carry
+/// their own warranty (date + mileage), feeding the warranty-compliance surface.
+@DataClassName('PartUsedRow')
+class PartsUsed extends Table with AuditColumns {
+  TextColumn get lineItemId =>
+      text().references(ServiceLineItems, #id, onDelete: KeyAction.cascade)();
+  TextColumn get name => text()();
+  TextColumn get brand => text().nullable()();
+  TextColumn get oemNumber => text().nullable()();
+  TextColumn get aftermarketNumber => text().nullable()();
+  IntColumn get quantity => integer().withDefault(const Constant(1))();
+  IntColumn get unitCostMinor => integer().withDefault(const Constant(0))();
+  TextColumn get supplier => text().nullable()();
+  IntColumn get warrantyUntilDate => integer().nullable()();
+  IntColumn get warrantyUntilMileageMetres => integer().nullable()();
+}
+
+/// A fluid/consumable used during a line item (M4-T2), e.g. 5W-30, DOT4, G12.
+/// Quantity is canonical millilitres; display converts (L/qt) at the edge.
+@DataClassName('FluidUsedRow')
+class FluidsUsed extends Table with AuditColumns {
+  TextColumn get lineItemId =>
+      text().references(ServiceLineItems, #id, onDelete: KeyAction.cascade)();
+  // engineOil | coolant | brakeFluid | transmission | … (free text, localized).
+  TextColumn get fluidType => text()();
+  TextColumn get spec => text().nullable()();
+  IntColumn get quantityMl => integer().nullable()();
+}
+
+/// One ordered step of a DIY procedure log (M4-T2): the instruction plus optional
+/// torque spec and notes. Reorderable via [stepOrder].
+@DataClassName('ProcedureStepRow')
+class ServiceProcedureSteps extends Table with AuditColumns {
+  TextColumn get lineItemId =>
+      text().references(ServiceLineItems, #id, onDelete: KeyAction.cascade)();
+  IntColumn get stepOrder => integer().withDefault(const Constant(0))();
+  TextColumn get instruction => text()();
+  TextColumn get torqueSpec => text().nullable()();
+  TextColumn get notes => text().nullable()();
 }
 
 /// Any car cost. M6 adds recurring/amortization/loan/lease/TCO.

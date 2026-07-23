@@ -52,7 +52,16 @@ export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
 export 'src/domain/fuel_entry.dart' show FuelEntry;
 export 'src/domain/service_visit.dart'
-    show ServiceLineItem, ServiceLineItemDraft, ServiceVisit;
+    show
+        FluidDraft,
+        FluidUsed,
+        PartDraft,
+        PartUsed,
+        ProcedureStep,
+        ProcedureStepDraft,
+        ServiceLineItem,
+        ServiceLineItemDraft,
+        ServiceVisit;
 export 'src/domain/vehicle.dart' show Vehicle;
 export 'src/infra/app_dirs.dart' show AppDirs;
 export 'src/infra/app_time_zone.dart' show AppTimeZone;

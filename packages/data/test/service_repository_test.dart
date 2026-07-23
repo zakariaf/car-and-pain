@@ -204,4 +204,97 @@ void main() {
     // The reset flag rides through so the engine can pick the anchor.
     expect(byType['oil']!.where((e) => e.resetsInterval), hasLength(1));
   });
+
+  // ── M4-T2: parts, fluids, procedure logs, warranty, catalog ────────────────
+
+  test('a line item carries parts, fluids, procedure steps, and warranty',
+      () async {
+    final (db, vehicleId) = await freshWithVehicle();
+    addTearDown(db.close);
+    final repo = ServiceRepository(db);
+    await seedType(db, 'oil');
+
+    final id = (await repo.add(
+      vehicleId: vehicleId,
+      servicedAt: const Instant.fromEpochMillis(1000),
+      currencyCode: 'EUR',
+      lineItems: const [
+        ServiceLineItemDraft(
+          serviceTypeId: 'oil',
+          partsMinor: 4000,
+          warrantyUntilDate: 99999,
+          warrantyUntilMileageMetres: 200000000,
+          parts: [
+            PartDraft(
+              name: 'Oil filter',
+              brand: 'Mann',
+              oemNumber: 'W712',
+              quantity: 2,
+              unitCostMinor: 1500,
+            ),
+          ],
+          fluids: [
+            FluidDraft(fluidType: 'engineOil', spec: '5W-30', quantityMl: 5000),
+          ],
+          procedureSteps: [
+            ProcedureStepDraft(instruction: 'Drain', torqueSpec: '25Nm'),
+            ProcedureStepDraft(instruction: 'Refill'),
+          ],
+        ),
+      ],
+    ))
+        .valueOrNull!;
+
+    final li = (await repo.lineItemsFor(id)).single;
+    expect(li.warrantyUntilDate, 99999);
+    expect(li.warrantyUntilMileageMetres, 200000000);
+
+    final parts = await repo.partsFor(li.id);
+    expect(parts, hasLength(1));
+    expect(parts.single.oemNumber, 'W712');
+    expect(parts.single.totalCostMinor, 3000); // 1500 × 2
+
+    final fluids = await repo.fluidsFor(li.id);
+    expect(fluids.single.spec, '5W-30');
+    expect(fluids.single.quantityMl, 5000);
+
+    final steps = await repo.procedureStepsFor(li.id);
+    expect(steps.map((s) => s.instruction), ['Drain', 'Refill']);
+    expect(steps.first.stepOrder, 0);
+    expect(steps.first.torqueSpec, '25Nm');
+  });
+
+  test('parts catalog dedups by (name, oem), newest first, with a query filter',
+      () async {
+    final (db, vehicleId) = await freshWithVehicle();
+    addTearDown(db.close);
+    final repo = ServiceRepository(db);
+    await seedType(db, 'oil');
+
+    Future<void> addWith(int at, PartDraft part) => repo.add(
+          vehicleId: vehicleId,
+          servicedAt: Instant.fromEpochMillis(at),
+          currencyCode: 'EUR',
+          lineItems: [
+            ServiceLineItemDraft(serviceTypeId: 'oil', parts: [part]),
+          ],
+        );
+
+    await addWith(1000, const PartDraft(name: 'Oil filter', oemNumber: 'W712'));
+    await addWith(2000, const PartDraft(name: 'Brake pad', oemNumber: 'BP1'));
+    // A newer duplicate of the oil filter must collapse to one entry.
+    await addWith(
+        3000,
+        const PartDraft(
+            name: 'Oil filter', oemNumber: 'W712', unitCostMinor: 1600));
+
+    final all = await repo.partsCatalog();
+    expect(all, hasLength(2)); // deduped
+    expect(all.first.name, 'Oil filter'); // newest first, newest cost
+    expect(all.first.unitCostMinor, 1600);
+
+    final filtered = await repo.partsCatalog(query: 'brake');
+    expect(filtered, hasLength(1));
+    expect(filtered.single.name, 'Brake pad');
+  });
 }

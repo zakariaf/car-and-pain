@@ -84,10 +84,19 @@ const _m4CategoryColumns = [
   'default_interval_logic'
 ];
 
-/// Rewind the M4 (v8) additions on a freshly-built DB so a forward migration can
-/// re-apply them. Drops the child table first, then the FK-bearing columns, then
-/// the parent table, then the taxonomy columns.
+/// Rewind the M4 (v8 + v9) additions on a freshly-built DB so a forward migration
+/// can re-apply them. Drops leaf detail tables first, then line items and their
+/// FK-bearing columns, then the parent table, then the taxonomy columns.
 Future<void> _dropM4(AppDatabase db) async {
+  // v9 (M4-T2) detail tables + workmanship-warranty columns.
+  await db.customStatement('DROP TABLE parts_used');
+  await db.customStatement('DROP TABLE fluids_used');
+  await db.customStatement('DROP TABLE service_procedure_steps');
+  await db.customStatement('ALTER TABLE service_line_items DROP COLUMN '
+      'warranty_until_date');
+  await db.customStatement('ALTER TABLE service_line_items DROP COLUMN '
+      'warranty_until_mileage_metres');
+  // v8 (M4-T1) line items, provider directory, header + taxonomy columns.
   await db.customStatement('DROP TABLE service_line_items');
   for (final c in _m4ServiceColumns) {
     await db.customStatement('ALTER TABLE service_entries DROP COLUMN $c');
@@ -125,10 +134,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 8 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 9 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 8);
+    expect(db.schemaVersion, 9);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -147,6 +156,9 @@ void main() {
         'service_entries',
         'service_providers',
         'service_line_items',
+        'parts_used',
+        'fluids_used',
+        'service_procedure_steps',
         'expenses',
         'trips',
         'reminders',
@@ -178,7 +190,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v8 forward migration adds all later schema, keeps data', () async {
+  test('v1 → v9 forward migration adds all later schema, keeps data', () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';

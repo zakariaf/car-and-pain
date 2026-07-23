@@ -274,6 +274,7 @@
   "servicePartsCost": "Teilekosten",
   "serviceResetsInterval": "Setzt das Intervall zurück",
   "serviceSave": "Speichern",
+  "serviceSaveFailed": "Der Service konnte nicht gespeichert werden – deine Eingabe bleibt erhalten.",
   "serviceLastDone": "Zuletzt erledigt",
   "serviceNextDue": "Nächste Fälligkeit",
   "serviceStatusOk": "OK",

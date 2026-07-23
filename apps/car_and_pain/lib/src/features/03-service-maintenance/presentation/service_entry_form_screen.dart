@@ -176,7 +176,7 @@ class _ServiceFormState extends ConsumerState<ServiceEntryFormScreen> {
         ),
     ];
 
-    await ref.read(serviceRepositoryProvider).add(
+    final result = await ref.read(serviceRepositoryProvider).add(
           vehicleId: widget.vehicleId,
           servicedAt: Instant.fromDateTime(_servicedAt),
           currencyCode: code,
@@ -184,6 +184,16 @@ class _ServiceFormState extends ConsumerState<ServiceEntryFormScreen> {
           isDiy: _isDiy,
           lineItems: lineItems,
         );
+    if (!mounted) return;
+    if (result.isErr) {
+      // Never lose the user's entry (CLAUDE.md invariant): keep the draft and
+      // surface the failure rather than clearing + popping on a silent error.
+      setState(() => _busy = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).serviceSaveFailed)),
+      );
+      return;
+    }
     await _clearDraft();
     if (mounted) context.pop();
   }

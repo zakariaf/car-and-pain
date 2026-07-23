@@ -274,6 +274,7 @@
   "servicePartsCost": "هزینه قطعات",
   "serviceResetsInterval": "بازنشانی بازه",
   "serviceSave": "ذخیره",
+  "serviceSaveFailed": "ثبت سرویس ممکن نشد — ورودی شما حفظ شد.",
   "serviceLastDone": "آخرین انجام",
   "serviceNextDue": "سررسید بعدی",
   "serviceStatusOk": "سالم",

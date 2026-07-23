@@ -97,7 +97,12 @@ class ServiceRepository extends BaseRepository {
   Future<List<PartUsed>> partsCatalog({String? query, int limit = 20}) async {
     final rows = await (db.select(db.partsUsed)
           ..where((t) => t.isDeleted.equals(false))
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)]))
+          // id (UUIDv7, time-ordered) breaks same-millisecond createdAt ties so
+          // "newest per identity" is deterministic.
+          ..orderBy([
+            (t) => OrderingTerm.desc(t.createdAt),
+            (t) => OrderingTerm.desc(t.id),
+          ]))
         .get();
     final needle = query?.trim().toLowerCase();
     final seen = <String>{};

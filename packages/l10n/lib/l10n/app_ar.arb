@@ -274,6 +274,7 @@
   "servicePartsCost": "تكلفة القطع",
   "serviceResetsInterval": "يعيد ضبط الفترة",
   "serviceSave": "حفظ",
+  "serviceSaveFailed": "تعذّر حفظ الخدمة — تم الاحتفاظ بإدخالك.",
   "serviceLastDone": "آخر مرة",
   "serviceNextDue": "الاستحقاق التالي",
   "serviceStatusOk": "سليم",

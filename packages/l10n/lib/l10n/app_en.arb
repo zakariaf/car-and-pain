@@ -1179,6 +1179,10 @@
     "description": "Whether the line item resets the maintenance interval"
   },
   "serviceSave": "Save",
+  "serviceSaveFailed": "Couldn't save the service — your entry is kept.",
+  "@serviceSaveFailed": {
+    "description": "Error shown when saving a service visit fails; the draft is preserved."
+  },
   "@serviceSave": {
     "description": "Save the service visit"
   },

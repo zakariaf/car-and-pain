@@ -131,10 +131,11 @@ final class ServiceDueStatus {
 /// the status. Deleting an anchor is modelled by simply passing a history without
 /// it — the engine re-anchors to the previous valid resetting event.
 ///
-/// It reuses [LedgerEngine.avgDailyValue] / [LedgerEngine.estimatedValueNow] —
-/// the same projection primitive the F5 `NextDueEngine` uses — so the notify
-/// side (M4-T5) and the card side stay consistent. Use [toScheduleRule] to hand
-/// a resolved rule to `NextDueEngine` for OS firing (no parallel firing engine).
+/// It reuses [LedgerEngine.avgDailyValue] — the same clock-free usage-rate the F5
+/// `NextDueEngine` projects from — but estimates the odometer-now against its own
+/// injected [Clock] (and [LedgerReading.lifetimeValue], so a cluster swap never
+/// breaks the projection). Use [toScheduleRule] to hand a resolved rule to
+/// `NextDueEngine` for OS firing (no parallel firing engine).
 final class ServiceScheduleEngine {
   const ServiceScheduleEngine({
     Clock clock = const SystemClock(),
@@ -209,9 +210,18 @@ final class ServiceScheduleEngine {
     }
 
     // Grade each present dimension independently.
-    final distanceLevel = nextDueOdo == null
+    var distanceLevel = nextDueOdo == null
         ? ServiceDueLevel.unknown
         : _gradeDistance(remainingMetres, dueSoonMetres);
+    // Distance early-warning is "1,000 km OR ~1 week before" (feature doc): when
+    // still outside the km band, also escalate to due-soon if the projected date
+    // lands inside the time window — so a heavy driver is warned in time.
+    if (distanceLevel == ServiceDueLevel.ok && projectedDueDate != null) {
+      final projRemainMs = projectedDueDate.epochMillis - nowMs;
+      if (projRemainMs > 0 && projRemainMs <= dueSoonWindow.inMilliseconds) {
+        distanceLevel = ServiceDueLevel.dueSoon;
+      }
+    }
     final timeLevel = nextDueDate == null
         ? ServiceDueLevel.unknown
         : _gradeTime(remainingTime, dueSoonWindow);
@@ -312,15 +322,25 @@ final class ServiceScheduleEngine {
 
   /// Project the calendar date at which [threshold] metres is reached from the
   /// average daily distance. Null on insufficient data (< 2 readings, flat/zero
-  /// rate) — the caller then treats distance as an uncertain estimate.
+  /// rate). The odometer-now estimate is computed against THIS engine's [nowMs]
+  /// (not the ledger's own clock) so the projected date is consistent with the
+  /// rest of the status, and it reads [LedgerReading.lifetimeValue] so an
+  /// instrument-cluster swap (cumulative offset) never breaks the projection.
   Instant? _projectOdometerDate(
     int threshold,
     List<LedgerReading> odometerHistory,
     int nowMs,
   ) {
-    final rate = _ledger.avgDailyValue(odometerHistory); // metres/day
-    final estNow = _ledger.estimatedValueNow(odometerHistory);
-    if (rate == null || estNow == null || rate <= 0) return null;
+    final rate =
+        _ledger.avgDailyValue(odometerHistory); // metres/day, clock-free
+    if (rate == null || rate <= 0 || odometerHistory.isEmpty) return null;
+    final newest = odometerHistory.reduce(
+      (a, b) => a.takenAt.epochMillis >= b.takenAt.epochMillis ? a : b,
+    );
+    final daysSince =
+        (nowMs - newest.takenAt.epochMillis) / Duration.millisecondsPerDay;
+    final estNow = newest.lifetimeValue +
+        (daysSince <= 0 ? 0.0 : rate * daysSince).round();
     if (estNow >= threshold) return Instant.fromEpochMillis(nowMs);
     final days = (threshold - estNow) / rate;
     return Instant.fromEpochMillis(

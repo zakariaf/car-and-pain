@@ -274,6 +274,7 @@
   "servicePartsCost": "Coût des pièces",
   "serviceResetsInterval": "Réinitialise l'intervalle",
   "serviceSave": "Enregistrer",
+  "serviceSaveFailed": "Impossible d'enregistrer l'entretien — votre saisie est conservée.",
   "serviceLastDone": "Dernier effectué",
   "serviceNextDue": "Prochaine échéance",
   "serviceStatusOk": "OK",

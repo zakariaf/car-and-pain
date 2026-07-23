@@ -244,6 +244,36 @@ void main() {
     });
   });
 
+  test('distance early-warning also fires on the projected date (heavy driver)',
+      () {
+    // Anchor at 10_000 km, 10_000 km interval → due at 20_000 km. Current 19_400
+    // km is 600 km out (outside the 500 km band → ok by metres alone), but a
+    // ~140 km/day pace projects the threshold ~4 days away → due-soon.
+    final odo = [
+      LedgerReading(
+        value: 18000 * km,
+        takenAt: at(2026, 6, 21),
+        source: LedgerSource.manual,
+      ),
+      LedgerReading(
+        value: 19400 * km,
+        takenAt: at(2026, 7, 1),
+        source: LedgerSource.manual,
+      ),
+    ];
+    final s = engineAt(2026, 7).status(
+      const ServiceInterval(
+        logic: ServiceIntervalLogic.distance,
+        distanceMetres: tenThousandKm,
+      ),
+      [ServiceEvent(doneAt: at(2026, 1, 1), odometerMetres: 10000 * km)],
+      currentOdometerMetres: 19400 * km,
+      odometerHistory: odo,
+    );
+    expect(s.remainingMetres, 600 * km); // outside the 500 km band…
+    expect(s.level, ServiceDueLevel.dueSoon); // …but projected ~4 days away
+  });
+
   group('projection confidence', () {
     test('distance-governed with insufficient ledger → uncertain', () {
       final s = engineAt(2026, 7).status(

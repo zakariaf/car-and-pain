@@ -274,6 +274,7 @@
   "servicePartsCost": "تێچووی پارچەکان",
   "serviceResetsInterval": "ماوەکە ڕێکدەخاتەوە",
   "serviceSave": "پاشەکەوتکردن",
+  "serviceSaveFailed": "پاشەکەوتی خزمەتگۆزاری سەرکەوتوو نەبوو — تۆمارەکەت پارێزراوە.",
   "serviceLastDone": "دوایین جار",
   "serviceNextDue": "دواترین کاتی پێویست",
   "serviceStatusOk": "باش",

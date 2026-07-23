@@ -6,6 +6,7 @@ import 'package:drift/drift.dart';
 import '../db/app_database.dart';
 import '../domain/trip.dart';
 import 'base_repository.dart';
+import 'rollup_service.dart';
 
 /// The trip logbook boundary (M7-T1). Owns manual trip entry by odometer, by
 /// direct distance, or by from/to saved locations; writes start/end odometer
@@ -17,6 +18,8 @@ class TripsRepository extends BaseRepository {
   TripsRepository(super.db, {super.clock});
 
   static const _gap = GapReconciler();
+
+  RollupService get _rollups => RollupService(db);
 
   // ── reads ──────────────────────────────────────────────────────────────────
 
@@ -230,6 +233,15 @@ class TripsRepository extends BaseRepository {
         if (newest != null) {
           await _cacheOdometerIfNewest(vehicleId, newest, newestAt, now);
         }
+        // Additive trip-distance rollup — mirrors RollupService.rebuild so a
+        // from-scratch rebuild equals the incremental value (M8 KPIs read this).
+        await _rollups.bump(
+          vehicleId: vehicleId,
+          period: monthPeriodKey(tripAt.epochMillis),
+          metric: 'distanceMetres',
+          delta: distance,
+          now: now,
+        );
       });
       return Ok(id);
     } on Object catch (e) {
@@ -328,6 +340,15 @@ class TripsRepository extends BaseRepository {
             updatedAt: Value(now),
             rowRevision: Value(cur.rowRevision + 1),
           ),
+        );
+        // Reverse the additive distance rollup so a rebuild (which excludes
+        // tombstoned rows) still equals the incremental value.
+        await _rollups.bump(
+          vehicleId: cur.vehicleId,
+          period: monthPeriodKey(cur.tripAt),
+          metric: 'distanceMetres',
+          delta: -cur.distanceMetres,
+          now: now,
         );
         return true;
       });

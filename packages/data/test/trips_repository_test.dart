@@ -174,6 +174,38 @@ void main() {
     });
   });
 
+  group('trip distance rollup', () {
+    Future<int> distanceRollup(String vehicleId) async {
+      final rows = await (db.select(db.rollups)
+            ..where((t) =>
+                t.vehicleId.equals(vehicleId) &
+                t.metric.equals('distanceMetres')))
+          .get();
+      return rows.fold<int>(0, (s, r) => s + r.value);
+    }
+
+    test('incremental add matches a from-scratch rebuild; delete reverses',
+        () async {
+      final v = await seedVehicle();
+      final repo = TripsRepository(db);
+      await repo.add(vehicleId: v, tripAt: at(0), directDistanceMetres: 8000);
+      final second = (await repo.add(
+              vehicleId: v, tripAt: at(1), directDistanceMetres: 12000))
+          .valueOrNull!;
+      expect(await distanceRollup(v), 20000);
+
+      // A from-scratch rebuild reproduces the incremental value exactly.
+      await RollupService(db).rebuild(v, now: at(5).epochMillis);
+      expect(await distanceRollup(v), 20000);
+
+      // Soft-delete reverses its contribution (tombstoned rows are excluded).
+      await repo.softDelete(second);
+      expect(await distanceRollup(v), 8000);
+      await RollupService(db).rebuild(v, now: at(6).epochMillis);
+      expect(await distanceRollup(v), 8000);
+    });
+  });
+
   group('RateSchemesRepository round-trip', () {
     test('encode → store → rehydrate engine → price matches', () async {
       final repo = RateSchemesRepository(db);

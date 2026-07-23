@@ -165,6 +165,48 @@ Future<void> runForwardMigrations(
       case 12: // 12 → 13: M6-T4/T3 financing (loan/lease) + budgets.
         await m.createTable(db.financings);
         await m.createTable(db.budgets);
+      case 13: // 13 → 14: M7 trips logbook. Create the referenced tables FIRST
+        // so the new trip FK columns resolve, then extend trips.
+        await m.createTable(db.savedLocations);
+        await m.createTable(db.rateSchemes);
+        await m.createTable(db.roadtrips);
+        final t = db.trips;
+        for (final col in [
+          t.endAt,
+          t.classification,
+          t.isDeductible,
+          t.isContemporaneous,
+          t.autoDetected,
+          t.vehicleClass,
+          t.categoryId,
+          t.clientId,
+          t.projectId,
+          t.costCentre,
+          t.billable,
+          t.driverId,
+          t.fromLocationId,
+          t.toLocationId,
+          t.gpxRef,
+          t.rateSchemeId,
+          t.applicableRateThousandths,
+          t.tierApplied,
+          t.passengerCount,
+          t.computedAmountMinor,
+          t.currencyCode,
+          t.gapMetres,
+          t.roadtripId,
+          t.legSequence,
+          t.linkedFillupIds,
+          t.linkedExpenseIds,
+          t.fuelUsedMl,
+          t.energyUsedWh,
+          t.costMinor,
+          t.tags,
+          t.notes,
+          t.entryCalendar,
+        ]) {
+          await m.addColumn(t, col);
+        }
       // Future versions append their `case N` block here.
     }
   }

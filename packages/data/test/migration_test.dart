@@ -138,6 +138,53 @@ Future<void> _dropM4(AppDatabase db) async {
   }
 }
 
+/// Rewind the M7 (v13→v14) trip additions so a forward migration re-applies
+/// them. Drop the index over trips.roadtrip_id first (SQLite refuses DROP COLUMN
+/// while an index uses it), then the trip columns, then the referenced support
+/// tables (safe only after the FK-bearing trip columns are gone).
+Future<void> _dropM7(AppDatabase db) async {
+  await db.customStatement('DROP INDEX IF EXISTS idx_trip_roadtrip');
+  for (final c in [
+    'end_at',
+    'classification',
+    'is_deductible',
+    'is_contemporaneous',
+    'auto_detected',
+    'vehicle_class',
+    'category_id',
+    'client_id',
+    'project_id',
+    'cost_centre',
+    'billable',
+    'driver_id',
+    'from_location_id',
+    'to_location_id',
+    'gpx_ref',
+    'rate_scheme_id',
+    'applicable_rate_thousandths',
+    'tier_applied',
+    'passenger_count',
+    'computed_amount_minor',
+    'currency_code',
+    'gap_metres',
+    'roadtrip_id',
+    'leg_sequence',
+    'linked_fillup_ids',
+    'linked_expense_ids',
+    'fuel_used_ml',
+    'energy_used_wh',
+    'cost_minor',
+    'tags',
+    'notes',
+    'entry_calendar',
+  ]) {
+    await db.customStatement('ALTER TABLE trips DROP COLUMN $c');
+  }
+  await db.customStatement('DROP TABLE roadtrips');
+  await db.customStatement('DROP TABLE rate_schemes');
+  await db.customStatement('DROP TABLE saved_locations');
+}
+
 void main() {
   test('SnapshotGuard takes a pre-migration snapshot and restores on failure',
       () async {
@@ -165,10 +212,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 13 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 14 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 13);
+    expect(db.schemaVersion, 14);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -194,6 +241,9 @@ void main() {
         'expenses',
         'financings',
         'budgets',
+        'saved_locations',
+        'rate_schemes',
+        'roadtrips',
         'trips',
         'reminders',
         'categories',
@@ -224,7 +274,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v13 forward migration adds all later schema, keeps data',
+  test('v1 → v14 forward migration adds all later schema, keeps data',
       () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
@@ -271,6 +321,7 @@ void main() {
     }
     // The M4 (v8) service line items, provider directory, and header/taxonomy
     // columns.
+    await _dropM7(setup);
     await _dropM6(setup);
     await _dropM5(setup);
     await _dropM4(setup);
@@ -354,6 +405,7 @@ void main() {
     for (final c in _m3FuelColumns) {
       await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
+    await _dropM7(setup);
     await _dropM6(setup);
     await _dropM5(setup);
     await _dropM4(setup);

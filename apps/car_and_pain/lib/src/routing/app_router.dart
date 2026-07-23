@@ -21,6 +21,10 @@ import '../features/05-expenses-cost-ownership/presentation/expense_quick_add_sc
 import '../features/05-expenses-cost-ownership/presentation/expenses_screen.dart';
 import '../features/05-expenses-cost-ownership/presentation/financing_detail_screen.dart';
 import '../features/05-expenses-cost-ownership/presentation/tco_screen.dart';
+import '../features/06-trips-mileage/presentation/mileage_report_screen.dart';
+import '../features/06-trips-mileage/presentation/roadtrip_screen.dart';
+import '../features/06-trips-mileage/presentation/trip_editor_screen.dart';
+import '../features/06-trips-mileage/presentation/trips_logbook_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/app_lock_controller.dart';
@@ -236,6 +240,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           vehicleId: state.pathParameters['vehicleId']!,
           financingId: state.pathParameters['financingId']!,
         ),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/trips/new',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            TripEditorScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/trips/:tripId/edit',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => TripEditorScreen(
+          vehicleId: state.pathParameters['vehicleId']!,
+          tripId: state.pathParameters['tripId'],
+        ),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/trips',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            TripsLogbookScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/mileage-report',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            MileageReportScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/roadtrips',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            RoadtripScreen(vehicleId: state.pathParameters['vehicleId']!),
       ),
       GoRoute(
         path: '/trash',

@@ -1610,5 +1610,240 @@
         "type": "String"
       }
     }
+  },
+  "tripsTitle": "Trips",
+  "@tripsTitle": {
+    "description": "M7 trips/report: tripsTitle"
+  },
+  "tripsEmpty": "No trips logged yet.",
+  "@tripsEmpty": {
+    "description": "M7 trips/report: tripsEmpty"
+  },
+  "tripAddTitle": "Add trip",
+  "@tripAddTitle": {
+    "description": "M7 trips/report: tripAddTitle"
+  },
+  "tripEditTitle": "Edit trip",
+  "@tripEditTitle": {
+    "description": "M7 trips/report: tripEditTitle"
+  },
+  "tripSave": "Save",
+  "@tripSave": {
+    "description": "M7 trips/report: tripSave"
+  },
+  "tripCancel": "Cancel",
+  "@tripCancel": {
+    "description": "M7 trips/report: tripCancel"
+  },
+  "tripDelete": "Delete",
+  "@tripDelete": {
+    "description": "M7 trips/report: tripDelete"
+  },
+  "tripSaveFailed": "Couldn't save the trip — your entry is kept.",
+  "@tripSaveFailed": {
+    "description": "M7 trips/report: tripSaveFailed"
+  },
+  "tripByOdometer": "By odometer",
+  "@tripByOdometer": {
+    "description": "M7 trips/report: tripByOdometer"
+  },
+  "tripByDistance": "By distance",
+  "@tripByDistance": {
+    "description": "M7 trips/report: tripByDistance"
+  },
+  "tripStartOdometer": "Start odometer (km)",
+  "@tripStartOdometer": {
+    "description": "M7 trips/report: tripStartOdometer"
+  },
+  "tripEndOdometer": "End odometer (km)",
+  "@tripEndOdometer": {
+    "description": "M7 trips/report: tripEndOdometer"
+  },
+  "tripDistance": "Distance (km)",
+  "@tripDistance": {
+    "description": "M7 trips/report: tripDistance"
+  },
+  "tripDistanceLocked": "Distance is locked once recorded.",
+  "@tripDistanceLocked": {
+    "description": "M7 trips/report: tripDistanceLocked"
+  },
+  "tripDistanceRequired": "Enter a distance or start and end odometer.",
+  "@tripDistanceRequired": {
+    "description": "M7 trips/report: tripDistanceRequired"
+  },
+  "tripDistanceNonPositive": "Distance must be greater than zero.",
+  "@tripDistanceNonPositive": {
+    "description": "M7 trips/report: tripDistanceNonPositive"
+  },
+  "tripDate": "Date",
+  "@tripDate": {
+    "description": "M7 trips/report: tripDate"
+  },
+  "tripClassificationLabel": "Classification",
+  "@tripClassificationLabel": {
+    "description": "M7 trips/report: tripClassificationLabel"
+  },
+  "tripPassengers": "Passengers",
+  "@tripPassengers": {
+    "description": "M7 trips/report: tripPassengers"
+  },
+  "tripNote": "Note",
+  "@tripNote": {
+    "description": "M7 trips/report: tripNote"
+  },
+  "tripGapPreview": "Gap of {distance} since the last trip.",
+  "@tripGapPreview": {
+    "description": "M7 trips/report: tripGapPreview",
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "tripGapWarning": "Gap",
+  "@tripGapWarning": {
+    "description": "M7 trips/report: tripGapWarning"
+  },
+  "tripReconstructed": "Reconstructed",
+  "@tripReconstructed": {
+    "description": "M7 trips/report: tripReconstructed"
+  },
+  "tripClassifyTooltip": "Classify",
+  "@tripClassifyTooltip": {
+    "description": "M7 trips/report: tripClassifyTooltip"
+  },
+  "tripClassBusiness": "Business",
+  "@tripClassBusiness": {
+    "description": "M7 trips/report: tripClassBusiness"
+  },
+  "tripClassPersonal": "Personal",
+  "@tripClassPersonal": {
+    "description": "M7 trips/report: tripClassPersonal"
+  },
+  "tripClassCommute": "Commute",
+  "@tripClassCommute": {
+    "description": "M7 trips/report: tripClassCommute"
+  },
+  "tripClassUnclassified": "Unclassified",
+  "@tripClassUnclassified": {
+    "description": "M7 trips/report: tripClassUnclassified"
+  },
+  "tripSummaryDistance": "Distance",
+  "@tripSummaryDistance": {
+    "description": "M7 trips/report: tripSummaryDistance"
+  },
+  "tripSummaryBusinessUse": "Business use",
+  "@tripSummaryBusinessUse": {
+    "description": "M7 trips/report: tripSummaryBusinessUse"
+  },
+  "tripSummaryUnclassified": "Unclassified",
+  "@tripSummaryUnclassified": {
+    "description": "M7 trips/report: tripSummaryUnclassified"
+  },
+  "tripSummaryNoData": "—",
+  "@tripSummaryNoData": {
+    "description": "M7 trips/report: tripSummaryNoData"
+  },
+  "mileageReportTitle": "Mileage report",
+  "@mileageReportTitle": {
+    "description": "M7 trips/report: mileageReportTitle"
+  },
+  "reportExport": "Export",
+  "@reportExport": {
+    "description": "M7 trips/report: reportExport"
+  },
+  "reportExportCsv": "Copy as CSV",
+  "@reportExportCsv": {
+    "description": "M7 trips/report: reportExportCsv"
+  },
+  "reportExportJson": "Copy as JSON",
+  "@reportExportJson": {
+    "description": "M7 trips/report: reportExportJson"
+  },
+  "reportCopied": "Copied to clipboard.",
+  "@reportCopied": {
+    "description": "M7 trips/report: reportCopied"
+  },
+  "reportIrs": "IRS",
+  "@reportIrs": {
+    "description": "M7 trips/report: reportIrs"
+  },
+  "reportHmrc": "HMRC",
+  "@reportHmrc": {
+    "description": "M7 trips/report: reportHmrc"
+  },
+  "reportLinesHeader": "Rate breakdown",
+  "@reportLinesHeader": {
+    "description": "M7 trips/report: reportLinesHeader"
+  },
+  "reportNoDeductible": "No deductible business trips in range.",
+  "@reportNoDeductible": {
+    "description": "M7 trips/report: reportNoDeductible"
+  },
+  "reportLineRate": "{year} · {rate}/unit",
+  "@reportLineRate": {
+    "description": "M7 trips/report: reportLineRate",
+    "placeholders": {
+      "year": {
+        "type": "String"
+      },
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "reportTotalDeduction": "Total deduction",
+  "@reportTotalDeduction": {
+    "description": "M7 trips/report: reportTotalDeduction"
+  },
+  "reportCompliant": "Contemporaneous record — compliant.",
+  "@reportCompliant": {
+    "description": "M7 trips/report: reportCompliant"
+  },
+  "reportNonContemporaneous": "{count} reconstructed trip(s) flagged.",
+  "@reportNonContemporaneous": {
+    "description": "M7 trips/report: reportNonContemporaneous",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "reportBusinessUse": "Business use: {percent}",
+  "@reportBusinessUse": {
+    "description": "M7 trips/report: reportBusinessUse",
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "roadtripsTitle": "Road trips",
+  "@roadtripsTitle": {
+    "description": "M7 trips/report: roadtripsTitle"
+  },
+  "roadtripsEmpty": "No road trips yet.",
+  "@roadtripsEmpty": {
+    "description": "M7 trips/report: roadtripsEmpty"
+  },
+  "roadtripAdd": "New road trip",
+  "@roadtripAdd": {
+    "description": "M7 trips/report: roadtripAdd"
+  },
+  "roadtripName": "Name",
+  "@roadtripName": {
+    "description": "M7 trips/report: roadtripName"
+  },
+  "roadtripSpend": "Spend",
+  "@roadtripSpend": {
+    "description": "M7 trips/report: roadtripSpend"
+  },
+  "roadtripPerPerson": "Per person",
+  "@roadtripPerPerson": {
+    "description": "M7 trips/report: roadtripPerPerson"
+  },
+  "roadtripMapUnavailable": "Map unavailable offline — showing labels.",
+  "@roadtripMapUnavailable": {
+    "description": "M7 trips/report: roadtripMapUnavailable"
   }
 }

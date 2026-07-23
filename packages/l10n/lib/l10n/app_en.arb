@@ -2027,5 +2027,81 @@
   "settingsPrivacyBody": "No account, 100% offline, no ads, no forced sync, no telemetry. Your data stays on your device.",
   "@settingsPrivacyBody": {
     "description": "M9 settings: settingsPrivacyBody"
+  },
+  "helpTitle": "Help",
+  "@helpTitle": {
+    "description": "M10 help: helpTitle"
+  },
+  "helpSearchHint": "Search help",
+  "@helpSearchHint": {
+    "description": "M10 help: helpSearchHint"
+  },
+  "helpNoResults": "No matching topics.",
+  "@helpNoResults": {
+    "description": "M10 help: helpNoResults"
+  },
+  "helpOfflineTitle": "Is it really offline?",
+  "@helpOfflineTitle": {
+    "description": "M10 help: helpOfflineTitle"
+  },
+  "helpOfflineBody": "Yes — Car and Pain works fully offline with no account. Your data never leaves your device unless you export it yourself.",
+  "@helpOfflineBody": {
+    "description": "M10 help: helpOfflineBody"
+  },
+  "helpTcoTitle": "What is total cost of ownership?",
+  "@helpTcoTitle": {
+    "description": "M10 help: helpTcoTitle"
+  },
+  "helpTcoBody": "TCO adds every cost of running a car — fuel, service, expenses, financing interest and depreciation — over the distance and time driven, so you see the real cost per kilometre and per day.",
+  "@helpTcoBody": {
+    "description": "M10 help: helpTcoBody"
+  },
+  "helpEconomyTitle": "How is fuel economy measured?",
+  "@helpEconomyTitle": {
+    "description": "M10 help: helpEconomyTitle"
+  },
+  "helpEconomyBody": "Economy is computed full tank to full tank. A partial fill rolls into the next full fill, so a single partial never produces a misleading figure.",
+  "@helpEconomyBody": {
+    "description": "M10 help: helpEconomyBody"
+  },
+  "helpCalendarsTitle": "Which calendars are supported?",
+  "@helpCalendarsTitle": {
+    "description": "M10 help: helpCalendarsTitle"
+  },
+  "helpCalendarsBody": "Gregorian, Jalali (Solar Hijri), Hijri and Hebrew. Dates are stored canonically and shown in your chosen calendar — switching never changes the stored date.",
+  "@helpCalendarsBody": {
+    "description": "M10 help: helpCalendarsBody"
+  },
+  "helpRemindersTitle": "Why aren't my reminders firing?",
+  "@helpRemindersTitle": {
+    "description": "M10 help: helpRemindersTitle"
+  },
+  "helpRemindersBody": "Some phones aggressively stop background apps. Grant notification and exact-alarm permission, and disable battery optimization for Car and Pain in your system settings.",
+  "@helpRemindersBody": {
+    "description": "M10 help: helpRemindersBody"
+  },
+  "helpDemoSection": "Sample data",
+  "@helpDemoSection": {
+    "description": "M10 help: helpDemoSection"
+  },
+  "helpDemoSeed": "Add a sample car",
+  "@helpDemoSeed": {
+    "description": "M10 help: helpDemoSeed"
+  },
+  "helpDemoRemove": "Remove sample car",
+  "@helpDemoRemove": {
+    "description": "M10 help: helpDemoRemove"
+  },
+  "helpDemoSeeded": "Sample car added.",
+  "@helpDemoSeeded": {
+    "description": "M10 help: helpDemoSeeded"
+  },
+  "helpDemoRemoved": "Sample car removed.",
+  "@helpDemoRemoved": {
+    "description": "M10 help: helpDemoRemoved"
+  },
+  "helpDemoFailed": "Couldn't update the sample car.",
+  "@helpDemoFailed": {
+    "description": "M10 help: helpDemoFailed"
   }
 }

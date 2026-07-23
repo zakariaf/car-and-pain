@@ -102,13 +102,17 @@ export 'src/providers.dart'
         fuelRepositoryProvider,
         ledgerRepositoryProvider,
         notificationScheduleRepositoryProvider,
+        rateSchemesRepositoryProvider,
         remindersRepositoryProvider,
+        roadtripsRepositoryProvider,
+        savedLocationsRepositoryProvider,
         secureKeyStoreProvider,
         serviceRepositoryProvider,
         settingsRepositoryProvider,
         stationsRepositoryProvider,
         taxonomyRepositoryProvider,
         trashRepositoryProvider,
+        tripsRepositoryProvider,
         vehiclesRepositoryProvider;
 export 'src/repositories/attachments_repository.dart'
     show AttachmentsRepository;

@@ -15,6 +15,8 @@ import 'repositories/fuel_repository.dart';
 import 'repositories/reminders_repository.dart';
 import 'repositories/service_repository.dart';
 import 'repositories/stations_repository.dart';
+import 'repositories/trip_support_repositories.dart';
+import 'repositories/trips_repository.dart';
 import 'repositories/vehicles_repository.dart';
 import 'settings/settings_repository.dart';
 import 'taxonomy/taxonomy.dart';
@@ -89,6 +91,22 @@ final budgetsRepositoryProvider = Provider<BudgetsRepository>(
 
 final remindersRepositoryProvider = Provider<RemindersRepository>(
   (ref) => RemindersRepository(ref.watch(appDatabaseProvider)),
+);
+
+final tripsRepositoryProvider = Provider<TripsRepository>(
+  (ref) => TripsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final savedLocationsRepositoryProvider = Provider<SavedLocationsRepository>(
+  (ref) => SavedLocationsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final rateSchemesRepositoryProvider = Provider<RateSchemesRepository>(
+  (ref) => RateSchemesRepository(ref.watch(appDatabaseProvider)),
+);
+
+final roadtripsRepositoryProvider = Provider<RoadtripsRepository>(
+  (ref) => RoadtripsRepository(ref.watch(appDatabaseProvider)),
 );
 
 final trashRepositoryProvider = Provider<TrashRepository>(

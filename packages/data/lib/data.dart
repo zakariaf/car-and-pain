@@ -31,11 +31,15 @@ export 'src/backup/competitor_presets.dart'
     show
         CompetitorPreset,
         CsvFieldMap,
+        aCarServicePreset,
         competitorPresets,
         dollarsToMinorUnits,
+        drivvoServicePreset,
+        fuelioServicePreset,
         fuellyFuelPreset,
         gallonsToMillilitres,
         isoDateToEpochMillis,
+        kmToMetres,
         milesToMetres;
 export 'src/backup/csv_export.dart'
     show csvField, exportEntitiesToCsv, rowsToCsv;

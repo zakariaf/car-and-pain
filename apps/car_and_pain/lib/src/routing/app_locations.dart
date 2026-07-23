@@ -89,6 +89,9 @@ abstract final class AppLocations {
   /// The road-trip containers for [vehicleId] (full-screen flow).
   static String roadtrips(String vehicleId) => '/vehicle/$vehicleId/roadtrips';
 
+  /// The analytics dashboard (full-screen flow above the shell).
+  static const dashboard = '/dashboard';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

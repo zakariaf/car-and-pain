@@ -110,6 +110,7 @@ export 'src/providers.dart'
         serviceRepositoryProvider,
         settingsRepositoryProvider,
         stationsRepositoryProvider,
+        statsRepositoryProvider,
         taxonomyRepositoryProvider,
         trashRepositoryProvider,
         tripsRepositoryProvider,
@@ -126,6 +127,7 @@ export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
 export 'src/repositories/service_repository.dart' show ServiceRepository;
 export 'src/repositories/stations_repository.dart' show StationsRepository;
+export 'src/repositories/stats_repository.dart' show StatsRepository;
 export 'src/repositories/trip_support_repositories.dart'
     show RateSchemesRepository, RoadtripsRepository, SavedLocationsRepository;
 export 'src/repositories/trips_repository.dart' show TripsRepository;

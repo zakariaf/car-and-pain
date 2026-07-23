@@ -1845,5 +1845,127 @@
   "roadtripMapUnavailable": "Map unavailable offline — showing labels.",
   "@roadtripMapUnavailable": {
     "description": "M7 trips/report: roadtripMapUnavailable"
+  },
+  "dashboardTitle": "Dashboard",
+  "@dashboardTitle": {
+    "description": "M8 dashboard: dashboardTitle"
+  },
+  "dashboardNoVehicle": "Add a vehicle to see stats.",
+  "@dashboardNoVehicle": {
+    "description": "M8 dashboard: dashboardNoVehicle"
+  },
+  "dashboardScopeVehicle": "This vehicle",
+  "@dashboardScopeVehicle": {
+    "description": "M8 dashboard: dashboardScopeVehicle"
+  },
+  "dashboardScopeAll": "All vehicles",
+  "@dashboardScopeAll": {
+    "description": "M8 dashboard: dashboardScopeAll"
+  },
+  "dashboardPeriodMonth": "Month",
+  "@dashboardPeriodMonth": {
+    "description": "M8 dashboard: dashboardPeriodMonth"
+  },
+  "dashboardPeriodYear": "Year",
+  "@dashboardPeriodYear": {
+    "description": "M8 dashboard: dashboardPeriodYear"
+  },
+  "dashboardPeriodAll": "All time",
+  "@dashboardPeriodAll": {
+    "description": "M8 dashboard: dashboardPeriodAll"
+  },
+  "dashboardKpiSpend": "Spend",
+  "@dashboardKpiSpend": {
+    "description": "M8 dashboard: dashboardKpiSpend"
+  },
+  "dashboardKpiDistance": "Distance",
+  "@dashboardKpiDistance": {
+    "description": "M8 dashboard: dashboardKpiDistance"
+  },
+  "dashboardKpiCostPerKm": "Cost/km",
+  "@dashboardKpiCostPerKm": {
+    "description": "M8 dashboard: dashboardKpiCostPerKm"
+  },
+  "dashboardKpiEconomy": "L/100km",
+  "@dashboardKpiEconomy": {
+    "description": "M8 dashboard: dashboardKpiEconomy"
+  },
+  "dashboardKpiCo2": "CO₂ (kg)",
+  "@dashboardKpiCo2": {
+    "description": "M8 dashboard: dashboardKpiCo2"
+  },
+  "dashboardMixedCurrency": "Mixed",
+  "@dashboardMixedCurrency": {
+    "description": "M8 dashboard: dashboardMixedCurrency"
+  },
+  "dashboardSpendTrend": "Spend over time",
+  "@dashboardSpendTrend": {
+    "description": "M8 dashboard: dashboardSpendTrend"
+  },
+  "dashboardSpendTrendSemantics": "Spend over {count} months",
+  "@dashboardSpendTrendSemantics": {
+    "description": "M8 dashboard: dashboardSpendTrendSemantics",
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardNoData": "Not enough data yet.",
+  "@dashboardNoData": {
+    "description": "M8 dashboard: dashboardNoData"
+  },
+  "dashboardForecastSpend": "Projected 30-day spend: {amount}",
+  "@dashboardForecastSpend": {
+    "description": "M8 dashboard: dashboardForecastSpend",
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "dashboardForecastInsufficient": "Not enough history to forecast yet.",
+  "@dashboardForecastInsufficient": {
+    "description": "M8 dashboard: dashboardForecastInsufficient"
+  },
+  "dashboardNoInsights": "Nothing unusual — all healthy.",
+  "@dashboardNoInsights": {
+    "description": "M8 dashboard: dashboardNoInsights"
+  },
+  "dashboardQuickAdd": "Quick add",
+  "@dashboardQuickAdd": {
+    "description": "M8 dashboard: dashboardQuickAdd"
+  },
+  "dashboardAddFuel": "Fuel",
+  "@dashboardAddFuel": {
+    "description": "M8 dashboard: dashboardAddFuel"
+  },
+  "dashboardAddExpense": "Expense",
+  "@dashboardAddExpense": {
+    "description": "M8 dashboard: dashboardAddExpense"
+  },
+  "dashboardAddTrip": "Trip",
+  "@dashboardAddTrip": {
+    "description": "M8 dashboard: dashboardAddTrip"
+  },
+  "insightSpendSpike": "Spend is higher than usual this period.",
+  "@insightSpendSpike": {
+    "description": "M8 dashboard: insightSpendSpike"
+  },
+  "insightEconomyDrop": "Fuel economy dropped below your baseline.",
+  "@insightEconomyDrop": {
+    "description": "M8 dashboard: insightEconomyDrop"
+  },
+  "insightOdometerGap": "An odometer gap suggests an unlogged trip.",
+  "@insightOdometerGap": {
+    "description": "M8 dashboard: insightOdometerGap"
+  },
+  "insightOdometerRegression": "An odometer reading went backwards — please review.",
+  "@insightOdometerRegression": {
+    "description": "M8 dashboard: insightOdometerRegression"
+  },
+  "insightDuplicate": "A possible duplicate entry was found.",
+  "@insightDuplicate": {
+    "description": "M8 dashboard: insightDuplicate"
   }
 }

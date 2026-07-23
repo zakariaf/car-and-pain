@@ -7,6 +7,17 @@
 /// Everything under `src/` is private by convention — import only this barrel.
 library;
 
+export 'src/dashboard/dashboard_stats.dart' show DashboardKpis, KpiContribution;
+export 'src/dashboard/forecast.dart'
+    show
+        ForecastEngine,
+        ForecastInsufficient,
+        ForecastResult,
+        ServiceDueForecast,
+        SpendForecast;
+export 'src/dashboard/gamification.dart' show Badge, GamificationEngine, Streak;
+export 'src/dashboard/insights.dart'
+    show Insight, InsightEngine, InsightKind, InsightSeverity;
 export 'src/dashboard/readiness.dart'
     show
         AcuteAche,

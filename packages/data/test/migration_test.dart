@@ -84,6 +84,27 @@ const _m4CategoryColumns = [
   'default_interval_logic'
 ];
 
+/// Rewind the M6 (v12) expense columns so a forward migration re-applies them.
+Future<void> _dropM6(AppDatabase db) async {
+  // Drop the indexes that reference the M6 columns first — SQLite refuses to
+  // DROP COLUMN while an index uses it.
+  await db.customStatement('DROP INDEX IF EXISTS idx_expense_category');
+  await db.customStatement('DROP INDEX IF EXISTS idx_expense_source');
+  for (final c in [
+    'driver_id',
+    'fx_rate_thousandths',
+    'fx_as_of',
+    'base_amount_minor',
+    'source_entity_type',
+    'source_entity_id',
+    'receipt_attachment_id',
+    'tags',
+    'entry_calendar',
+  ]) {
+    await db.customStatement('ALTER TABLE expenses DROP COLUMN $c');
+  }
+}
+
 /// Rewind the M5 (v11) reminder columns so a forward migration re-applies them.
 Future<void> _dropM5(AppDatabase db) async {
   await db.customStatement('ALTER TABLE reminders DROP COLUMN notes');
@@ -142,10 +163,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 11 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 12 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 11);
+    expect(db.schemaVersion, 12);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -199,7 +220,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v11 forward migration adds all later schema, keeps data',
+  test('v1 → v12 forward migration adds all later schema, keeps data',
       () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
@@ -246,6 +267,7 @@ void main() {
     }
     // The M4 (v8) service line items, provider directory, and header/taxonomy
     // columns.
+    await _dropM6(setup);
     await _dropM5(setup);
     await _dropM4(setup);
     await setup.customStatement('PRAGMA user_version = 1');
@@ -328,6 +350,7 @@ void main() {
     for (final c in _m3FuelColumns) {
       await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
+    await _dropM6(setup);
     await _dropM5(setup);
     await _dropM4(setup);
     await setup.customStatement('PRAGMA user_version = 3');

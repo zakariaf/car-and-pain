@@ -334,7 +334,12 @@ class ServiceAppointments extends Table with AuditColumns {
   TextColumn get notes => text().nullable()();
 }
 
-/// Any car cost. M6 adds recurring/amortization/loan/lease/TCO.
+/// Any car cost — the canonical ledger every cost writes into (M6-T1). Money is
+/// integer minor units keyed to the currency's real exponent; a dated-FX triple
+/// converts the entry to the base currency at the rate that applied on its date.
+/// A polymorphic source link lets fuel/service/tire rows project here without
+/// being double-counted.
+@DataClassName('ExpenseRow')
 class Expenses extends Table with AuditColumns {
   TextColumn get vehicleId =>
       text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
@@ -345,6 +350,24 @@ class Expenses extends Table with AuditColumns {
   TextColumn get currencyCode => text()();
   IntColumn get odometerMetres => integer().nullable()();
   TextColumn get notes => text().nullable()();
+  // ── M6-T1 ─────────────────────────────────────────────────────────────────
+  // Optional driver scoping (household P&L, later modules).
+  TextColumn get driverId => text().nullable()();
+  // Dated FX: rate (thousandths of base per unit) applied on [fxAsOf], and the
+  // resulting base-currency amount — so a historical entry never re-converts at
+  // today's rate.
+  IntColumn get fxRateThousandths => integer().nullable()();
+  IntColumn get fxAsOf => integer().nullable()();
+  IntColumn get baseAmountMinor => integer().nullable()();
+  // Polymorphic source link (fuel | service | tire | …) so a module row projects
+  // into the ledger without duplication.
+  TextColumn get sourceEntityType => text().nullable()();
+  TextColumn get sourceEntityId => text().nullable()();
+  TextColumn get receiptAttachmentId => text().nullable()();
+  // JSON array of user tags (comma-safe).
+  TextColumn get tags => text().nullable()();
+  // The calendar the entry was made in (for calendar-aware display).
+  TextColumn get entryCalendar => text().nullable()();
 }
 
 /// A trip logbook entry. M7 adds tax classification + rate engines.

@@ -54,6 +54,7 @@ export 'src/diagnostics/diagnostics_repository.dart'
     show AppDiagnosticsRepository, DiagnosticsRepository;
 export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
+export 'src/domain/expense.dart' show Expense;
 export 'src/domain/fuel_entry.dart' show FuelEntry;
 export 'src/domain/reminder.dart'
     show Reminder, ReminderLiveState, ReminderWithState, classifyReminderState;
@@ -92,6 +93,7 @@ export 'src/providers.dart'
         appTimeZoneProvider,
         attachmentsRepositoryProvider,
         diagnosticsRepositoryProvider,
+        expensesRepositoryProvider,
         fuelRepositoryProvider,
         ledgerRepositoryProvider,
         notificationScheduleRepositoryProvider,
@@ -106,6 +108,7 @@ export 'src/providers.dart'
 export 'src/repositories/attachments_repository.dart'
     show AttachmentsRepository;
 export 'src/repositories/base_repository.dart' show BaseRepository, newId;
+export 'src/repositories/expenses_repository.dart' show ExpensesRepository;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/reminders_repository.dart' show RemindersRepository;
 export 'src/repositories/rollup_service.dart'

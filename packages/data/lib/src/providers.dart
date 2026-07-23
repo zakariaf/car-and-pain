@@ -8,6 +8,7 @@ import 'infra/secure_key_store.dart';
 import 'ledger/ledger_repository.dart';
 import 'notifications/notification_schedule_repository.dart';
 import 'repositories/attachments_repository.dart';
+import 'repositories/expenses_repository.dart';
 import 'repositories/fuel_repository.dart';
 import 'repositories/reminders_repository.dart';
 import 'repositories/service_repository.dart';
@@ -70,6 +71,10 @@ final fuelRepositoryProvider = Provider<FuelRepository>(
 
 final serviceRepositoryProvider = Provider<ServiceRepository>(
   (ref) => ServiceRepository(ref.watch(appDatabaseProvider)),
+);
+
+final expensesRepositoryProvider = Provider<ExpensesRepository>(
+  (ref) => ExpensesRepository(ref.watch(appDatabaseProvider)),
 );
 
 final remindersRepositoryProvider = Provider<RemindersRepository>(

@@ -172,7 +172,7 @@ class CanonicalCodec {
           (await db.select(db.expenses).get()).map((r) => r.toJson()).toList(),
       (j) => db
           .into(db.expenses)
-          .insert(Expense.fromJson(j), mode: InsertMode.insertOrReplace),
+          .insert(ExpenseRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
     _Entity(
       'trips',

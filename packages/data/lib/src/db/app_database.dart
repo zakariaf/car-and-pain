@@ -46,7 +46,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 11;
+  int get schemaVersion => 12;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -90,6 +90,8 @@ class AppDatabase extends _$AppDatabase {
       'CREATE INDEX IF NOT EXISTS idx_procedure_line_item ON service_procedure_steps (line_item_id, step_order);',
       'CREATE INDEX IF NOT EXISTS idx_appointment_vehicle_time ON service_appointments (vehicle_id, scheduled_at);',
       'CREATE INDEX IF NOT EXISTS idx_expense_vehicle_time ON expenses (vehicle_id, spent_at);',
+      'CREATE INDEX IF NOT EXISTS idx_expense_category ON expenses (category_id);',
+      'CREATE INDEX IF NOT EXISTS idx_expense_source ON expenses (source_entity_type, source_entity_id);',
       'CREATE INDEX IF NOT EXISTS idx_trip_vehicle_time ON trips (vehicle_id, trip_at);',
       // UNIQUE: exactly one rollup per (vehicle, period, metric). Enforces the
       // documented invariant at the DB level so RollupService.getSingleOrNull()

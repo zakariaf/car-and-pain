@@ -49,6 +49,11 @@ class VehicleProfileScreen extends ConsumerWidget {
           onPressed: () => context.push(AppLocations.trips(vehicleId)),
         ),
         IconButton(
+          icon: const Icon(Icons.insights_outlined),
+          tooltip: l10n.dashboardTitle,
+          onPressed: () => context.push(AppLocations.dashboard),
+        ),
+        IconButton(
           icon: const Icon(Icons.edit_outlined),
           tooltip: l10n.vehicleEdit,
           onPressed: () => context.push(AppLocations.editVehicle(vehicleId)),

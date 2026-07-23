@@ -38,6 +38,15 @@ class StatsRepository extends BaseRepository {
         sincePeriod: sincePeriod, untilPeriod: untilPeriod);
   }
 
+  /// A vehicle's per-month values for one [metric], oldest-first — the ordered
+  /// series a `CustomPainter` chart plots. Reads rollups only.
+  Stream<List<int>> watchMonthlyMetric(String vehicleId, String metric) {
+    final query = db.select(db.rollups)
+      ..where((t) => t.vehicleId.equals(vehicleId) & t.metric.equals(metric))
+      ..orderBy([(t) => OrderingTerm.asc(t.periodKey)]);
+    return query.watch().map((rows) => rows.map((r) => r.value).toList());
+  }
+
   /// The fill count for a vehicle in an optional time window — an indexed count,
   /// not a scan of the whole ledger. (Fill count is an event tally, not an
   /// additive rollup.)

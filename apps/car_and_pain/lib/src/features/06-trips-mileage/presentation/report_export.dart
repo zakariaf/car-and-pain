@@ -13,7 +13,9 @@ String mileageReportToCsv(MileageReport report) {
   final buffer = StringBuffer()
     ..writeln('tax_year,rate_thousandths_per_unit,distance_metres,'
         'deduction_minor,currency');
+  var claimedDistance = 0;
   for (final line in report.lines) {
+    claimedDistance += line.distanceMetres;
     buffer.writeln([
       line.taxYearLabel,
       line.rateThousandthsPerUnit,
@@ -22,11 +24,23 @@ String mileageReportToCsv(MileageReport report) {
       report.currencyCode,
     ].map(_csvField).join(','));
   }
-  // Totals row (rate column blank; distance is business-deductible distance).
+  // The passenger add-on is its own line (no rate/distance), so the rows sum to
+  // the TOTAL deduction — a CSV always reconciles.
+  if (report.passengerDeductionMinor > 0) {
+    buffer.writeln([
+      'PASSENGERS',
+      '',
+      '',
+      report.passengerDeductionMinor,
+      report.currencyCode,
+    ].map(_csvField).join(','));
+  }
+  // TOTAL: the claimed deductible distance (= Σ rate-line distances) and the
+  // full deduction (rate lines + passenger add-on).
   buffer.writeln([
     'TOTAL',
     '',
-    report.rollup.businessDistanceMetres,
+    claimedDistance,
     report.deductionMinor,
     report.currencyCode,
   ].map(_csvField).join(','));

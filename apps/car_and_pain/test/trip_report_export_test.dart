@@ -49,8 +49,9 @@ void main() {
   });
 
   test('JSON round-trips the report shape and reconciles totals', () {
-    final decoded = jsonDecode(mileageReportToJson(report(contemporaneous: false)))
-        as Map<String, dynamic>;
+    final decoded =
+        jsonDecode(mileageReportToJson(report(contemporaneous: false)))
+            as Map<String, dynamic>;
     expect(decoded['format'], 'mileage_report');
     expect(decoded['currency'], 'GBP');
     expect(decoded['compliant'], false);
@@ -60,6 +61,43 @@ void main() {
     final lines = decoded['lines'] as List<dynamic>;
     expect(lines, hasLength(1));
     expect((lines.first as Map)['rate_thousandths_per_unit'], 45000);
+  });
+
+  test('CSV rows reconcile with TOTAL when a passenger add-on is present', () {
+    // A passenger-carrying scheme so the add-on is non-zero.
+    final withPax = MileageRateScheme(
+      id: 'hmrc',
+      name: 'HMRC',
+      kind: RateKind.hmrc,
+      currencyCode: 'GBP',
+      unit: RateDistanceUnit.mile,
+      revisions: [
+        RateRevision(
+          effectiveFrom: DateTime.utc(2011, 4, 6),
+          passengerRateThousandthsPerUnit: 5000,
+          tiersByClass: const {
+            MileageVehicleClass.car: [RateTier(rateThousandthsPerUnit: 45000)],
+          },
+        ),
+      ],
+    );
+    final r = buildMileageReport(scheme: withPax, trips: [
+      ReportTrip(
+        date: DateTime.utc(2024, 6),
+        distanceMetres: mi1000,
+        classification: TripClassification.business,
+        isContemporaneous: true,
+        isDeductible: true,
+        passengerCount: 2,
+      ),
+    ]);
+    final lines = mileageReportToCsv(r).trim().split('\n');
+    expect(lines.any((l) => l.startsWith('PASSENGERS,')), isTrue);
+    // Rows (rate line 45000 + passenger 10000) sum to the TOTAL 55000.
+    final total = lines.last.split(',');
+    expect(total[0], 'TOTAL');
+    expect(total[3], '55000');
+    expect(r.deductionMinor, 55000);
   });
 
   test('a field containing a comma is RFC-4180 quoted', () {

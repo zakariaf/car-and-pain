@@ -38,6 +38,19 @@ class SettingsScreen extends ConsumerWidget {
       title: l10n.settingsTitle,
       body: ListView(
         children: [
+          _SectionLabel(l10n.settingsPresetSection),
+          for (final p in RegionalPreset.values)
+            _OptionRow(
+              label: _presetName(l10n, p),
+              onTap: () async {
+                await controller.applyRegionalPreset(p);
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.settingsPresetApplied)),
+                  );
+                }
+              },
+            ),
           _SectionLabel(l10n.settingsLanguage),
           _OptionRow(
             label: l10n.languageSystemDefault,
@@ -149,12 +162,40 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
           ),
+          _SectionLabel(l10n.settingsPrivacySection),
+          Padding(
+            padding: const EdgeInsetsDirectional.all(PulseTokens.s3),
+            child: PulseCard(
+              child: Row(
+                children: [
+                  const Icon(Icons.shield_outlined),
+                  const SizedBox(width: PulseTokens.s3),
+                  Expanded(child: Text(l10n.settingsPrivacyBody)),
+                ],
+              ),
+            ),
+          ),
           _SectionLabel(l10n.settingsPreview),
           _Preview(prefs: prefs, fmt: fmt),
         ],
       ),
     );
   }
+
+  static String _presetName(AppLocalizations l, RegionalPreset p) =>
+      switch (p) {
+        RegionalPreset.iran => l.presetIran,
+        RegionalPreset.germany => l.presetGermany,
+        RegionalPreset.france => l.presetFrance,
+        RegionalPreset.unitedStates => l.presetUnitedStates,
+        RegionalPreset.saudiArabia => l.presetSaudiArabia,
+        RegionalPreset.kurdistan => l.presetKurdistan,
+        RegionalPreset.turkey => l.presetTurkey,
+        RegionalPreset.india => l.presetIndia,
+        RegionalPreset.israel => l.presetIsrael,
+        RegionalPreset.spain => l.presetSpain,
+        RegionalPreset.brazil => l.presetBrazil,
+      };
 
   static String _calendarName(AppLocalizations l, CalendarSystem c) =>
       switch (c) {
@@ -199,8 +240,8 @@ class _SectionLabel extends StatelessWidget {
 class _OptionRow extends StatelessWidget {
   const _OptionRow({
     required this.label,
-    required this.selected,
     required this.onTap,
+    this.selected = false,
     this.trailing,
   });
 

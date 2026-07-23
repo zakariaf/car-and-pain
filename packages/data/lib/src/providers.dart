@@ -15,6 +15,7 @@ import 'repositories/fuel_repository.dart';
 import 'repositories/reminders_repository.dart';
 import 'repositories/service_repository.dart';
 import 'repositories/stations_repository.dart';
+import 'repositories/stats_repository.dart';
 import 'repositories/trip_support_repositories.dart';
 import 'repositories/trips_repository.dart';
 import 'repositories/vehicles_repository.dart';
@@ -123,6 +124,10 @@ final settingsRepositoryProvider = Provider<SettingsRepository>(
 
 final stationsRepositoryProvider = Provider<StationsRepository>(
   (ref) => StationsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final statsRepositoryProvider = Provider<StatsRepository>(
+  (ref) => StatsRepository(ref.watch(appDatabaseProvider)),
 );
 
 final notificationScheduleRepositoryProvider =

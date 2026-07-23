@@ -140,5 +140,25 @@ void main() {
       expect(rc.costPerKmMinor, isNull); // no distance
       expect(rc.costPerMonthMinor, 3000);
     });
+
+    test('a negative (refund) numerator rounds half away from zero', () {
+      // -100 over 3 km = -33.33 → -33 (symmetric with the positive case).
+      expect(
+        engine.costPerDistanceMinor(totalMinor: -100, distanceMetres: 3000),
+        -33,
+      );
+    });
+  });
+
+  test('value objects construct at runtime (guards + getters)', () {
+    // `int.parse` defeats const-folding so the constructor bodies actually run.
+    final n = int.parse('2');
+    final li = ServiceLineItemCost(labourMinor: n, partsMinor: n);
+    expect(li.subtotalMinor, 4);
+    final visit = VisitCost(lineItems: [li], taxMinor: n, feesMinor: n);
+    expect(visit.totalMinor, 4 + 2 + 2);
+    final point =
+        ServiceCostPoint(totalMinor: n, distanceMetres: n, spanDays: n);
+    expect(point.totalMinor, 2);
   });
 }

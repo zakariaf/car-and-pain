@@ -84,6 +84,29 @@ void main() {
     expect(id, isNotEmpty);
   });
 
+  test('a failed visit save rolls back the ledger reading too (atomicity)',
+      () async {
+    final (db, vehicleId) = await freshWithVehicle();
+    addTearDown(db.close);
+    final repo = ServiceRepository(db);
+
+    // A line item references a service type that does not exist → the FK insert
+    // fails mid-transaction, AFTER the visit row and ledger row would be written.
+    final result = await repo.add(
+      vehicleId: vehicleId,
+      servicedAt: const Instant.fromEpochMillis(2000),
+      currencyCode: 'EUR',
+      odometerMetres: 150000000,
+      lineItems: const [ServiceLineItemDraft(serviceTypeId: 'does-not-exist')],
+    );
+    expect(result.isErr, isTrue);
+
+    // Neither the visit NOR its ledger row survived — the whole write rolled back.
+    final visits = await repo.watchByVehicle(vehicleId).first;
+    expect(visits, isEmpty);
+    expect(await LedgerRepository(db).watchByVehicle(vehicleId).first, isEmpty);
+  });
+
   test('a visit without an odometer writes no ledger row', () async {
     final (db, vehicleId) = await freshWithVehicle();
     addTearDown(db.close);

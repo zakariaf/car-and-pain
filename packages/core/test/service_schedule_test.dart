@@ -322,4 +322,50 @@ void main() {
       );
     });
   });
+
+  group('logic pins one dimension even when both are present', () {
+    final anchor = [
+      ServiceEvent(doneAt: at(2026, 1, 1), odometerMetres: 10000 * km),
+    ];
+
+    test('logic=distance ignores the time dimension for grading', () {
+      // Both dims present, but a distance-only logic → graded purely by metres.
+      final s = engineAt(2026, 7).status(
+        const ServiceInterval(
+          logic: ServiceIntervalLogic.distance,
+          distanceMetres: tenThousandKm,
+          time: Recurrence(1, RecurrenceUnit.months), // overdue on time…
+        ),
+        anchor,
+        currentOdometerMetres: 12000 * km, // …but fine on distance
+      );
+      expect(s.governing, ServiceIntervalLogic.distance);
+      expect(s.level, ServiceDueLevel.ok); // time overdue is ignored
+    });
+
+    test('logic=time ignores the distance dimension for grading', () {
+      final s = engineAt(2026, 3).status(
+        const ServiceInterval(
+          logic: ServiceIntervalLogic.time,
+          distanceMetres: tenThousandKm, // would be overdue on distance…
+          time: Recurrence(12, RecurrenceUnit.months),
+        ),
+        anchor,
+        currentOdometerMetres: 99000 * km, // …but time governs and is fine
+      );
+      expect(s.governing, ServiceIntervalLogic.time);
+      expect(s.level, ServiceDueLevel.ok);
+    });
+  });
+
+  test('value objects construct at runtime (guards + getters)', () {
+    // Defeat const-folding so the constructor/assert bodies actually run.
+    final metres = int.parse('10000');
+    final interval = ServiceInterval(
+      logic: ServiceIntervalLogic.distance,
+      distanceMetres: metres,
+    );
+    expect(interval.hasDistance, isTrue);
+    expect(interval.hasTime, isFalse);
+  });
 }

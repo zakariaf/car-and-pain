@@ -47,6 +47,8 @@ export 'src/finance/amortization.dart'
         FinancingKind,
         LoanTerms,
         PayoffQuote;
+export 'src/finance/budget.dart' show BudgetEngine, BudgetPeriod, BudgetStatus;
+export 'src/finance/cost_validation.dart' show CostValidators, ExpenseKey;
 export 'src/finance/depreciation.dart'
     show DepreciationCurve, DepreciationMethod, EquityPosition;
 export 'src/finance/recurring_bill.dart' show LumpAmortizer, RecurringBill;

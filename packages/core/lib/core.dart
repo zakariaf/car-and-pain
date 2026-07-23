@@ -87,7 +87,8 @@ export 'src/result/failures.dart'
         WrongSecret;
 export 'src/result/result.dart' show Err, Ok, Result, ResultX;
 export 'src/result/validation.dart' show FieldError, Validation;
-export 'src/scheduling/ics_export.dart' show IcsEvent, buildIcsCalendar;
+export 'src/scheduling/ics_export.dart'
+    show IcsAppointment, IcsEvent, buildAppointmentIcs, buildIcsCalendar;
 export 'src/scheduling/next_due_engine.dart' show NextDueEngine;
 export 'src/scheduling/schedule_rule.dart'
     show

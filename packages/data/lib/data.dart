@@ -51,6 +51,8 @@ export 'src/diagnostics/diagnostics_repository.dart'
 export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
 export 'src/domain/fuel_entry.dart' show FuelEntry;
+export 'src/domain/service_appointment.dart'
+    show ServiceAppointment, WarrantyExpiry;
 export 'src/domain/service_visit.dart'
     show
         FluidDraft,

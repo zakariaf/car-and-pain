@@ -4,6 +4,7 @@ import 'package:core/core.dart';
 import 'package:drift/drift.dart';
 
 import '../db/app_database.dart';
+import '../domain/service_appointment.dart';
 import '../domain/service_visit.dart';
 import 'base_repository.dart';
 import 'rollup_service.dart';
@@ -396,6 +397,176 @@ class ServiceRepository extends BaseRepository {
         ServiceIntervalLogic.distance => 'distance',
         ServiceIntervalLogic.whicheverFirst => 'whicheverFirst',
       };
+
+  // ── Appointments (M4-T5) — a class deliberately separate from reminders ─────
+
+  /// Book a service appointment (a specific instant + shop). Independent of any
+  /// interval reminder: cancelling one never touches the other.
+  Future<Result<String, DbFailure>> addAppointment({
+    required String vehicleId,
+    required Instant scheduledAt,
+    String? providerId,
+    int durationMinutes = 60,
+    String? title,
+    String? notes,
+  }) async {
+    try {
+      final id = newId();
+      final now = nowMillis();
+      await db.into(db.serviceAppointments).insert(
+            ServiceAppointmentsCompanion.insert(
+              id: id,
+              vehicleId: vehicleId,
+              scheduledAt: scheduledAt.epochMillis,
+              createdAt: now,
+              updatedAt: now,
+              providerId: Value(providerId),
+              durationMinutes: Value(durationMinutes),
+              title: Value(title),
+              notes: Value(notes),
+            ),
+          );
+      return Ok(id);
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'service_appointments'));
+    }
+  }
+
+  /// A vehicle's appointments, soonest first, tombstone-filtered. When
+  /// [activeOnly] is true, cancelled/completed appointments are excluded.
+  Stream<List<ServiceAppointment>> watchAppointments(
+    String vehicleId, {
+    bool activeOnly = false,
+  }) {
+    final query = db.select(db.serviceAppointments)
+      ..where((t) => t.vehicleId.equals(vehicleId) & t.isDeleted.equals(false));
+    if (activeOnly) {
+      query.where((t) => t.status.equals('scheduled'));
+    }
+    query.orderBy([(t) => OrderingTerm.asc(t.scheduledAt)]);
+    return query.watch().map((rows) => rows.map(_toAppointment).toList());
+  }
+
+  /// Update an appointment's status (scheduled | completed | cancelled | noShow).
+  /// This is the ONLY thing "cancelling an appointment" touches — interval
+  /// reminders are separate rows and are never affected.
+  Future<Result<void, DbFailure>> setAppointmentStatus(
+    String id,
+    String status,
+  ) async {
+    try {
+      final now = nowMillis();
+      final n = await (db.update(db.serviceAppointments)
+            ..where((t) => t.id.equals(id) & t.isDeleted.equals(false)))
+          .write(
+        ServiceAppointmentsCompanion(
+          status: Value(status),
+          updatedAt: Value(now),
+        ),
+      );
+      return n == 0
+          ? const Err(NotFound('service_appointment'))
+          : const Ok(null);
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'service_appointments'));
+    }
+  }
+
+  /// Build a local timed `.ics` for one appointment (M4-T5) — a read-only file
+  /// for the device calendar, no server. [summary] is the already-localized event
+  /// title supplied at the edge (data stays l10n-free); [location] is typically
+  /// the resolved shop name. Null when the appointment is missing/tombstoned.
+  Future<String?> appointmentIcs(
+    String id, {
+    required String summary,
+    String? location,
+  }) async {
+    final row = await (db.select(db.serviceAppointments)
+          ..where((t) => t.id.equals(id) & t.isDeleted.equals(false)))
+        .getSingleOrNull();
+    if (row == null) return null;
+    return buildAppointmentIcs(
+      [
+        IcsAppointment(
+          uid: '${row.id}@car-and-pain',
+          summary: summary,
+          start: Instant.fromEpochMillis(row.scheduledAt),
+          durationMinutes: row.durationMinutes,
+          location: location,
+          description: row.notes,
+        ),
+      ],
+      dtstamp: Instant.fromEpochMillis(nowMillis()),
+    );
+  }
+
+  /// The warranty limits (part + workmanship) across a vehicle's live visits, for
+  /// the shared warranty-expiry reminder surface (M4-T5). Each carries its date
+  /// and/or mileage limit so either can drive an expiry reminder via the engine.
+  Future<List<WarrantyExpiry>> warrantyExpiries(String vehicleId) async {
+    final visits = await (db.select(db.serviceEntries)
+          ..where(
+              (t) => t.vehicleId.equals(vehicleId) & t.isDeleted.equals(false)))
+        .get();
+    final visitIds = {for (final v in visits) v.id};
+    if (visitIds.isEmpty) return const [];
+
+    final out = <WarrantyExpiry>[];
+    // Workmanship warranties on line items.
+    final lineItems = await (db.select(db.serviceLineItems)
+          ..where((t) => t.isDeleted.equals(false)))
+        .get();
+    final lineItemIds = <String>{};
+    for (final li in lineItems) {
+      if (!visitIds.contains(li.visitId)) continue;
+      lineItemIds.add(li.id);
+      if (li.warrantyUntilDate != null ||
+          li.warrantyUntilMileageMetres != null) {
+        out.add(
+          WarrantyExpiry(
+            source: 'workmanship',
+            label: li.serviceTypeId ?? li.id,
+            visitId: li.visitId,
+            untilDate: li.warrantyUntilDate,
+            untilMileageMetres: li.warrantyUntilMileageMetres,
+          ),
+        );
+      }
+    }
+    // Part warranties.
+    final lineItemToVisit = {
+      for (final li in lineItems) li.id: li.visitId,
+    };
+    final parts = await (db.select(db.partsUsed)
+          ..where((t) => t.isDeleted.equals(false)))
+        .get();
+    for (final p in parts) {
+      if (!lineItemIds.contains(p.lineItemId)) continue;
+      if (p.warrantyUntilDate != null || p.warrantyUntilMileageMetres != null) {
+        out.add(
+          WarrantyExpiry(
+            source: 'part',
+            label: p.name,
+            visitId: lineItemToVisit[p.lineItemId] ?? '',
+            untilDate: p.warrantyUntilDate,
+            untilMileageMetres: p.warrantyUntilMileageMetres,
+          ),
+        );
+      }
+    }
+    return out;
+  }
+
+  ServiceAppointment _toAppointment(AppointmentRow r) => ServiceAppointment(
+        id: r.id,
+        vehicleId: r.vehicleId,
+        scheduledAt: Instant.fromEpochMillis(r.scheduledAt),
+        providerId: r.providerId,
+        durationMinutes: r.durationMinutes,
+        status: r.status,
+        title: r.title,
+        notes: r.notes,
+      );
 
   /// Soft-delete a visit (and its owned line items) to trash — never a hard
   /// delete. The additive cost rollup this visit bumped is reversed so dashboards

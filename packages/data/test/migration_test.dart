@@ -88,6 +88,8 @@ const _m4CategoryColumns = [
 /// can re-apply them. Drops leaf detail tables first, then line items and their
 /// FK-bearing columns, then the parent table, then the taxonomy columns.
 Future<void> _dropM4(AppDatabase db) async {
+  // v10 (M4-T5) appointments.
+  await db.customStatement('DROP TABLE service_appointments');
   // v9 (M4-T2) detail tables + workmanship-warranty columns.
   await db.customStatement('DROP TABLE parts_used');
   await db.customStatement('DROP TABLE fluids_used');
@@ -134,10 +136,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 9 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 10 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 9);
+    expect(db.schemaVersion, 10);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -159,6 +161,7 @@ void main() {
         'parts_used',
         'fluids_used',
         'service_procedure_steps',
+        'service_appointments',
         'expenses',
         'trips',
         'reminders',
@@ -190,7 +193,8 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v9 forward migration adds all later schema, keeps data', () async {
+  test('v1 → v10 forward migration adds all later schema, keeps data',
+      () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';

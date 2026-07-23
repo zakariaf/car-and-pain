@@ -141,6 +141,8 @@ Future<void> runForwardMigrations(
         await m.createTable(db.partsUsed);
         await m.createTable(db.fluidsUsed);
         await m.createTable(db.serviceProcedureSteps);
+      case 9: // 9 → 10: M4-T5 service appointments (separate from reminders).
+        await m.createTable(db.serviceAppointments);
       // Future versions append their `case N` block here.
     }
   }

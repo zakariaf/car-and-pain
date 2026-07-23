@@ -155,6 +155,17 @@ class CanonicalCodec {
             mode: InsertMode.insertOrReplace,
           ),
     ),
+    // Service appointments (M4-T5) — after service_providers (FK provider_id).
+    _Entity(
+      'service_appointments',
+      () async => (await db.select(db.serviceAppointments).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.serviceAppointments).insert(
+            AppointmentRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
     _Entity(
       'expenses',
       () async =>

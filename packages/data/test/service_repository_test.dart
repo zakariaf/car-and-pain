@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:data/data.dart';
+import 'package:drift/drift.dart' show Variable;
 import 'package:flutter_test/flutter_test.dart';
 
 /// M4-T1 — the service schema + repository: one receipt per visit, atomic ledger
@@ -296,5 +297,118 @@ void main() {
     final filtered = await repo.partsCatalog(query: 'brake');
     expect(filtered, hasLength(1));
     expect(filtered.single.name, 'Brake pad');
+  });
+
+  // ── M4-T5: appointments, .ics, independence, warranty expiries ─────────────
+
+  test('appointment lifecycle: book, list active, set status, build .ics',
+      () async {
+    final (db, vehicleId) = await freshWithVehicle();
+    addTearDown(db.close);
+    final repo = ServiceRepository(db);
+
+    final id = (await repo.addAppointment(
+      vehicleId: vehicleId,
+      scheduledAt: Instant.fromDateTime(DateTime.utc(2026, 7, 15, 9, 30)),
+      durationMinutes: 90,
+      title: 'Oil change',
+    ))
+        .valueOrNull!;
+
+    expect(await repo.watchAppointments(vehicleId, activeOnly: true).first,
+        hasLength(1));
+
+    final ics = await repo.appointmentIcs(id, summary: 'Oil change');
+    expect(ics, contains('DTSTART:20260715T093000Z'));
+    expect(ics, contains('DTEND:20260715T110000Z'));
+
+    // Completing it drops it from the active list but keeps it in the full list.
+    expect((await repo.setAppointmentStatus(id, 'completed')).isOk, isTrue);
+    expect(await repo.watchAppointments(vehicleId, activeOnly: true).first,
+        isEmpty);
+    expect(await repo.watchAppointments(vehicleId).first, hasLength(1));
+
+    // A status update on a missing appointment is a typed NotFound.
+    expect(
+        (await repo.setAppointmentStatus('ghost', 'cancelled')).failureOrNull,
+        isA<NotFound>());
+  });
+
+  test('cancelling an appointment never clears interval reminders', () async {
+    final (db, vehicleId) = await freshWithVehicle();
+    addTearDown(db.close);
+    final repo = ServiceRepository(db);
+    await seedType(db, 'oil');
+
+    // An interval reminder from applying a template.
+    const template = ScheduleTemplate(
+      version: 1,
+      id: 'generic',
+      name: 'schedule.generic',
+      entries: [
+        ScheduleTemplateEntry(
+          serviceType: 'oil',
+          logic: ServiceIntervalLogic.time,
+          months: 12,
+        ),
+      ],
+    );
+    await repo.applyTemplate(
+      vehicleId,
+      template,
+      profile: ScheduleProfile.generic,
+      anchorDate: const Instant.fromEpochMillis(0),
+    );
+    final appt = (await repo.addAppointment(
+      vehicleId: vehicleId,
+      scheduledAt: const Instant.fromEpochMillis(1000),
+    ))
+        .valueOrNull!;
+
+    Future<int> reminderCount() async =>
+        (await db.customSelect('SELECT id FROM reminders WHERE vehicle_id = ?',
+                variables: [Variable<String>(vehicleId)]).get())
+            .length;
+
+    expect(await reminderCount(), 1);
+    // Cancel the appointment — the interval reminder is untouched.
+    expect((await repo.setAppointmentStatus(appt, 'cancelled')).isOk, isTrue);
+    expect(await reminderCount(), 1);
+  });
+
+  test('warranty expiries surface part + workmanship limits (date and mileage)',
+      () async {
+    final (db, vehicleId) = await freshWithVehicle();
+    addTearDown(db.close);
+    final repo = ServiceRepository(db);
+    await seedType(db, 'oil');
+
+    await repo.add(
+      vehicleId: vehicleId,
+      servicedAt: const Instant.fromEpochMillis(1000),
+      currencyCode: 'EUR',
+      lineItems: const [
+        ServiceLineItemDraft(
+          serviceTypeId: 'oil',
+          warrantyUntilDate: 50000,
+          warrantyUntilMileageMetres: 200000000,
+          parts: [
+            PartDraft(
+              name: 'Timing belt',
+              warrantyUntilDate: 99999,
+            ),
+          ],
+        ),
+      ],
+    );
+
+    final expiries = await repo.warrantyExpiries(vehicleId);
+    expect(expiries, hasLength(2));
+    final workmanship = expiries.firstWhere((e) => e.source == 'workmanship');
+    expect(workmanship.untilDate, 50000);
+    expect(workmanship.untilMileageMetres, 200000000);
+    final part = expiries.firstWhere((e) => e.source == 'part');
+    expect(part.label, 'Timing belt');
+    expect(part.untilDate, 99999);
   });
 }

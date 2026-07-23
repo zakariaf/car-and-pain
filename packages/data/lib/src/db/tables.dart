@@ -315,6 +315,25 @@ class ServiceProcedureSteps extends Table with AuditColumns {
   TextColumn get notes => text().nullable()();
 }
 
+/// A booked service appointment (M4-T5) — a specific date+time with a shop.
+/// Deliberately a SEPARATE class from interval reminders: cancelling an
+/// appointment never clears an interval reminder and vice-versa. Generates a
+/// local timed `.ics` for the device calendar (no server). `scheduledAt` is a
+/// true instant (UTC epoch millis); the calendar renders it in the user's locale.
+@DataClassName('AppointmentRow')
+class ServiceAppointments extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  TextColumn get providerId =>
+      text().nullable().references(ServiceProviders, #id)();
+  IntColumn get scheduledAt => integer()();
+  IntColumn get durationMinutes => integer().withDefault(const Constant(60))();
+  // scheduled | completed | cancelled | noShow.
+  TextColumn get status => text().withDefault(const Constant('scheduled'))();
+  TextColumn get title => text().nullable()();
+  TextColumn get notes => text().nullable()();
+}
+
 /// Any car cost. M6 adds recurring/amortization/loan/lease/TCO.
 class Expenses extends Table with AuditColumns {
   TextColumn get vehicleId =>

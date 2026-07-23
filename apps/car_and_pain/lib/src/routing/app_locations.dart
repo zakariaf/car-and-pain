@@ -43,6 +43,14 @@ abstract final class AppLocations {
   static String serviceHistory(String vehicleId) =>
       '/vehicle/$vehicleId/service';
 
+  /// The reminders list for [vehicleId] (full-screen flow above the shell).
+  static String remindersList(String vehicleId) =>
+      '/vehicle/$vehicleId/reminders';
+
+  /// The add-reminder form for [vehicleId] (full-screen flow above the shell).
+  static String newReminder(String vehicleId) =>
+      '/vehicle/$vehicleId/reminders/new';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

@@ -1,5 +1,6 @@
 import 'package:car_and_pain/src/app.dart';
 import 'package:car_and_pain/src/features/01-vehicles-garage/application/vehicle_profile_providers.dart';
+import 'package:car_and_pain/src/features/04-reminders-notifications/application/reminder_providers.dart';
 import 'package:car_and_pain/src/flavor.dart';
 import 'package:car_and_pain/src/notifications/notification_providers.dart';
 import 'package:car_and_pain/src/routing/deep_link_listener.dart';
@@ -88,6 +89,10 @@ Widget testApp(
       // `settings` drives locale/scope/onboarding-complete deterministically.
       settingsMapProvider.overrideWith((ref) => Stream.value(settings)),
       vehiclesStreamProvider.overrideWith((ref) => Stream.value(vehicles)),
+      // The reminder detail (notification deep-link target) reads this Drift
+      // .watch()-backed provider; stub it so no pending timer survives teardown.
+      reminderLiveStatesProvider
+          .overrideWith((ref, id) => Stream.value(const <ReminderWithState>[])),
       // The vehicle-profile screen's Drift-backed family streams, stubbed off
       // fixed streams so the profile route doesn't open a .watch() (pending
       // timer at teardown).

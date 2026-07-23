@@ -70,26 +70,3 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 }
-
-/// A reminder detail placeholder (M5 fills it) — the notification deep-link
-/// target, rebuilt entirely from path params (extra is null after reboot).
-class ReminderDetailScreen extends StatelessWidget {
-  const ReminderDetailScreen({
-    required this.vehicleId,
-    required this.reminderId,
-    super.key,
-  });
-
-  final String vehicleId;
-  final String reminderId;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return PulseScaffold(
-      title: pulseLabel(l10n, 'room.pitlane'),
-      // Placeholder identity echo (raw ids) until M5 builds the real detail.
-      body: Center(child: Text('$vehicleId · $reminderId')), // i18n-ignore
-    );
-  }
-}

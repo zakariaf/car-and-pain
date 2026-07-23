@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:car_and_pain/src/features/04-reminders-notifications/presentation/reminder_detail_screen.dart';
 import 'package:car_and_pain/src/security/app_lock_screen.dart';
 import 'package:car_and_pain/src/shell/shell_placeholders.dart';
 import 'package:core/core.dart';
@@ -101,6 +102,6 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(AppLockScreen), findsNothing);
     expect(find.byType(ReminderDetailScreen), findsOneWidget);
-    expect(find.text('v1 · r7'), findsOneWidget);
+    expect(find.text('Reminder not found'), findsOneWidget);
   });
 }

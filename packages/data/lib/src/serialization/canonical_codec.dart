@@ -193,13 +193,45 @@ class CanonicalCodec {
           .into(db.budgets)
           .insert(BudgetRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // Trip support tables (M7) — saved locations, rate schemes, road-trip
+    // containers — MUST restore before trips (FK: from/to location, rate scheme,
+    // roadtrip).
+    _Entity(
+      'saved_locations',
+      () async => (await db.select(db.savedLocations).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.savedLocations).insert(
+            SavedLocationRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'rate_schemes',
+      () async => (await db.select(db.rateSchemes).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.rateSchemes).insert(
+            RateSchemeRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'roadtrips',
+      () async =>
+          (await db.select(db.roadtrips).get()).map((r) => r.toJson()).toList(),
+      (j) => db.into(db.roadtrips).insert(
+            RoadtripRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
     _Entity(
       'trips',
       () async =>
           (await db.select(db.trips).get()).map((r) => r.toJson()).toList(),
       (j) => db
           .into(db.trips)
-          .insert(Trip.fromJson(j), mode: InsertMode.insertOrReplace),
+          .insert(TripRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
     _Entity(
       'reminders',

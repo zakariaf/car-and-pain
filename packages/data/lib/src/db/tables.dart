@@ -411,16 +411,117 @@ class Budgets extends Table with AuditColumns {
   TextColumn get lastAlertPeriod => text().nullable()();
 }
 
-/// A trip logbook entry. M7 adds tax classification + rate engines.
+/// A trip logbook entry — manual/GPS with tax classification and effective-dated
+/// mileage rates (M7-T1). `TripRow` frees the `Trip` name for the Drift-free
+/// domain model, matching the `ExpenseRow`/`ReminderRow` convention.
+@DataClassName('TripRow')
 class Trips extends Table with AuditColumns {
   TextColumn get vehicleId =>
       text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  // Trip start instant (UTC epoch millis); optional end for GPS/duration.
   IntColumn get tripAt => integer()();
+  IntColumn get endAt => integer().nullable()();
   IntColumn get startOdometerMetres => integer().nullable()();
   IntColumn get endOdometerMetres => integer().nullable()();
   IntColumn get distanceMetres => integer()();
   TextColumn get purpose => text().nullable()();
+  // Legacy F2 flag; superseded by [classification] but kept for back-compat.
   BoolColumn get isBusiness => boolean().withDefault(const Constant(false))();
+  // ── M7-T1 ─────────────────────────────────────────────────────────────────
+  // unclassified | business | personal | commute.
+  TextColumn get classification =>
+      text().withDefault(const Constant('unclassified'))();
+  BoolColumn get isDeductible => boolean().withDefault(const Constant(false))();
+  // A reconstructed (after-the-fact) trip is non-contemporaneous for audit.
+  BoolColumn get isContemporaneous =>
+      boolean().withDefault(const Constant(true))();
+  BoolColumn get autoDetected => boolean().withDefault(const Constant(false))();
+  // car | van | motorcycle | bicycle (feeds the class-aware rate engine).
+  TextColumn get vehicleClass => text().withDefault(const Constant('car'))();
+  // Custom taxonomy + business allocation.
+  TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  TextColumn get clientId => text().nullable()();
+  TextColumn get projectId => text().nullable()();
+  TextColumn get costCentre => text().nullable()();
+  BoolColumn get billable => boolean().withDefault(const Constant(false))();
+  TextColumn get driverId => text().nullable()();
+  // Endpoints (saved locations); nullable so raw-distance entry needs neither.
+  // Distinct @ReferenceName since both point at the same table.
+  @ReferenceName('fromTrips')
+  TextColumn get fromLocationId =>
+      text().nullable().references(SavedLocations, #id)();
+  @ReferenceName('toTrips')
+  TextColumn get toLocationId =>
+      text().nullable().references(SavedLocations, #id)();
+  // On-device GPS track reference (no online routing).
+  TextColumn get gpxRef => text().nullable()();
+  // Effective-dated rate engine snapshot resolved at classification time.
+  TextColumn get rateSchemeId =>
+      text().nullable().references(RateSchemes, #id)();
+  IntColumn get applicableRateThousandths => integer().nullable()();
+  TextColumn get tierApplied => text().nullable()();
+  IntColumn get passengerCount => integer().withDefault(const Constant(0))();
+  IntColumn get computedAmountMinor => integer().nullable()();
+  TextColumn get currencyCode => text().nullable()();
+  IntColumn get gapMetres => integer().nullable()();
+  // Road-trip container linkage + per-trip economy/cost.
+  TextColumn get roadtripId => text().nullable().references(Roadtrips, #id)();
+  IntColumn get legSequence => integer().nullable()();
+  // JSON arrays of linked fuel-fill / expense ids (comma-safe).
+  TextColumn get linkedFillupIds => text().nullable()();
+  TextColumn get linkedExpenseIds => text().nullable()();
+  IntColumn get fuelUsedMl => integer().nullable()();
+  IntColumn get energyUsedWh => integer().nullable()();
+  IntColumn get costMinor => integer().nullable()();
+  TextColumn get tags => text().nullable()();
+  TextColumn get notes => text().nullable()();
+  TextColumn get entryCalendar => text().nullable()();
+}
+
+/// A reusable named place in the trip address book (M7-T9). Coordinates are
+/// stored as integer micro-degrees (degrees × 1e6) to keep them off the float
+/// path; `home`/`work` designations drive automatic commute exclusion.
+@DataClassName('SavedLocationRow')
+class SavedLocations extends Table with AuditColumns {
+  TextColumn get name => text()();
+  // home | work | client | generic.
+  TextColumn get kind => text().withDefault(const Constant('generic'))();
+  IntColumn get latitudeMicro => integer().nullable()();
+  IntColumn get longitudeMicro => integer().nullable()();
+  TextColumn get mapPinRef => text().nullable()();
+  TextColumn get notes => text().nullable()();
+}
+
+/// A persisted, effective-dated mileage-rate scheme (M7-T3). The tiered,
+/// vehicle-class-aware revisions are serialized as canonical JSON in
+/// [revisionsJson]; the core `MileageRateScheme` engine rehydrates from it.
+@DataClassName('RateSchemeRow')
+class RateSchemes extends Table with AuditColumns {
+  TextColumn get name => text()();
+  // irs | hmrc | custom.
+  TextColumn get kind => text()();
+  TextColumn get currencyCode => text()();
+  // mile | kilometre.
+  TextColumn get unit => text()();
+  IntColumn get taxYearStartMonth => integer().withDefault(const Constant(1))();
+  IntColumn get taxYearStartDay => integer().withDefault(const Constant(1))();
+  // JSON array of {effectiveFrom, tiersByClass, passengerRateThousandths}.
+  TextColumn get revisionsJson => text()();
+  BoolColumn get isBuiltIn => boolean().withDefault(const Constant(false))();
+}
+
+/// A multi-day road-trip container grouping legs, linked fills and expenses into
+/// one P&L (M7-T4).
+@DataClassName('RoadtripRow')
+class Roadtrips extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  TextColumn get title => text()();
+  IntColumn get startAt => integer()();
+  IntColumn get endAt => integer().nullable()();
+  IntColumn get companionCount => integer().withDefault(const Constant(1))();
+  TextColumn get currencyCode => text()();
+  TextColumn get notes => text().nullable()();
 }
 
 /// A reminder record. F5 owns the scheduling primitives; M5 adds the user-facing

@@ -27,6 +27,9 @@ part 'app_database.g.dart';
     Expenses,
     Financings,
     Budgets,
+    SavedLocations,
+    RateSchemes,
+    Roadtrips,
     Trips,
     Reminders,
     Categories,
@@ -48,7 +51,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 14;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -100,6 +103,9 @@ class AppDatabase extends _$AppDatabase {
       'CREATE INDEX IF NOT EXISTS idx_expense_category ON expenses (category_id);',
       'CREATE INDEX IF NOT EXISTS idx_expense_source ON expenses (source_entity_type, source_entity_id);',
       'CREATE INDEX IF NOT EXISTS idx_trip_vehicle_time ON trips (vehicle_id, trip_at);',
+      'CREATE INDEX IF NOT EXISTS idx_trip_roadtrip ON trips (roadtrip_id, leg_sequence);',
+      'CREATE INDEX IF NOT EXISTS idx_roadtrip_vehicle ON roadtrips (vehicle_id, start_at);',
+      'CREATE INDEX IF NOT EXISTS idx_savedloc_kind ON saved_locations (kind);',
       'CREATE INDEX IF NOT EXISTS idx_financing_vehicle ON financings (vehicle_id);',
       'CREATE INDEX IF NOT EXISTS idx_budget_vehicle ON budgets (vehicle_id);',
       // UNIQUE: exactly one rollup per (vehicle, period, metric). Enforces the

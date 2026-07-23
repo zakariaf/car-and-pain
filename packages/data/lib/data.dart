@@ -57,6 +57,7 @@ export 'src/domain/attachment.dart'
 export 'src/domain/expense.dart' show Expense;
 export 'src/domain/financing.dart' show Budget, Financing;
 export 'src/domain/fuel_entry.dart' show FuelEntry;
+export 'src/domain/rate_scheme.dart' show RateScheme;
 export 'src/domain/reminder.dart'
     show Reminder, ReminderLiveState, ReminderWithState, classifyReminderState;
 export 'src/domain/service_appointment.dart'
@@ -72,6 +73,7 @@ export 'src/domain/service_visit.dart'
         ServiceLineItem,
         ServiceLineItemDraft,
         ServiceVisit;
+export 'src/domain/trip.dart' show Roadtrip, SavedLocation, Trip;
 export 'src/domain/vehicle.dart' show Vehicle;
 export 'src/infra/app_dirs.dart' show AppDirs;
 export 'src/infra/app_time_zone.dart' show AppTimeZone;
@@ -120,6 +122,9 @@ export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
 export 'src/repositories/service_repository.dart' show ServiceRepository;
 export 'src/repositories/stations_repository.dart' show StationsRepository;
+export 'src/repositories/trip_support_repositories.dart'
+    show RateSchemesRepository, RoadtripsRepository, SavedLocationsRepository;
+export 'src/repositories/trips_repository.dart' show TripsRepository;
 export 'src/repositories/vehicles_repository.dart'
     show VehicleEdit, VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;

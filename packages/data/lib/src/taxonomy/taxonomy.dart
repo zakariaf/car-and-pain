@@ -101,6 +101,23 @@ class TaxonomyRepository extends BaseRepository {
     ),
   ];
 
+  /// Default service intervals for the built-in service types (M4-T3/T6), keyed
+  /// by the seed's label key so the localized status cards compute a next-due out
+  /// of the box. Distance is canonical metres; every value stays user-overridable.
+  static const Map<String, ({int? metres, int? months, String logic})>
+      _serviceIntervals = {
+    'taxonomy.oil_change': (
+      metres: 15000000, // 15_000 km
+      months: 12,
+      logic: 'whicheverFirst',
+    ),
+    'taxonomy.brakes': (
+      metres: 20000000, // 20_000 km
+      months: 12,
+      logic: 'whicheverFirst',
+    ),
+  };
+
   Category _toDomain(CategoryRow r) => Category(
         id: r.id,
         kind: r.kind,
@@ -138,6 +155,7 @@ class TaxonomyRepository extends BaseRepository {
                 ))
               .getSingleOrNull();
           if (exists != null) continue;
+          final iv = _serviceIntervals[d.labelKey];
           await db.into(db.categories).insert(
                 CategoriesCompanion.insert(
                   id: newId(),
@@ -147,6 +165,9 @@ class TaxonomyRepository extends BaseRepository {
                   createdAt: now,
                   updatedAt: now,
                   iconKey: Value(d.iconKey),
+                  defaultIntervalMetres: Value(iv?.metres),
+                  defaultIntervalMonths: Value(iv?.months),
+                  defaultIntervalLogic: Value(iv?.logic),
                 ),
               );
           inserted++;

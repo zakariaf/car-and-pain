@@ -210,6 +210,14 @@ void main() {
       final second = await repo.seedDefaults();
       expect(second.valueOrNull, 0); // re-seed inserts nothing
       expect(await repo.watchByKind('expense').first, isNotEmpty);
+
+      // Built-in service types ship with an interval default (M4-T6) so the
+      // localized status cards compute a next-due out of the box.
+      final services = await repo.watchByKind('service').first;
+      final oil = services.firstWhere((c) => c.label == 'taxonomy.oil_change');
+      expect(oil.defaultIntervalMetres, 15000000);
+      expect(oil.defaultIntervalMonths, 12);
+      expect(oil.defaultIntervalLogic, 'whicheverFirst');
     });
   });
 

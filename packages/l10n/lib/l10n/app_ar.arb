@@ -139,5 +139,16 @@
   "recoveryRedeem": "استخدم رمز استرداد",
   "recoveryRedeemDesc": "استعد الوصول إذا نسيت رمز PIN",
   "recoveryRedeemDone": "تمت استعادة الوصول",
-  "recoveryRedeemInvalid": "رمز غير صالح أو مُستخدَم من قبل"
+  "recoveryRedeemInvalid": "رمز غير صالح أو مُستخدَم من قبل",
+  "roomCockpitSub": "الآن",
+  "roomGarageSub": "سياراتك",
+  "roomPitlaneSub": "المستحق",
+  "readinessLabel": "الجاهزية",
+  "quickAdd": "إضافة",
+  "homeEmptyTitle": "أضِف مركبتك الأولى للبدء",
+  "homeEmptyCta": "إضافة مركبة",
+  "onboardingTitle": "مرحبًا",
+  "discardChangesTitle": "تجاهل التغييرات؟",
+  "discardChangesBody": "ستُفقد تغييراتك غير المحفوظة.",
+  "discardAction": "تجاهل"
 }

@@ -14,6 +14,7 @@ final class ScheduledNotification {
     required this.body,
     this.channelId = 'info',
     this.groupKey,
+    this.payload,
   });
 
   final int id;
@@ -28,6 +29,13 @@ final class ScheduledNotification {
 
   /// Digest grouping key; entries sharing a key collapse into one summary.
   final String? groupKey;
+
+  /// The deep-link target armed with the OS notification (M1-T6): the router
+  /// location to open when the user taps it (e.g. a reminder detail, or the
+  /// Pit-lane for a digest). Opaque to the gateway; validated at the edge by the
+  /// app's `mapNotificationPayload` before it drives navigation. Never contains
+  /// personal data — only stable ids already in the URL.
+  final String? payload;
 }
 
 /// A reminder's scheduling definition, mapped from the DB by the data layer so

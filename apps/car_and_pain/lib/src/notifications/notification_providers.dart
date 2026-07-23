@@ -24,6 +24,12 @@ final permissionServiceProvider = Provider<PermissionService>(
   (ref) => const PermissionService(),
 );
 
+/// Deep-link payloads from notifications tapped while the app is alive (M1-T6).
+/// A listener maps each to a route via `mapNotificationPayload` and navigates.
+final notificationTapProvider = StreamProvider<String?>(
+  (ref) => ref.watch(notificationServiceProvider).taps,
+);
+
 /// The pure [NotificationGateway] the scheduler/reconciler talk to — the real
 /// FLN-backed gateway in prod, a [FakeNotificationGateway] in tests.
 final notificationGatewayProvider = Provider<NotificationGateway>(

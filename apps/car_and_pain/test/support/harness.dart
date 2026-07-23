@@ -1,12 +1,17 @@
 import 'package:car_and_pain/src/app.dart';
 import 'package:car_and_pain/src/flavor.dart';
+import 'package:car_and_pain/src/notifications/notification_providers.dart';
+import 'package:car_and_pain/src/routing/deep_link_listener.dart';
+import 'package:car_and_pain/src/routing/pending_location.dart';
 import 'package:car_and_pain/src/security/biometric_authenticator.dart';
 import 'package:car_and_pain/src/security/security_providers.dart';
 import 'package:car_and_pain/src/settings/locale_controller.dart';
+import 'package:car_and_pain/src/shell/shell_state.dart';
 import 'package:car_and_pain/src/startup/app_infra.dart';
 import 'package:car_and_pain/src/startup/startup_initializer.dart';
 import 'package:core/core.dart';
 import 'package:data/data.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:security/security.dart';
@@ -48,11 +53,23 @@ Widget testApp(
   StartupInitializer initializer, {
   AppDatabase? database,
   SecureStore? secureStore,
+  List<Vehicle> vehicles = const [],
+  Map<String, String> settings = const {},
+  bool reduceMotion = false,
+  String? pendingLocation,
+  Stream<String?>? deepLinkTaps,
 }) {
   return ProviderScope(
     overrides: [
       flavorProvider.overrideWithValue(Flavor.dev),
       startupInitializerProvider.overrideWithValue(initializer),
+      if (pendingLocation != null)
+        pendingLocationProvider
+            .overrideWithValue(PendingDeepLink(pendingLocation)),
+      // Warm-app notification taps are fed off a controllable stream so the
+      // deep-link path is drivable without the OS plugin.
+      if (deepLinkTaps != null)
+        notificationTapProvider.overrideWith((ref) => deepLinkTaps),
       appDatabaseProvider.overrideWithValue(database ?? AppDatabase.memory()),
       secureKeyStoreProvider.overrideWithValue(const FakeSecureKeyStore()),
       appDirsProvider.overrideWithValue(_dirs),
@@ -64,12 +81,23 @@ Widget testApp(
       // A no-hardware biometric fake so the gate never reaches the local_auth
       // plugin channel (which would make resolution non-deterministic in tests).
       biometricAuthenticatorProvider.overrideWithValue(const _NoBiometric()),
-      // Feed localization off a synchronous fixed stream so widget tests don't
-      // open a Drift .watch() (which leaves a pending timer at teardown).
-      settingsMapProvider
-          .overrideWith((ref) => Stream.value(const <String, String>{})),
+      // Feed localization + the vehicle list off synchronous fixed streams so
+      // widget tests don't open a Drift .watch() (which leaves a pending timer
+      // at teardown). The router redirect and shell read these directly.
+      // `settings` drives locale/scope/onboarding-complete deterministically.
+      settingsMapProvider.overrideWith((ref) => Stream.value(settings)),
+      vehiclesStreamProvider.overrideWith((ref) => Stream.value(vehicles)),
     ],
-    child: const CarAndPainApp(),
+    // Force the app-level reduce-motion preference on for deterministic pumps
+    // of the breathing hero (which otherwise repeats forever → pumpAndSettle
+    // never returns). The scope sits above MaterialApp but inherited widgets
+    // still reach every descendant.
+    child: ReducedMotionScope(
+      reduce: reduceMotion,
+      child: deepLinkTaps == null
+          ? const CarAndPainApp()
+          : const DeepLinkListener(child: CarAndPainApp()),
+    ),
   );
 }
 

@@ -139,5 +139,16 @@
   "recoveryRedeem": "Utiliser un code de récupération",
   "recoveryRedeemDesc": "Récupérez l'accès si vous avez oublié votre code PIN",
   "recoveryRedeemDone": "Accès rétabli",
-  "recoveryRedeemInvalid": "Code invalide ou déjà utilisé"
+  "recoveryRedeemInvalid": "Code invalide ou déjà utilisé",
+  "roomCockpitSub": "Maintenant",
+  "roomGarageSub": "Vos véhicules",
+  "roomPitlaneSub": "À échéance",
+  "readinessLabel": "État de préparation",
+  "quickAdd": "Ajouter",
+  "homeEmptyTitle": "Ajoutez votre premier véhicule pour commencer",
+  "homeEmptyCta": "Ajouter un véhicule",
+  "onboardingTitle": "Bienvenue",
+  "discardChangesTitle": "Abandonner les modifications ?",
+  "discardChangesBody": "Vos modifications non enregistrées seront perdues.",
+  "discardAction": "Abandonner"
 }

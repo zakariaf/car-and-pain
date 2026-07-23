@@ -139,5 +139,16 @@
   "recoveryRedeem": "کۆدی گەڕاندنەوە بەکاربهێنە",
   "recoveryRedeemDesc": "دیسان دەستت دەگاتەوە ئەگەر ژمارەی نهێنیت لەبیرچووبێت",
   "recoveryRedeemDone": "دەستڕاگەیشتن گەڕایەوە",
-  "recoveryRedeemInvalid": "کۆدی نادروست یان پێشتر بەکارهاتوو"
+  "recoveryRedeemInvalid": "کۆدی نادروست یان پێشتر بەکارهاتوو",
+  "roomCockpitSub": "ئێستا",
+  "roomGarageSub": "ئۆتۆمبێلەکانت",
+  "roomPitlaneSub": "کاتی چاکسازی",
+  "readinessLabel": "ئامادەیی",
+  "quickAdd": "زیادکردن",
+  "homeEmptyTitle": "بۆ دەستپێکردن یەکەم ئۆتۆمبێلت زیاد بکە",
+  "homeEmptyCta": "ئۆتۆمبێلێک زیاد بکە",
+  "onboardingTitle": "بەخێربێیت",
+  "discardChangesTitle": "گۆڕانکارییەکان بسڕدرێنەوە؟",
+  "discardChangesBody": "گۆڕانکارییە هەڵنەگیراوەکانت لەدەست دەچن.",
+  "discardAction": "سڕینەوە"
 }

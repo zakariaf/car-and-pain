@@ -18,6 +18,7 @@ class CarAndPainApp extends ConsumerWidget {
     // the script-aware theme, so a language change re-renders live (F4-T2).
     final prefs = ref.watch(localizationPrefsProvider);
     return MaterialApp.router(
+      restorationScopeId: 'app',
       onGenerateTitle: (context) => AppLocalizations.of(context).appTitle,
       debugShowCheckedModeBanner: false,
       theme: pulseTheme(Brightness.light, arabicScript: prefs.isRtl),

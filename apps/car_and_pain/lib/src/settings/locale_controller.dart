@@ -9,6 +9,13 @@ abstract final class SettingsKeys {
   static const locale = 'locale';
   static const calendar = 'calendar';
   static const numeral = 'numeral';
+
+  // ── Shell UI state (M1-T3/T10): persisted through the settings table, so it
+  // round-trips through the single-file backup / JSON export like any setting.
+  static const defaultVehicleId = 'default_vehicle_id';
+  static const scope = 'scope';
+  static const lastRoom = 'last_room';
+  static const onboardingComplete = 'onboarding_complete';
 }
 
 /// Reactive snapshot of the encrypted settings table — the single source that

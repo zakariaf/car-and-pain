@@ -15,5 +15,8 @@ String pulseLabel(AppLocalizations l10n, String key) => switch (key) {
       'room.cockpit' => l10n.roomCockpit,
       'room.garage' => l10n.roomGarage,
       'room.pitlane' => l10n.roomPitlane,
+      'room.cockpit_sub' => l10n.roomCockpitSub,
+      'room.garage_sub' => l10n.roomGarageSub,
+      'room.pitlane_sub' => l10n.roomPitlaneSub,
       _ => key,
     };

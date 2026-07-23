@@ -139,5 +139,16 @@
   "recoveryRedeem": "Wiederherstellungscode verwenden",
   "recoveryRedeemDesc": "Zugriff zurückerlangen, falls du deine PIN vergessen hast",
   "recoveryRedeemDone": "Zugriff wiederhergestellt",
-  "recoveryRedeemInvalid": "Ungültiger oder bereits verwendeter Code"
+  "recoveryRedeemInvalid": "Ungültiger oder bereits verwendeter Code",
+  "roomCockpitSub": "Jetzt",
+  "roomGarageSub": "Deine Autos",
+  "roomPitlaneSub": "Fällig",
+  "readinessLabel": "Bereitschaft",
+  "quickAdd": "Hinzufügen",
+  "homeEmptyTitle": "Füge dein erstes Fahrzeug hinzu, um zu beginnen",
+  "homeEmptyCta": "Fahrzeug hinzufügen",
+  "onboardingTitle": "Willkommen",
+  "discardChangesTitle": "Änderungen verwerfen?",
+  "discardChangesBody": "Deine nicht gespeicherten Änderungen gehen verloren.",
+  "discardAction": "Verwerfen"
 }

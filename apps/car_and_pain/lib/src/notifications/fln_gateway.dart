@@ -30,6 +30,9 @@ final class FlnNotificationGateway implements NotificationGateway {
         androidScheduleMode: n.channelId == 'overdue'
             ? AndroidScheduleMode.exactAllowWhileIdle
             : AndroidScheduleMode.inexactAllowWhileIdle,
+        // The deep-link target survives the reboot/Doze boundary with the OS
+        // notification; the tap handler maps it back to a route (M1-T6).
+        payload: n.payload,
       );
       return const Ok(null);
     } on Object {

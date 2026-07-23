@@ -1397,5 +1397,218 @@
   "reminderDelete": "Delete",
   "@reminderDelete": {
     "description": "Reminders UI (M5): reminderDelete"
+  },
+  "expenseAddTitle": "Add expense",
+  "@expenseAddTitle": {
+    "description": "M6 expense/TCO: expenseAddTitle"
+  },
+  "expenseSave": "Save",
+  "@expenseSave": {
+    "description": "M6 expense/TCO: expenseSave"
+  },
+  "expenseAmount": "Amount",
+  "@expenseAmount": {
+    "description": "M6 expense/TCO: expenseAmount"
+  },
+  "expenseCategory": "Category",
+  "@expenseCategory": {
+    "description": "M6 expense/TCO: expenseCategory"
+  },
+  "expenseDate": "Date",
+  "@expenseDate": {
+    "description": "M6 expense/TCO: expenseDate"
+  },
+  "expenseOdometer": "Odometer (km)",
+  "@expenseOdometer": {
+    "description": "M6 expense/TCO: expenseOdometer"
+  },
+  "expenseNote": "Note",
+  "@expenseNote": {
+    "description": "M6 expense/TCO: expenseNote"
+  },
+  "expenseAttachReceipt": "Attach receipt",
+  "@expenseAttachReceipt": {
+    "description": "M6 expense/TCO: expenseAttachReceipt"
+  },
+  "expenseAmountInvalid": "Enter a valid amount",
+  "@expenseAmountInvalid": {
+    "description": "M6 expense/TCO: expenseAmountInvalid"
+  },
+  "expenseSaveFailed": "Couldn't save the expense — your entry is kept.",
+  "@expenseSaveFailed": {
+    "description": "M6 expense/TCO: expenseSaveFailed"
+  },
+  "expensesTitle": "Expenses",
+  "@expensesTitle": {
+    "description": "M6 expense/TCO: expensesTitle"
+  },
+  "expensesEmpty": "No expenses yet",
+  "@expensesEmpty": {
+    "description": "M6 expense/TCO: expensesEmpty"
+  },
+  "expenseUncategorized": "Uncategorized",
+  "@expenseUncategorized": {
+    "description": "M6 expense/TCO: expenseUncategorized"
+  },
+  "expenseCategoryFuel": "Fuel",
+  "@expenseCategoryFuel": {
+    "description": "M6 expense/TCO: expenseCategoryFuel"
+  },
+  "expenseCategoryInsurance": "Insurance",
+  "@expenseCategoryInsurance": {
+    "description": "M6 expense/TCO: expenseCategoryInsurance"
+  },
+  "expenseCategoryTax": "Tax",
+  "@expenseCategoryTax": {
+    "description": "M6 expense/TCO: expenseCategoryTax"
+  },
+  "expenseCategoryParking": "Parking",
+  "@expenseCategoryParking": {
+    "description": "M6 expense/TCO: expenseCategoryParking"
+  },
+  "budgetsTitle": "Budgets",
+  "@budgetsTitle": {
+    "description": "M6 expense/TCO: budgetsTitle"
+  },
+  "budgetsError": "Couldn't load budgets",
+  "@budgetsError": {
+    "description": "M6 expense/TCO: budgetsError"
+  },
+  "budgetsEmpty": "No budgets set",
+  "@budgetsEmpty": {
+    "description": "M6 expense/TCO: budgetsEmpty"
+  },
+  "budgetOverLabel": "Over budget",
+  "@budgetOverLabel": {
+    "description": "M6 expense/TCO: budgetOverLabel"
+  },
+  "budgetProjectedOverLabel": "Projected over",
+  "@budgetProjectedOverLabel": {
+    "description": "M6 expense/TCO: budgetProjectedOverLabel"
+  },
+  "budgetWithinLabel": "Within budget",
+  "@budgetWithinLabel": {
+    "description": "M6 expense/TCO: budgetWithinLabel"
+  },
+  "budgetCurrent": "Spent",
+  "@budgetCurrent": {
+    "description": "M6 expense/TCO: budgetCurrent"
+  },
+  "budgetLimit": "Limit",
+  "@budgetLimit": {
+    "description": "M6 expense/TCO: budgetLimit"
+  },
+  "budgetProjected": "Projected",
+  "@budgetProjected": {
+    "description": "M6 expense/TCO: budgetProjected"
+  },
+  "tcoTitle": "Cost of ownership",
+  "@tcoTitle": {
+    "description": "M6 expense/TCO: tcoTitle"
+  },
+  "tcoError": "Couldn't compute TCO",
+  "@tcoError": {
+    "description": "M6 expense/TCO: tcoError"
+  },
+  "tcoTotal": "Total cost",
+  "@tcoTotal": {
+    "description": "M6 expense/TCO: tcoTotal"
+  },
+  "tcoInsufficientData": "Not enough data",
+  "@tcoInsufficientData": {
+    "description": "M6 expense/TCO: tcoInsufficientData"
+  },
+  "tcoPerKm": "Per km",
+  "@tcoPerKm": {
+    "description": "M6 expense/TCO: tcoPerKm"
+  },
+  "tcoPerDay": "Per day",
+  "@tcoPerDay": {
+    "description": "M6 expense/TCO: tcoPerDay"
+  },
+  "tcoBreakdown": "By category",
+  "@tcoBreakdown": {
+    "description": "M6 expense/TCO: tcoBreakdown"
+  },
+  "tcoNoCosts": "No costs recorded",
+  "@tcoNoCosts": {
+    "description": "M6 expense/TCO: tcoNoCosts"
+  },
+  "tcoBucketService": "Service",
+  "@tcoBucketService": {
+    "description": "M6 expense/TCO: tcoBucketService"
+  },
+  "tcoBucketFinancing": "Financing",
+  "@tcoBucketFinancing": {
+    "description": "M6 expense/TCO: tcoBucketFinancing"
+  },
+  "tcoBucketDepreciation": "Depreciation",
+  "@tcoBucketDepreciation": {
+    "description": "M6 expense/TCO: tcoBucketDepreciation"
+  },
+  "tcoBucketOther": "Other",
+  "@tcoBucketOther": {
+    "description": "M6 expense/TCO: tcoBucketOther"
+  },
+  "financingTitle": "Loan / lease",
+  "@financingTitle": {
+    "description": "M6 expense/TCO: financingTitle"
+  },
+  "financingNotFound": "This financing isn't available",
+  "@financingNotFound": {
+    "description": "M6 expense/TCO: financingNotFound"
+  },
+  "financingMonthly": "Monthly payment",
+  "@financingMonthly": {
+    "description": "M6 expense/TCO: financingMonthly"
+  },
+  "financingTotalInterest": "Total interest",
+  "@financingTotalInterest": {
+    "description": "M6 expense/TCO: financingTotalInterest"
+  },
+  "financingPayoffNow": "Payoff now",
+  "@financingPayoffNow": {
+    "description": "M6 expense/TCO: financingPayoffNow"
+  },
+  "financingNegativeEquity": "Negative equity",
+  "@financingNegativeEquity": {
+    "description": "M6 expense/TCO: financingNegativeEquity"
+  },
+  "financingEquity": "Equity",
+  "@financingEquity": {
+    "description": "M6 expense/TCO: financingEquity"
+  },
+  "financingSchedule": "Schedule",
+  "@financingSchedule": {
+    "description": "M6 expense/TCO: financingSchedule"
+  },
+  "financingColPeriod": "#",
+  "@financingColPeriod": {
+    "description": "M6 expense/TCO: financingColPeriod"
+  },
+  "financingColPayment": "Payment",
+  "@financingColPayment": {
+    "description": "M6 expense/TCO: financingColPayment"
+  },
+  "financingColInterest": "Interest",
+  "@financingColInterest": {
+    "description": "M6 expense/TCO: financingColInterest"
+  },
+  "financingColPrincipal": "Principal",
+  "@financingColPrincipal": {
+    "description": "M6 expense/TCO: financingColPrincipal"
+  },
+  "financingColBalance": "Balance",
+  "@financingColBalance": {
+    "description": "M6 expense/TCO: financingColBalance"
+  },
+  "budgetPeriodLabel": "{period, select, monthly{Monthly} quarterly{Quarterly} annual{Annual} other{Budget}}",
+  "@budgetPeriodLabel": {
+    "description": "Budget period label (monthly/quarterly/annual)",
+    "placeholders": {
+      "period": {
+        "type": "String"
+      }
+    }
   }
 }

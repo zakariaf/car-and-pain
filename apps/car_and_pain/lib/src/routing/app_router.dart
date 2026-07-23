@@ -27,6 +27,7 @@ import '../features/06-trips-mileage/presentation/trip_editor_screen.dart';
 import '../features/06-trips-mileage/presentation/trips_logbook_screen.dart';
 import '../features/17-dashboard-statistics-reports/presentation/dashboard_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
+import '../features/25-onboarding-help/presentation/help_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/app_lock_controller.dart';
 import '../security/app_lock_screen.dart';
@@ -278,6 +279,11 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/dashboard',
         parentNavigatorKey: _rootKey,
         builder: (context, state) => const DashboardScreen(),
+      ),
+      GoRoute(
+        path: '/help',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) => const HelpScreen(),
       ),
       GoRoute(
         path: '/trash',

@@ -92,6 +92,9 @@ abstract final class AppLocations {
   /// The analytics dashboard (full-screen flow above the shell).
   static const dashboard = '/dashboard';
 
+  /// The offline help & FAQ centre (full-screen flow above the shell).
+  static const help = '/help';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

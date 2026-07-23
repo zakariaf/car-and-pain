@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:l10n/l10n.dart';
 
+import '../routing/app_locations.dart';
 import 'locale_controller.dart';
 
 /// The PULSE language / calendar / numeral settings surface (F4-T9). Every
@@ -36,6 +37,13 @@ class SettingsScreen extends ConsumerWidget {
 
     return PulseScaffold(
       title: l10n.settingsTitle,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.help_outline),
+          tooltip: l10n.helpTitle,
+          onPressed: () => context.push(AppLocations.help),
+        ),
+      ],
       body: ListView(
         children: [
           _SectionLabel(l10n.settingsPresetSection),

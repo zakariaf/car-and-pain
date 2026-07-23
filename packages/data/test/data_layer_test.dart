@@ -102,6 +102,32 @@ void main() {
           totalCostMinor: 5200,
           currencyCode: 'EUR');
 
+      final expenses = ExpensesRepository(db);
+      // A plain manual base-currency expense — counted.
+      await expenses.add(
+          vehicleId: v.id,
+          spentAt: on(1),
+          amountMinor: 1999,
+          currencyCode: 'EUR');
+      // A foreign-currency expense: the incremental path counts baseAmountMinor,
+      // NOT the raw amountMinor — rebuild must do the same.
+      await expenses.add(
+          vehicleId: v.id,
+          spentAt: on(2),
+          amountMinor: 5000,
+          currencyCode: 'USD',
+          fxRateThousandths: 920,
+          baseAmountMinor: 4600);
+      // A projected cross-module row: counted by its own module, so the expense
+      // rollup must skip it on BOTH the incremental and the rebuild paths.
+      await expenses.add(
+          vehicleId: v.id,
+          spentAt: on(3),
+          amountMinor: 9999,
+          currencyCode: 'EUR',
+          sourceEntityType: 'fuel',
+          sourceEntityId: 'some-fuel-id');
+
       final incrementalCost = await rollupValue(v.id, 'costMinor');
       final incrementalFuel = await rollupValue(v.id, 'fuelMl');
 

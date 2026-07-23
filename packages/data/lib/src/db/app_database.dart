@@ -62,6 +62,11 @@ class AppDatabase extends _$AppDatabase {
           final snapshot = await snapshotGuard?.take();
           try {
             await runForwardMigrations(m, this, from: from, to: to);
+            // Indexes are declared out-of-band (not via Drift table schemas), so
+            // onCreate is not enough: a table/column added by a migration also
+            // needs its index created on the upgrade path. Idempotent (IF NOT
+            // EXISTS), so re-running the full set here is safe and cheap.
+            await _createIndexes();
           } catch (_) {
             if (snapshot != null) await snapshotGuard?.restore(snapshot);
             rethrow;

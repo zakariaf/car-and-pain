@@ -174,6 +174,25 @@ class CanonicalCodec {
           .into(db.expenses)
           .insert(ExpenseRow.fromJson(j), mode: InsertMode.insertOrReplace),
     ),
+    // Financing + budgets (M6-T4/T3) — after vehicles + categories (FK-safe).
+    _Entity(
+      'financings',
+      () async => (await db.select(db.financings).get())
+          .map((r) => r.toJson())
+          .toList(),
+      (j) => db.into(db.financings).insert(
+            FinancingRow.fromJson(j),
+            mode: InsertMode.insertOrReplace,
+          ),
+    ),
+    _Entity(
+      'budgets',
+      () async =>
+          (await db.select(db.budgets).get()).map((r) => r.toJson()).toList(),
+      (j) => db
+          .into(db.budgets)
+          .insert(BudgetRow.fromJson(j), mode: InsertMode.insertOrReplace),
+    ),
     _Entity(
       'trips',
       () async =>

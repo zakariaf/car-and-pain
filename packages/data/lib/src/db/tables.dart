@@ -370,6 +370,47 @@ class Expenses extends Table with AuditColumns {
   TextColumn get entryCalendar => text().nullable()();
 }
 
+/// A loan or lease against a vehicle (M6-T4). The amortization schedule is
+/// recomputed by the pure engine from these terms — never stored as a lossy
+/// duplicate. `refinancedFromId` links a successor to the schedule it replaced;
+/// `closedAt` marks a paid-off/refinanced loan.
+@DataClassName('FinancingRow')
+class Financings extends Table with AuditColumns {
+  TextColumn get vehicleId =>
+      text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  // loan | lease.
+  TextColumn get kind => text()();
+  IntColumn get principalMinor => integer()();
+  TextColumn get currencyCode => text()();
+  IntColumn get aprBps => integer()();
+  IntColumn get termMonths => integer()();
+  IntColumn get startDate => integer()();
+  IntColumn get residualMinor => integer().withDefault(const Constant(0))();
+  TextColumn get refinancedFromId => text().nullable()();
+  IntColumn get closedAt => integer().nullable()();
+  TextColumn get notes => text().nullable()();
+}
+
+/// A spending budget (M6-T3): per category (null = overall), per vehicle (null =
+/// all-vehicles), a calendar-aware period, and a minor-unit target in the base
+/// currency. Alert de-dup state fires each threshold once per period.
+@DataClassName('BudgetRow')
+class Budgets extends Table with AuditColumns {
+  TextColumn get vehicleId => text()
+      .nullable()
+      .references(Vehicles, #id, onDelete: KeyAction.cascade)();
+  TextColumn get categoryId => text().nullable().references(Categories, #id)();
+  // monthly | quarterly | annual.
+  TextColumn get period => text()();
+  IntColumn get targetMinor => integer()();
+  TextColumn get currencyCode => text()();
+  // cash | amortized.
+  TextColumn get basis => text().withDefault(const Constant('cash'))();
+  // The highest alert threshold already fired + the period key it fired for.
+  IntColumn get lastAlertThreshold => integer().nullable()();
+  TextColumn get lastAlertPeriod => text().nullable()();
+}
+
 /// A trip logbook entry. M7 adds tax classification + rate engines.
 class Trips extends Table with AuditColumns {
   TextColumn get vehicleId =>

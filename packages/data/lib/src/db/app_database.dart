@@ -25,6 +25,8 @@ part 'app_database.g.dart';
     ServiceProcedureSteps,
     ServiceAppointments,
     Expenses,
+    Financings,
+    Budgets,
     Trips,
     Reminders,
     Categories,
@@ -46,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
   SnapshotGuard? snapshotGuard;
 
   @override
-  int get schemaVersion => 12;
+  int get schemaVersion => 13;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -93,6 +95,8 @@ class AppDatabase extends _$AppDatabase {
       'CREATE INDEX IF NOT EXISTS idx_expense_category ON expenses (category_id);',
       'CREATE INDEX IF NOT EXISTS idx_expense_source ON expenses (source_entity_type, source_entity_id);',
       'CREATE INDEX IF NOT EXISTS idx_trip_vehicle_time ON trips (vehicle_id, trip_at);',
+      'CREATE INDEX IF NOT EXISTS idx_financing_vehicle ON financings (vehicle_id);',
+      'CREATE INDEX IF NOT EXISTS idx_budget_vehicle ON budgets (vehicle_id);',
       // UNIQUE: exactly one rollup per (vehicle, period, metric). Enforces the
       // documented invariant at the DB level so RollupService.getSingleOrNull()
       // can never trip a StateError on a duplicate and crash dashboard reads.

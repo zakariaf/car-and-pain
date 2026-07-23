@@ -162,6 +162,9 @@ Future<void> runForwardMigrations(
         ]) {
           await m.addColumn(e, col);
         }
+      case 12: // 12 → 13: M6-T4/T3 financing (loan/lease) + budgets.
+        await m.createTable(db.financings);
+        await m.createTable(db.budgets);
       // Future versions append their `case N` block here.
     }
   }

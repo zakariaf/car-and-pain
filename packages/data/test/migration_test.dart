@@ -86,6 +86,8 @@ const _m4CategoryColumns = [
 
 /// Rewind the M6 (v12) expense columns so a forward migration re-applies them.
 Future<void> _dropM6(AppDatabase db) async {
+  await db.customStatement('DROP TABLE financings');
+  await db.customStatement('DROP TABLE budgets');
   // Drop the indexes that reference the M6 columns first — SQLite refuses to
   // DROP COLUMN while an index uses it.
   await db.customStatement('DROP INDEX IF EXISTS idx_expense_category');
@@ -163,10 +165,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 12 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 13 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 12);
+    expect(db.schemaVersion, 13);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -190,6 +192,8 @@ void main() {
         'service_procedure_steps',
         'service_appointments',
         'expenses',
+        'financings',
+        'budgets',
         'trips',
         'reminders',
         'categories',
@@ -220,7 +224,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v12 forward migration adds all later schema, keeps data',
+  test('v1 → v13 forward migration adds all later schema, keeps data',
       () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));

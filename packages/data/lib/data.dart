@@ -96,6 +96,7 @@ export 'src/providers.dart'
         appTimeZoneProvider,
         attachmentsRepositoryProvider,
         budgetsRepositoryProvider,
+        demoSeederProvider,
         diagnosticsRepositoryProvider,
         expensesRepositoryProvider,
         financingRepositoryProvider,
@@ -119,6 +120,7 @@ export 'src/repositories/attachments_repository.dart'
     show AttachmentsRepository;
 export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/budgets_repository.dart' show BudgetsRepository;
+export 'src/repositories/demo_seeder.dart' show DemoSeeder;
 export 'src/repositories/expenses_repository.dart' show ExpensesRepository;
 export 'src/repositories/financing_repository.dart' show FinancingRepository;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;

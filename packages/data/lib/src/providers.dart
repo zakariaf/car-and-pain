@@ -9,6 +9,7 @@ import 'ledger/ledger_repository.dart';
 import 'notifications/notification_schedule_repository.dart';
 import 'repositories/attachments_repository.dart';
 import 'repositories/budgets_repository.dart';
+import 'repositories/demo_seeder.dart';
 import 'repositories/expenses_repository.dart';
 import 'repositories/financing_repository.dart';
 import 'repositories/fuel_repository.dart';
@@ -128,6 +129,10 @@ final stationsRepositoryProvider = Provider<StationsRepository>(
 
 final statsRepositoryProvider = Provider<StatsRepository>(
   (ref) => StatsRepository(ref.watch(appDatabaseProvider)),
+);
+
+final demoSeederProvider = Provider<DemoSeeder>(
+  (ref) => DemoSeeder(ref.watch(appDatabaseProvider)),
 );
 
 final notificationScheduleRepositoryProvider =

@@ -212,10 +212,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 14 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 15 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 14);
+    expect(db.schemaVersion, 15);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -274,7 +274,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v14 forward migration adds all later schema, keeps data',
+  test('v1 → v15 forward migration adds all later schema, keeps data',
       () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
@@ -321,6 +321,7 @@ void main() {
     }
     // The M4 (v8) service line items, provider directory, and header/taxonomy
     // columns.
+    await setup.customStatement('ALTER TABLE vehicles DROP COLUMN is_demo');
     await _dropM7(setup);
     await _dropM6(setup);
     await _dropM5(setup);
@@ -405,6 +406,7 @@ void main() {
     for (final c in _m3FuelColumns) {
       await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
+    await setup.customStatement('ALTER TABLE vehicles DROP COLUMN is_demo');
     await _dropM7(setup);
     await _dropM6(setup);
     await _dropM5(setup);

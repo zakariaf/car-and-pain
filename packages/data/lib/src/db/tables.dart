@@ -96,6 +96,8 @@ class Vehicles extends Table with AuditColumns {
   TextColumn get consumptionUnit => text().nullable()();
   TextColumn get currencyCode => text().nullable()();
   BoolColumn get isDefault => boolean().withDefault(const Constant(false))();
+  // M10-T3: a sample/demo vehicle (seeded for exploration, cleanly tearable).
+  BoolColumn get isDemo => boolean().withDefault(const Constant(false))();
 }
 
 /// Prior-plate history — a normalized child table (never a JSON blob) so it

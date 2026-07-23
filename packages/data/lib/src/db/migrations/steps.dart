@@ -207,6 +207,8 @@ Future<void> runForwardMigrations(
         ]) {
           await m.addColumn(t, col);
         }
+      case 14: // 14 → 15: M10-T3 demo/sample vehicle flag.
+        await m.addColumn(db.vehicles, db.vehicles.isDemo);
       // Future versions append their `case N` block here.
     }
   }

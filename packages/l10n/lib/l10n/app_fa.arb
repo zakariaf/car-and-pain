@@ -460,5 +460,20 @@
   "insightEconomyDrop": "مصرف سوخت از خط پایه شما بیشتر شده است.",
   "insightOdometerGap": "فاصله کیلومترشمار نشان‌دهنده سفر ثبت‌نشده است.",
   "insightOdometerRegression": "یک عدد کیلومترشمار کاهش یافته — لطفاً بررسی کنید.",
-  "insightDuplicate": "یک ورودی تکراری احتمالی پیدا شد."
+  "insightDuplicate": "یک ورودی تکراری احتمالی پیدا شد.",
+  "settingsPresetSection": "پیش‌تنظیم منطقه‌ای",
+  "presetIran": "ایران",
+  "presetGermany": "آلمان",
+  "presetFrance": "فرانسه",
+  "presetUnitedStates": "ایالات متحده",
+  "presetSaudiArabia": "عربستان سعودی",
+  "presetKurdistan": "کردستان",
+  "presetTurkey": "ترکیه",
+  "presetIndia": "هند",
+  "presetIsrael": "اسرائیل",
+  "presetSpain": "اسپانیا",
+  "presetBrazil": "برزیل",
+  "settingsPresetApplied": "پیش‌تنظیم اعمال شد.",
+  "settingsPrivacySection": "حریم خصوصی",
+  "settingsPrivacyBody": "بدون حساب، ۱۰۰٪ آفلاین، بدون تبلیغات، بدون همگام‌سازی اجباری، بدون تله‌متری. داده‌های شما روی دستگاهتان می‌ماند."
 }

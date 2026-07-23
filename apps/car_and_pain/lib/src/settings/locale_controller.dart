@@ -20,6 +20,16 @@ abstract final class SettingsKeys {
   // ── Notifications (M5-T4): grouped-digest delivery config ─────────────────
   // Collapse a delivery day into one digest once it has this many due items.
   static const digestGroupThreshold = 'digest_group_threshold';
+
+  // ── M9: display units, home currency, and fiscal/week boundaries. These are
+  // display projections only — changing them never rewrites a canonical value.
+  static const homeCurrency = 'home_currency';
+  static const distanceUnit = 'distance_unit';
+  static const volumeUnit = 'volume_unit';
+  static const temperatureUnit = 'temperature_unit';
+  static const firstDayOfWeek = 'first_day_of_week';
+  static const fiscalYearStart = 'fiscal_year_start';
+  static const themeMode = 'theme_mode';
 }
 
 /// Reactive snapshot of the encrypted settings table — the single source that
@@ -142,6 +152,28 @@ class LocalizationController {
 
   Future<Result<void, DbFailure>> setNumeralSystem(NumeralSystem n) =>
       _settings.set(SettingsKeys.numeral, n.name);
+
+  /// Apply a regional preset (M9-T2): set every i18n axis at once as a starting
+  /// point. Each axis remains independently overridable afterwards. Only display
+  /// projections change — no canonical value is rewritten.
+  Future<void> applyRegionalPreset(RegionalPreset preset) async {
+    final d = presetDefaults(preset);
+    await setLocale(Locale(d.localeCode));
+    await setCalendar(CalendarSystem.values.asNameMap()[d.calendar] ??
+        CalendarSystem.gregorian);
+    await setNumeralSystem(switch (d.numeral) {
+      'persian' => NumeralSystem.persian,
+      'arabic' => NumeralSystem.easternArabic,
+      _ => NumeralSystem.western,
+    });
+    await _settings.set(SettingsKeys.homeCurrency, d.currencyCode);
+    await _settings.set(SettingsKeys.distanceUnit, d.distance.name);
+    await _settings.set(SettingsKeys.volumeUnit, d.volume.name);
+    await _settings.set(SettingsKeys.temperatureUnit, d.temperature.name);
+    await _settings.set(SettingsKeys.firstDayOfWeek, '${d.firstDayOfWeek}');
+    await _settings.set(SettingsKeys.fiscalYearStart,
+        '${d.fiscalYearStartMonth}-${d.fiscalYearStartDay}');
+  }
 }
 
 final localizationControllerProvider = Provider<LocalizationController>(

@@ -460,5 +460,20 @@
   "insightEconomyDrop": "Der Verbrauch liegt über deinem Ausgangswert.",
   "insightOdometerGap": "Eine Kilometerlücke deutet auf eine nicht erfasste Fahrt hin.",
   "insightOdometerRegression": "Ein Kilometerstand ging zurück – bitte prüfen.",
-  "insightDuplicate": "Ein möglicher doppelter Eintrag wurde gefunden."
+  "insightDuplicate": "Ein möglicher doppelter Eintrag wurde gefunden.",
+  "settingsPresetSection": "Regionale Voreinstellung",
+  "presetIran": "Iran",
+  "presetGermany": "Deutschland",
+  "presetFrance": "Frankreich",
+  "presetUnitedStates": "USA",
+  "presetSaudiArabia": "Saudi-Arabien",
+  "presetKurdistan": "Kurdistan",
+  "presetTurkey": "Türkei",
+  "presetIndia": "Indien",
+  "presetIsrael": "Israel",
+  "presetSpain": "Spanien",
+  "presetBrazil": "Brasilien",
+  "settingsPresetApplied": "Voreinstellung angewendet.",
+  "settingsPrivacySection": "Datenschutz",
+  "settingsPrivacyBody": "Kein Konto, 100% offline, keine Werbung, keine erzwungene Synchronisierung, keine Telemetrie. Deine Daten bleiben auf deinem Gerät."
 }

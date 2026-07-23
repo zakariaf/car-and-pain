@@ -460,5 +460,20 @@
   "insightEconomyDrop": "بەکارهێنانی سووتەمەنی لە بنەڕەتەکەت کەمتر بووە.",
   "insightOdometerGap": "کەلێنی کیلۆمەتر ئاماژە بە گەشتی تۆمارنەکراو دەکات.",
   "insightOdometerRegression": "خوێندنەوەی کیلۆمەتر کەمی کردووە — تکایە پێداچوونەوەی بکە.",
-  "insightDuplicate": "تۆمارێکی دووبارەی ئەگەری هەبوو دۆزرایەوە."
+  "insightDuplicate": "تۆمارێکی دووبارەی ئەگەری هەبوو دۆزرایەوە.",
+  "settingsPresetSection": "ڕێکخستنی هەرێمی",
+  "presetIran": "ئێران",
+  "presetGermany": "ئەڵمانیا",
+  "presetFrance": "فەڕەنسا",
+  "presetUnitedStates": "ویلایەتە یەکگرتووەکان",
+  "presetSaudiArabia": "عەرەبستانی سعودی",
+  "presetKurdistan": "کوردستان",
+  "presetTurkey": "تورکیا",
+  "presetIndia": "هیندستان",
+  "presetIsrael": "ئیسرائیل",
+  "presetSpain": "ئیسپانیا",
+  "presetBrazil": "برازیل",
+  "settingsPresetApplied": "ڕێکخستنەکە جێبەجێ کرا.",
+  "settingsPrivacySection": "تایبەتمەندی",
+  "settingsPrivacyBody": "بێ هەژمار، ١٠٠٪ ئۆفلاین، بێ ڕیکلام، بێ هاوکاتکردنی زۆرەملێ، بێ تێلێمێتری. داتاکانت لەسەر ئامێرەکەت دەمێننەوە."
 }

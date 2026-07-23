@@ -152,6 +152,13 @@ export 'src/service/service_schedule.dart'
         ServiceInterval,
         ServiceIntervalLogic,
         ServiceScheduleEngine;
+export 'src/settings/regional_preset.dart'
+    show
+        RegionalDefaults,
+        RegionalPreset,
+        dayOfWeekIndex,
+        fiscalYearOf,
+        presetDefaults;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
 export 'src/trips/gap_reconciliation.dart' show GapKind, GapReconciler, TripGap;

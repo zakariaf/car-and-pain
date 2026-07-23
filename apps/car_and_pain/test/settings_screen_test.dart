@@ -29,9 +29,10 @@ Widget _host(
     );
 
 /// A tall surface so the whole settings list is laid out (the ListView is lazy;
-/// off-screen rows aren't built in the default 600px test window).
+/// off-screen rows aren't built in the default 600px test window). Sized to fit
+/// the regional-preset section + privacy panel added in M9.
 void _tall(WidgetTester tester) {
-  tester.view.physicalSize = const Size(600, 1800);
+  tester.view.physicalSize = const Size(600, 3000);
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
 }

@@ -460,5 +460,20 @@
   "insightEconomyDrop": "انخفض استهلاك الوقود دون خط الأساس.",
   "insightOdometerGap": "فجوة في العدّاد تشير إلى رحلة غير مسجّلة.",
   "insightOdometerRegression": "انخفضت قراءة العدّاد — يُرجى المراجعة.",
-  "insightDuplicate": "تم العثور على إدخال مكرّر محتمل."
+  "insightDuplicate": "تم العثور على إدخال مكرّر محتمل.",
+  "settingsPresetSection": "الإعداد الإقليمي",
+  "presetIran": "إيران",
+  "presetGermany": "ألمانيا",
+  "presetFrance": "فرنسا",
+  "presetUnitedStates": "الولايات المتحدة",
+  "presetSaudiArabia": "السعودية",
+  "presetKurdistan": "كردستان",
+  "presetTurkey": "تركيا",
+  "presetIndia": "الهند",
+  "presetIsrael": "إسرائيل",
+  "presetSpain": "إسبانيا",
+  "presetBrazil": "البرازيل",
+  "settingsPresetApplied": "تم تطبيق الإعداد.",
+  "settingsPrivacySection": "الخصوصية",
+  "settingsPrivacyBody": "لا حساب، غير متصل 100٪، لا إعلانات، لا مزامنة إجبارية، لا قياس عن بُعد. تبقى بياناتك على جهازك."
 }

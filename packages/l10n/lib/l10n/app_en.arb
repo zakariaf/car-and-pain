@@ -1967,5 +1967,65 @@
   "insightDuplicate": "A possible duplicate entry was found.",
   "@insightDuplicate": {
     "description": "M8 dashboard: insightDuplicate"
+  },
+  "settingsPresetSection": "Regional preset",
+  "@settingsPresetSection": {
+    "description": "M9 settings: settingsPresetSection"
+  },
+  "presetIran": "Iran",
+  "@presetIran": {
+    "description": "M9 settings: presetIran"
+  },
+  "presetGermany": "Germany",
+  "@presetGermany": {
+    "description": "M9 settings: presetGermany"
+  },
+  "presetFrance": "France",
+  "@presetFrance": {
+    "description": "M9 settings: presetFrance"
+  },
+  "presetUnitedStates": "United States",
+  "@presetUnitedStates": {
+    "description": "M9 settings: presetUnitedStates"
+  },
+  "presetSaudiArabia": "Saudi Arabia",
+  "@presetSaudiArabia": {
+    "description": "M9 settings: presetSaudiArabia"
+  },
+  "presetKurdistan": "Kurdistan",
+  "@presetKurdistan": {
+    "description": "M9 settings: presetKurdistan"
+  },
+  "presetTurkey": "Turkey",
+  "@presetTurkey": {
+    "description": "M9 settings: presetTurkey"
+  },
+  "presetIndia": "India",
+  "@presetIndia": {
+    "description": "M9 settings: presetIndia"
+  },
+  "presetIsrael": "Israel",
+  "@presetIsrael": {
+    "description": "M9 settings: presetIsrael"
+  },
+  "presetSpain": "Spain",
+  "@presetSpain": {
+    "description": "M9 settings: presetSpain"
+  },
+  "presetBrazil": "Brazil",
+  "@presetBrazil": {
+    "description": "M9 settings: presetBrazil"
+  },
+  "settingsPresetApplied": "Preset applied.",
+  "@settingsPresetApplied": {
+    "description": "M9 settings: settingsPresetApplied"
+  },
+  "settingsPrivacySection": "Privacy",
+  "@settingsPrivacySection": {
+    "description": "M9 settings: settingsPrivacySection"
+  },
+  "settingsPrivacyBody": "No account, 100% offline, no ads, no forced sync, no telemetry. Your data stays on your device.",
+  "@settingsPrivacyBody": {
+    "description": "M9 settings: settingsPrivacyBody"
   }
 }

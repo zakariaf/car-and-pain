@@ -267,6 +267,46 @@ class TripsRepository extends BaseRepository {
     }
   }
 
+  /// Edit a trip's **non-ledger** fields (classification, deductibility, purpose,
+  /// notes, passenger count, business allocation). Distance and the odometer
+  /// readings are immutable once written — editing them would corrupt the shared
+  /// ledger — so they are deliberately not touched here.
+  Future<Result<void, DbFailure>> updateDetails(
+    String id, {
+    required TripClassification classification,
+    bool? isDeductible,
+    String? purpose,
+    int? passengerCount,
+    String? notes,
+    String? clientId,
+  }) async {
+    try {
+      final now = nowMillis();
+      final found = await db.transaction(() async {
+        final cur = await (db.select(db.trips)..where((t) => t.id.equals(id)))
+            .getSingleOrNull();
+        if (cur == null || cur.isDeleted) return false;
+        await (db.update(db.trips)..where((t) => t.id.equals(id))).write(
+          TripsCompanion(
+            classification: Value(classification.name),
+            isDeductible:
+                Value(isDeductible ?? classification.isDeductibleByDefault),
+            purpose: Value(purpose),
+            passengerCount: Value(passengerCount ?? cur.passengerCount),
+            notes: Value(notes),
+            clientId: Value(clientId),
+            updatedAt: Value(now),
+            rowRevision: Value(cur.rowRevision + 1),
+          ),
+        );
+        return true;
+      });
+      return found ? const Ok(null) : const Err(NotFound('trip'));
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'trips'));
+    }
+  }
+
   /// Soft-delete to trash. The historical odometer readings stay in the ledger
   /// (a deleted trip does not unmake a reading), matching the fuel/service
   /// precedent.

@@ -116,6 +116,31 @@ void main() {
       expect(trip.isDeductible, isTrue); // business default
     });
 
+    test('updateDetails edits non-ledger fields, leaves distance intact',
+        () async {
+      final v = await seedVehicle();
+      final repo = TripsRepository(db);
+      final id = (await repo.add(
+              vehicleId: v,
+              tripAt: at(0),
+              startOdometerMetres: 10000000,
+              endOdometerMetres: 10050000))
+          .valueOrNull!;
+      final r = await repo.updateDetails(
+        id,
+        classification: TripClassification.commute,
+        passengerCount: 3,
+        notes: 'school run',
+      );
+      expect(r.isOk, isTrue);
+      final trip = (await repo.byId(id))!;
+      expect(trip.classification, TripClassification.commute);
+      expect(trip.isDeductible, isFalse); // commute default
+      expect(trip.passengerCount, 3);
+      expect(trip.notes, 'school run');
+      expect(trip.distanceMetres, 50000); // untouched
+    });
+
     test('softDelete tombstones and excludes from watch', () async {
       final v = await seedVehicle();
       final repo = TripsRepository(db);

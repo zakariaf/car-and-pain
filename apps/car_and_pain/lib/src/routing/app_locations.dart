@@ -72,6 +72,23 @@ abstract final class AppLocations {
   static String financingDetail(String vehicleId, String financingId) =>
       '/vehicle/$vehicleId/financing/$financingId';
 
+  /// The trip logbook for [vehicleId] (full-screen flow).
+  static String trips(String vehicleId) => '/vehicle/$vehicleId/trips';
+
+  /// The add-trip form for [vehicleId] (full-screen flow).
+  static String logTrip(String vehicleId) => '/vehicle/$vehicleId/trips/new';
+
+  /// The edit-trip form (full-screen flow).
+  static String editTrip(String vehicleId, String tripId) =>
+      '/vehicle/$vehicleId/trips/$tripId/edit';
+
+  /// The mileage report for [vehicleId] (full-screen flow).
+  static String mileageReport(String vehicleId) =>
+      '/vehicle/$vehicleId/mileage-report';
+
+  /// The road-trip containers for [vehicleId] (full-screen flow).
+  static String roadtrips(String vehicleId) => '/vehicle/$vehicleId/roadtrips';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

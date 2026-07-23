@@ -331,6 +331,72 @@ class ServiceRepository extends BaseRepository {
     }
   }
 
+  /// Apply a bundled schedule [template] under [profile] to a vehicle (M4-T3):
+  /// create one recurring reminder per entry, anchored to the vehicle's current
+  /// odometer + [anchorDate], producing the initial next-due state. Distance and
+  /// date rules re-anchor on completion (recurrence carried on date rules).
+  /// [resolveTitle] localizes each service-type key at the app edge so the data
+  /// layer stays l10n-free; a missing title falls back to the key. Every applied
+  /// interval remains user-overridable (a plain reminder row). Returns the ids.
+  Future<Result<List<String>, DbFailure>> applyTemplate(
+    String vehicleId,
+    ScheduleTemplate template, {
+    required ScheduleProfile profile,
+    required Instant anchorDate,
+    int? anchorOdometerMetres,
+    String Function(String serviceType)? resolveTitle,
+  }) async {
+    try {
+      final now = nowMillis();
+      var anchorOdo = anchorOdometerMetres;
+      if (anchorOdo == null) {
+        final veh = await (db.select(db.vehicles)
+              ..where((t) => t.id.equals(vehicleId)))
+            .getSingleOrNull();
+        anchorOdo = veh?.currentOdometerMetres ?? 0;
+      }
+      final items = applyScheduleTemplate(
+        template,
+        profile: profile,
+        anchorOdometerMetres: anchorOdo,
+        anchorDate: anchorDate,
+      );
+      final ids = <String>[];
+      await db.transaction(() async {
+        for (final item in items) {
+          final id = newId();
+          ids.add(id);
+          await db.into(db.reminders).insert(
+                RemindersCompanion.insert(
+                  id: id,
+                  vehicleId: vehicleId,
+                  title:
+                      resolveTitle?.call(item.serviceType) ?? item.serviceType,
+                  triggerType: _triggerFor(item.logic),
+                  createdAt: now,
+                  updatedAt: now,
+                  dueDate: Value(item.nextDueDate?.epochMillis),
+                  dueOdometerMetres: Value(item.nextDueOdometerMetres),
+                  // A date/whichever-first rule re-anchors by its month interval.
+                  recurrenceEvery: Value(item.intervalMonths),
+                  recurrenceUnit:
+                      Value(item.intervalMonths == null ? null : 'months'),
+                ),
+              );
+        }
+      });
+      return Ok(ids);
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'reminders'));
+    }
+  }
+
+  String _triggerFor(ServiceIntervalLogic logic) => switch (logic) {
+        ServiceIntervalLogic.time => 'date',
+        ServiceIntervalLogic.distance => 'distance',
+        ServiceIntervalLogic.whicheverFirst => 'whicheverFirst',
+      };
+
   /// Soft-delete a visit (and its owned line items) to trash — never a hard
   /// delete. The additive cost rollup this visit bumped is reversed so dashboards
   /// never count a trashed visit. The ledger row it wrote remains (audited).

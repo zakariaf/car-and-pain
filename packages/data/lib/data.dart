@@ -105,6 +105,8 @@ export 'src/repositories/stations_repository.dart' show StationsRepository;
 export 'src/repositories/vehicles_repository.dart'
     show VehicleEdit, VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;
+export 'src/service/schedule_template_library.dart'
+    show ScheduleTemplateLibrary;
 export 'src/settings/settings_repository.dart' show SettingsRepository;
 export 'src/taxonomy/taxonomy.dart' show Category, TaxonomyRepository;
 export 'src/trash/trash_repository.dart' show TrashItem, TrashRepository;

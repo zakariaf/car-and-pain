@@ -104,6 +104,13 @@ export 'src/scheduling/schedule_rule.dart'
         TriggerKind;
 export 'src/scheduling/scheduled_notification.dart'
     show ReminderScheduleDef, ScheduledNotification;
+export 'src/service/schedule_template.dart'
+    show
+        AppliedScheduleItem,
+        ScheduleProfile,
+        ScheduleTemplate,
+        ScheduleTemplateEntry,
+        applyScheduleTemplate;
 export 'src/service/service_cost.dart'
     show
         RunningCost,

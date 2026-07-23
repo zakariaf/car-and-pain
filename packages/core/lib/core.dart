@@ -143,6 +143,21 @@ export 'src/service/service_schedule.dart'
         ServiceScheduleEngine;
 export 'src/time/clock.dart' show Clock, FixedClock, SystemClock;
 export 'src/time/temporal.dart' show Instant, WallClockDateTime;
+export 'src/trips/gap_reconciliation.dart' show GapKind, GapReconciler, TripGap;
+export 'src/trips/gps_track.dart' show GpsFix, GpsTrackReducer;
+export 'src/trips/rate_engine.dart'
+    show
+        MileagePricing,
+        MileageRateScheme,
+        MileageVehicleClass,
+        RateDistanceUnit,
+        RateKind,
+        RateRevision,
+        RateTier,
+        TierApplication;
+export 'src/trips/roadtrip_pnl.dart' show RoadTripInput, RoadTripPnl;
+export 'src/trips/trip_classification.dart'
+    show ClassifiedTrip, TripClassification, TripClassificationX, TripRollup;
 export 'src/units/byte_size.dart' show ByteSize, ByteSizeUnit;
 export 'src/units/distance.dart' show Distance, DistanceUnit;
 export 'src/units/energy.dart' show Energy, EnergyUnit;

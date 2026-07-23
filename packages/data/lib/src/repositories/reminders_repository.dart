@@ -65,6 +65,30 @@ class RemindersRepository extends BaseRepository {
     ];
   }
 
+  /// A read-only `.ics` of the vehicle's reminders' projected due dates (M5-T6) —
+  /// a sharing convenience for the device calendar that NEVER mutates engine
+  /// state. [summary] localizes each event title at the edge (data stays
+  /// l10n-free); [dtstamp] is the export instant. All-day events on the due date.
+  Future<String> dueDatesIcs(
+    String vehicleId, {
+    required String Function(Reminder) summary,
+    required Instant dtstamp,
+    int utcOffsetMinutes = 0,
+  }) async {
+    final states =
+        await liveStatesFor(vehicleId, utcOffsetMinutes: utcOffsetMinutes);
+    final events = [
+      for (final s in states)
+        if (s.dueAt != null)
+          IcsEvent(
+            uid: '${s.reminder.id}@car-and-pain',
+            summary: summary(s.reminder),
+            date: s.dueAt!,
+          ),
+    ];
+    return buildIcsCalendar(events, dtstamp: dtstamp);
+  }
+
   /// One reminder by id, or null when missing/tombstoned.
   Future<Reminder?> byId(String id) async {
     final row = await (db.select(db.reminders)

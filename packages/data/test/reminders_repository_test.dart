@@ -159,4 +159,23 @@ void main() {
     expect(s.state, ReminderLiveState.upcoming);
     expect(s.next!.dueAt.epochMillis, greaterThan(t0.millisecondsSinceEpoch));
   });
+
+  test('watchReadingCount emits the live reading count on each write (M5-T2)',
+      () async {
+    final (db, _, vehicleId) = await fresh();
+    addTearDown(db.close);
+    final ledger = LedgerRepository(db);
+    final counts = <int>[];
+    final sub = ledger.watchReadingCount().listen(counts.add);
+
+    await pumpEventQueue();
+    await ledger.appendManual(
+        vehicleId: vehicleId, value: 1000, takenAt: at(t0));
+    await pumpEventQueue();
+
+    await sub.cancel();
+    // Starts at 0, re-emits 1 after the reading lands (the re-projection signal).
+    expect(counts.first, 0);
+    expect(counts.last, 1);
+  });
 }

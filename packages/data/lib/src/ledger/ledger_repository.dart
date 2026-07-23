@@ -21,6 +21,17 @@ class LedgerRepository extends BaseRepository {
         isRegressionOverride: r.isRegressionOverride,
       );
 
+  /// A lightweight change signal (M5-T2): emits the live count of odometer
+  /// readings, re-emitting whenever ANY reading is written across all vehicles.
+  /// Drives reactive re-projection of distance/engine-hour reminders (the F5
+  /// reconcile) without polling — a phone can't watch the odometer roll, so the
+  /// engine re-projects on each new reading instead.
+  Stream<int> watchReadingCount() {
+    final count = db.odometerReadings.id.count();
+    final query = db.selectOnly(db.odometerReadings)..addColumns([count]);
+    return query.watchSingle().map((row) => row.read(count) ?? 0);
+  }
+
   /// The vehicle's reading timeline, oldest first — push-updated.
   Stream<List<LedgerReading>> watchByVehicle(String vehicleId) {
     final query = db.select(db.odometerReadings)

@@ -150,6 +150,7 @@ class OdometerReadings extends Table with AuditColumns {
 
 /// A unified energy record (liquid/gas fill or EV/PHEV charge). M3 adds the full
 /// economy state machine; F2 keeps the canonical backbone.
+@DataClassName('FuelEntryRow')
 class FuelEntries extends Table with AuditColumns {
   TextColumn get vehicleId =>
       text().references(Vehicles, #id, onDelete: KeyAction.cascade)();
@@ -166,6 +167,34 @@ class FuelEntries extends Table with AuditColumns {
   BoolColumn get excludeFromEconomy =>
       boolean().withDefault(const Constant(false))();
   TextColumn get notes => text().nullable()();
+
+  // ── M3 liquid/gas fields ──────────────────────────────────────────────────
+  // gasoline | diesel | lpg | cng | ethanol | hydrogen | electric.
+  TextColumn get fuelType => text().nullable()();
+  TextColumn get octaneGrade => text().nullable()();
+  TextColumn get secondaryFuelType => text().nullable()();
+  // Entered display unit (L | usGal | ukGal | kg | m3); volume stays canonical.
+  TextColumn get volumeUnit => text().nullable()();
+  // Unit price in thousandths of a major currency unit (3-decimal precision).
+  IntColumn get pricePerUnitThousandths => integer().nullable()();
+  BoolColumn get isFree => boolean().withDefault(const Constant(false))();
+
+  // ── M3 EV / PHEV charge fields ────────────────────────────────────────────
+  TextColumn get chargerType => text().nullable()(); // acL1/acL2/dcFast
+  TextColumn get connectorType => text().nullable()();
+  IntColumn get startSocPct => integer().nullable()();
+  IntColumn get endSocPct => integer().nullable()();
+  BoolColumn get isHomeCharge => boolean().withDefault(const Constant(false))();
+  IntColumn get energyFromWallJoules => integer().nullable()();
+  TextColumn get network => text().nullable()();
+
+  // ── Shared ────────────────────────────────────────────────────────────────
+  TextColumn get stationId => text().nullable()();
+  TextColumn get stationName => text().nullable()();
+  TextColumn get paymentMethod => text().nullable()();
+  TextColumn get tripId => text().nullable()();
+  TextColumn get tags => text().nullable()();
+  TextColumn get receiptAttachmentId => text().nullable()();
 }
 
 /// A service visit mapped to one receipt. M4 adds line items/parts/warranties.
@@ -321,4 +350,16 @@ class Settings extends Table {
 
   @override
   Set<Column> get primaryKey => {key};
+}
+
+/// A user-saved fuel/charge station (M3-T9): the fully-offline substitute for a
+/// live station directory. Name + optional brand and raw GPS (micro-degrees,
+/// lat/lng × 1e6) pinned on the bundled offline map — no online geocoding. Rides
+/// backup/export like every other entity.
+@DataClassName('SavedStationRow')
+class SavedStations extends Table with AuditColumns {
+  TextColumn get name => text()();
+  TextColumn get brand => text().nullable()();
+  IntColumn get latMicro => integer().nullable()();
+  IntColumn get lngMicro => integer().nullable()();
 }

@@ -2,16 +2,47 @@ import 'package:core/core.dart';
 import 'package:drift/drift.dart';
 
 import '../db/app_database.dart';
+import '../domain/fuel_entry.dart';
 import 'base_repository.dart';
 import 'rollup_service.dart';
 
-/// The flagship transactional write (F2-T9/T10): a fuel entry, its odometer
-/// ledger row, the cached vehicle odometer, and the affected rollups are all
-/// written in ONE transaction so the spine never desyncs.
+/// The flagship transactional write (F2-T9/T10, M3-T1): a fuel/charge entry, its
+/// odometer ledger row, the cached vehicle odometer, and the affected rollups
+/// are all written in ONE transaction so the spine never desyncs.
 class FuelRepository extends BaseRepository {
   FuelRepository(super.db, {super.clock});
 
   RollupService get _rollups => RollupService(db);
+
+  FuelEntry _toDomain(FuelEntryRow r) => FuelEntry(
+        id: r.id,
+        vehicleId: r.vehicleId,
+        filledAt: Instant.fromEpochMillis(r.filledAt),
+        odometerMetres: r.odometerMetres,
+        volumeMl: r.volumeMl,
+        energyJoules: r.energyJoules,
+        totalCostMinor: r.totalCostMinor,
+        currencyCode: r.currencyCode,
+        isFullTank: r.isFullTank,
+        isMissedPrevious: r.isMissedPrevious,
+        excludeFromEconomy: r.excludeFromEconomy,
+        isFree: r.isFree,
+        fuelType: r.fuelType,
+        pricePerUnitThousandths: r.pricePerUnitThousandths,
+        startSocPct: r.startSocPct,
+        endSocPct: r.endSocPct,
+        isHomeCharge: r.isHomeCharge,
+        stationName: r.stationName,
+        notes: r.notes,
+      );
+
+  /// A vehicle's fill/charge history, newest first, tombstone-filtered.
+  Stream<List<FuelEntry>> watchByVehicle(String vehicleId) {
+    final query = db.select(db.fuelEntries)
+      ..where((t) => t.vehicleId.equals(vehicleId) & t.isDeleted.equals(false))
+      ..orderBy([(t) => OrderingTerm.desc(t.filledAt)]);
+    return query.watch().map((rows) => rows.map(_toDomain).toList());
+  }
 
   Future<Result<String, DbFailure>> add({
     required String vehicleId,
@@ -21,6 +52,17 @@ class FuelRepository extends BaseRepository {
     required int totalCostMinor,
     required String currencyCode,
     bool isFullTank = true,
+    bool isMissedPrevious = false,
+    bool excludeFromEconomy = false,
+    bool isFree = false,
+    String? fuelType,
+    int? energyJoules,
+    int? pricePerUnitThousandths,
+    int? startSocPct,
+    int? endSocPct,
+    bool isHomeCharge = false,
+    String? stationName,
+    String? notes,
   }) async {
     try {
       final id = newId();
@@ -38,6 +80,18 @@ class FuelRepository extends BaseRepository {
                 createdAt: now,
                 updatedAt: now,
                 isFullTank: Value(isFullTank),
+                isPartial: Value(!isFullTank),
+                isMissedPrevious: Value(isMissedPrevious),
+                excludeFromEconomy: Value(excludeFromEconomy),
+                isFree: Value(isFree),
+                fuelType: Value(fuelType),
+                energyJoules: Value(energyJoules),
+                pricePerUnitThousandths: Value(pricePerUnitThousandths),
+                startSocPct: Value(startSocPct),
+                endSocPct: Value(endSocPct),
+                isHomeCharge: Value(isHomeCharge),
+                stationName: Value(stationName),
+                notes: Value(notes),
               ),
             );
         // The ledger row — same transaction, source-tagged, back-referenced.
@@ -78,6 +132,68 @@ class FuelRepository extends BaseRepository {
             now: now);
       });
       return Ok(id);
+    } on Object catch (e) {
+      return Err(mapDbError(e, table: 'fuel_entries'));
+    }
+  }
+
+  /// The liquid/gas economy report for a vehicle (M3-T2), computed by the pure
+  /// [EconomyEngine] over the non-charge fills. EV charges are a separate series
+  /// (they carry no litre volume) and never blended into the liquid average.
+  Future<EconomyReport> economyReport(String vehicleId) async {
+    final rows = await (db.select(db.fuelEntries)
+          ..where(
+              (t) => t.vehicleId.equals(vehicleId) & t.isDeleted.equals(false)))
+        .get();
+    final liquidFills = rows
+        .map(_toDomain)
+        .where((e) => !e.isCharge)
+        .map((e) => e.toEnergyFill())
+        .toList();
+    return const EconomyEngine().compute(liquidFills);
+  }
+
+  /// Soft-delete a fuel/charge entry to trash (never a hard delete). The ledger
+  /// row it wrote remains — corrections there are audited, not erased.
+  Future<Result<void, DbFailure>> softDelete(
+    String id, {
+    Duration retention = const Duration(days: 30),
+  }) async {
+    try {
+      final now = nowMillis();
+      final found = await db.transaction(() async {
+        final cur = await (db.select(db.fuelEntries)
+              ..where((t) => t.id.equals(id)))
+            .getSingleOrNull();
+        if (cur == null || cur.isDeleted) return false;
+        await (db.update(db.fuelEntries)..where((t) => t.id.equals(id))).write(
+          FuelEntriesCompanion(
+            isDeleted: const Value(true),
+            deletedAt: Value(now),
+            trashExpiresAt: Value(now + retention.inMilliseconds),
+            updatedAt: Value(now),
+            rowRevision: Value(cur.rowRevision + 1),
+          ),
+        );
+        // Reverse the additive rollups this entry bumped on `add`, so the
+        // incremental rollups still equal a from-scratch rebuild (which excludes
+        // tombstoned rows) and dashboards never count a trashed fill.
+        final period = monthPeriodKey(cur.filledAt);
+        await _rollups.bump(
+            vehicleId: cur.vehicleId,
+            period: period,
+            metric: 'costMinor',
+            delta: -cur.totalCostMinor,
+            now: now);
+        await _rollups.bump(
+            vehicleId: cur.vehicleId,
+            period: period,
+            metric: 'fuelMl',
+            delta: -cur.volumeMl,
+            now: now);
+        return true;
+      });
+      return found ? const Ok(null) : const Err(NotFound('fuel_entry'));
     } on Object catch (e) {
       return Err(mapDbError(e, table: 'fuel_entries'));
     }

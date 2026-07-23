@@ -29,6 +29,12 @@ abstract final class AppLocations {
   /// The odometer ledger for [vehicleId] (full-screen flow above the shell).
   static String vehicleLedger(String vehicleId) => '/vehicle/$vehicleId/ledger';
 
+  /// The fuel/charge quick-add form for [vehicleId] (full-screen flow).
+  static String logFuel(String vehicleId) => '/vehicle/$vehicleId/fuel/new';
+
+  /// The Fuel & Economy history for [vehicleId] (full-screen flow).
+  static String fuelHistory(String vehicleId) => '/vehicle/$vehicleId/fuel';
+
   /// The gate locations the redirect owns — a fully-passed session sitting on one
   /// of these is sent home.
   static const gateLocations = <String>{

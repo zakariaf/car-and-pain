@@ -9,6 +9,8 @@ import '../backup/recovery_redeem_screen.dart';
 import '../features/01-vehicles-garage/presentation/vehicle_form_screen.dart';
 import '../features/01-vehicles-garage/presentation/vehicle_ledger_screen.dart';
 import '../features/01-vehicles-garage/presentation/vehicle_profile_screen.dart';
+import '../features/02-fuel-energy/presentation/fuel_entry_form_screen.dart';
+import '../features/02-fuel-energy/presentation/fuel_history_screen.dart';
 import '../features/18-data-offline-backup/presentation/trash_screen.dart';
 import '../gallery/pulse_gallery.dart';
 import '../security/app_lock_controller.dart';
@@ -143,6 +145,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         parentNavigatorKey: _rootKey,
         builder: (context, state) =>
             VehicleLedgerScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/fuel/new',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            FuelEntryFormScreen(vehicleId: state.pathParameters['vehicleId']!),
+      ),
+      GoRoute(
+        path: '/vehicle/:vehicleId/fuel',
+        parentNavigatorKey: _rootKey,
+        builder: (context, state) =>
+            FuelHistoryScreen(vehicleId: state.pathParameters['vehicleId']!),
       ),
       GoRoute(
         path: '/trash',

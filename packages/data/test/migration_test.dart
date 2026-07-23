@@ -42,6 +42,29 @@ const _m2VehicleColumns = [
   'consumption_unit',
 ];
 
+/// The fuel_entries columns added by the v5 → v6 (M3) migration step.
+const _m3FuelColumns = [
+  'fuel_type',
+  'octane_grade',
+  'secondary_fuel_type',
+  'volume_unit',
+  'price_per_unit_thousandths',
+  'is_free',
+  'charger_type',
+  'connector_type',
+  'start_soc_pct',
+  'end_soc_pct',
+  'is_home_charge',
+  'energy_from_wall_joules',
+  'network',
+  'station_id',
+  'station_name',
+  'payment_method',
+  'trip_id',
+  'tags',
+  'receipt_attachment_id',
+];
+
 void main() {
   test('SnapshotGuard takes a pre-migration snapshot and restores on failure',
       () async {
@@ -69,10 +92,10 @@ void main() {
     expect(File('$dbPath-shm').existsSync(), isFalse);
   });
 
-  test('schemaVersion is 5 and a fresh DB builds the full schema', () async {
+  test('schemaVersion is 7 and a fresh DB builds the full schema', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);
-    expect(db.schemaVersion, 5);
+    expect(db.schemaVersion, 7);
 
     // A query forces onCreate (createAll + indexes); no throw = schema built.
     final rows = await db
@@ -97,6 +120,7 @@ void main() {
         'attachments',
         'settings',
         'scheduled_notifications',
+        'saved_stations',
       ]),
     );
 
@@ -119,7 +143,7 @@ void main() {
     expect(key.read<int>('uq'), 1);
   });
 
-  test('v1 → v5 forward migration adds all later schema, keeps data', () async {
+  test('v1 → v7 forward migration adds all later schema, keeps data', () async {
     final dir = Directory.systemTemp.createTempSync('cap_mig2');
     addTearDown(() => dir.deleteSync(recursive: true));
     final path = '${dir.path}/app.sqlite';
@@ -136,6 +160,7 @@ void main() {
     await setup.customStatement('DROP TABLE plate_history');
     await setup.customStatement('DROP TABLE valuation_history');
     await setup.customStatement('DROP TABLE state_of_health_log');
+    await setup.customStatement('DROP TABLE saved_stations');
     const f5Columns = [
       'due_engine_minutes',
       'completed_at',
@@ -158,10 +183,14 @@ void main() {
     for (final c in _m2VehicleColumns) {
       await setup.customStatement('ALTER TABLE vehicles DROP COLUMN $c');
     }
+    // The M3 (v6) fuel_entries columns.
+    for (final c in _m3FuelColumns) {
+      await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
+    }
     await setup.customStatement('PRAGMA user_version = 1');
     await setup.close();
 
-    // Reopen: drift sees v1 < v5 and runs all guarded forward steps.
+    // Reopen: drift sees v1 < v6 and runs all guarded forward steps.
     final upgraded = AppDatabase(NativeDatabase(File(path)));
     addTearDown(upgraded.close);
 
@@ -231,13 +260,17 @@ void main() {
     await setup.customStatement('DROP TABLE plate_history');
     await setup.customStatement('DROP TABLE valuation_history');
     await setup.customStatement('DROP TABLE state_of_health_log');
+    await setup.customStatement('DROP TABLE saved_stations');
     for (final c in _m2VehicleColumns) {
       await setup.customStatement('ALTER TABLE vehicles DROP COLUMN $c');
+    }
+    for (final c in _m3FuelColumns) {
+      await setup.customStatement('ALTER TABLE fuel_entries DROP COLUMN $c');
     }
     await setup.customStatement('PRAGMA user_version = 3');
     await setup.close();
 
-    // Reopen: drift sees v3 < v5 and runs the guarded forward steps (3→4, 4→5).
+    // Reopen: drift sees v3 < v6 and runs the guarded forward steps (3→4…5→6).
     final upgraded = AppDatabase(NativeDatabase(File(path)));
     addTearDown(upgraded.close);
 

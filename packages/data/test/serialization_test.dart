@@ -69,6 +69,55 @@ void main() {
     expect((await v2.getById(v.id)).valueOrNull!.energyType, 'electric');
   });
 
+  test('M3 fuel/charge entries round-trip through the backup (T7)', () async {
+    final db = AppDatabase.memory();
+    addTearDown(db.close);
+    final v = (await VehiclesRepository(db).add(nickname: 'Rig')).valueOrNull!;
+    final fuel = FuelRepository(db);
+    // A liquid fill with M3 flags…
+    await fuel.add(
+      vehicleId: v.id,
+      filledAt: const Instant.fromEpochMillis(1000),
+      odometerMetres: 500000,
+      volumeMl: 40000,
+      totalCostMinor: 7036,
+      currencyCode: 'EUR',
+      fuelType: 'gasoline',
+      pricePerUnitThousandths: 1759,
+      stationName: 'Aral',
+    );
+    // …and an EV charge session.
+    await fuel.add(
+      vehicleId: v.id,
+      filledAt: const Instant.fromEpochMillis(2000),
+      odometerMetres: 700000,
+      volumeMl: 0,
+      totalCostMinor: 1200,
+      currencyCode: 'EUR',
+      fuelType: 'electric',
+      startSocPct: 20,
+      endSocPct: 80,
+      isHomeCharge: true,
+    );
+
+    final doc = await CanonicalCodec(db).export();
+    final db2 = AppDatabase.memory();
+    addTearDown(db2.close);
+    expect((await CanonicalCodec(db2).import(doc)).isOk, isTrue);
+
+    // Re-export is byte-identical and every M3 field survived.
+    final doc2 = await CanonicalCodec(db2).export();
+    expect(jsonEncode(doc2['entities']), jsonEncode(doc['entities']));
+    final entries = await FuelRepository(db2).watchByVehicle(v.id).first;
+    expect(entries, hasLength(2));
+    final charge = entries.firstWhere((e) => e.isCharge);
+    expect(charge.startSocPct, 20);
+    expect(charge.isHomeCharge, isTrue);
+    final liquid = entries.firstWhere((e) => !e.isCharge);
+    expect(liquid.pricePerUnitThousandths, 1759);
+    expect(liquid.stationName, 'Aral');
+  });
+
   test('a newer archive is refused with a typed failure', () async {
     final db = AppDatabase.memory();
     addTearDown(db.close);

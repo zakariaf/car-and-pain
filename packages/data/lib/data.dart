@@ -50,6 +50,7 @@ export 'src/diagnostics/diagnostics_repository.dart'
     show AppDiagnosticsRepository, DiagnosticsRepository;
 export 'src/domain/attachment.dart'
     show Attachment, AttachmentKind, AttachmentOwner;
+export 'src/domain/fuel_entry.dart' show FuelEntry;
 export 'src/domain/vehicle.dart' show Vehicle;
 export 'src/infra/app_dirs.dart' show AppDirs;
 export 'src/infra/app_time_zone.dart' show AppTimeZone;
@@ -77,6 +78,7 @@ export 'src/providers.dart'
         notificationScheduleRepositoryProvider,
         secureKeyStoreProvider,
         settingsRepositoryProvider,
+        stationsRepositoryProvider,
         taxonomyRepositoryProvider,
         trashRepositoryProvider,
         vehiclesRepositoryProvider;
@@ -86,6 +88,7 @@ export 'src/repositories/base_repository.dart' show BaseRepository, newId;
 export 'src/repositories/fuel_repository.dart' show FuelRepository;
 export 'src/repositories/rollup_service.dart'
     show RollupService, monthPeriodKey;
+export 'src/repositories/stations_repository.dart' show StationsRepository;
 export 'src/repositories/vehicles_repository.dart'
     show VehicleEdit, VehiclesRepository;
 export 'src/serialization/canonical_codec.dart' show CanonicalCodec;
